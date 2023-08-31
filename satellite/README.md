@@ -1,4 +1,5 @@
 # hostd-mon satellite
+Based on [https://github.com/SiaFoundation/host-bench](https://github.com/SiaFoundation/host-bench)
 
 ## How to build
 
@@ -14,3 +15,6 @@ This program supports following flags:
 
 ## Endpoints
 TODO
+
+## Disclaimer
+This project is funded by Sia Foundation. See [https://forum.sia.tech/t/grant-proposal-hostd-monitoring-service/362](https://forum.sia.tech/t/grant-proposal-hostd-monitoring-service/362).
