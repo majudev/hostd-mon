@@ -7,7 +7,6 @@ import (
 	"net"
 	"time"
 
-	"go.sia.tech/core/consensus"
 	rhp2 "go.sia.tech/core/rhp/v2"
 	"go.sia.tech/core/types"
 )
@@ -18,23 +17,6 @@ const (
 )
 
 type (
-	// A ChainManager is used to get the current consensus state
-	ChainManager interface {
-		TipState() consensus.State
-	}
-
-	// A Wallet funds and signs transactions
-	Wallet interface {
-		Address() types.Address
-		FundTransaction(txn *types.Transaction, amount types.Currency) ([]types.Hash256, func(), error)
-		SignTransaction(cs consensus.State, txn *types.Transaction, toSign []types.Hash256, cf types.CoveredFields) error
-	}
-
-	// A TPool manages transactions
-	TPool interface {
-		RecommendedFee() types.Currency
-	}
-
 	// A Session is an RHP2 session with a host
 	Session struct {
 		hostKey types.PublicKey
@@ -64,49 +46,6 @@ func (s *Session) ScanSettings() (settings rhp2.HostSettings, err error) {
 // Close closes the underlying connection.
 func (s *Session) Close() error {
 	return s.t.Close()
-}
-
-// hashRevision is a helper function to hash a contract revision for signing.
-func hashRevision(rev types.FileContractRevision) types.Hash256 {
-	h := types.NewHasher()
-	rev.EncodeTo(h.E)
-	return h.Sum()
-}
-
-// explicitCoveredFields returns a CoveredFields that covers all elements
-// present in txn.
-func explicitCoveredFields(txn types.Transaction) (cf types.CoveredFields) {
-	for i := range txn.SiacoinInputs {
-		cf.SiacoinInputs = append(cf.SiacoinInputs, uint64(i))
-	}
-	for i := range txn.SiacoinOutputs {
-		cf.SiacoinOutputs = append(cf.SiacoinOutputs, uint64(i))
-	}
-	for i := range txn.FileContracts {
-		cf.FileContracts = append(cf.FileContracts, uint64(i))
-	}
-	for i := range txn.FileContractRevisions {
-		cf.FileContractRevisions = append(cf.FileContractRevisions, uint64(i))
-	}
-	for i := range txn.StorageProofs {
-		cf.StorageProofs = append(cf.StorageProofs, uint64(i))
-	}
-	for i := range txn.SiafundInputs {
-		cf.SiafundInputs = append(cf.SiafundInputs, uint64(i))
-	}
-	for i := range txn.SiafundOutputs {
-		cf.SiafundOutputs = append(cf.SiafundOutputs, uint64(i))
-	}
-	for i := range txn.MinerFees {
-		cf.MinerFees = append(cf.MinerFees, uint64(i))
-	}
-	for i := range txn.ArbitraryData {
-		cf.ArbitraryData = append(cf.ArbitraryData, uint64(i))
-	}
-	for i := range txn.Signatures {
-		cf.Signatures = append(cf.Signatures, uint64(i))
-	}
-	return
 }
 
 // NewSession creates a new RHP2 session with a host. It is not safe for
