@@ -6,6 +6,11 @@
 go build
 ```
 
+And add capabilities for ping:
+```
+setcap cap_net_raw,cap_net_admin=eip ./satellite
+```
+
 ## How to use
 This program supports following flags:
 - `--log.level` - can be either normal, info, warn or debug

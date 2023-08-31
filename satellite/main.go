@@ -36,7 +36,7 @@ func main() {
 	}
 	defer apiListener.Close()
 
-	log.Println("Api started")
+	log.Println("API started")
 
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer cancel()
@@ -48,7 +48,7 @@ func main() {
 		os.Exit(1)
 	}()
 
-	log.Println("Ctx started")
+	log.Println("Context created")
 
 	cfg := zap.NewProductionConfig()
 	cfg.OutputPaths = []string{"stdout", logfile}
@@ -68,11 +68,9 @@ func main() {
 	}
 	defer logger.Sync()
 
-	log.Println("CFG started")
+	log.Println("Logger started")
 
 	b := benchmark.New(logger.Named("benchmark"))
-
-	log.Println("B started")
 
 	web := http.Server{
 		Handler:     api.NewServer(b, logger.Named("api")),

@@ -30,21 +30,3 @@ func (a *api) handlePOSTScan(c jape.Context) {
 	}
 	c.Encode(settings)
 }
-
-func parseLimitParams(c jape.Context, defaultLimit, maxLimit int) (limit, offset int) {
-	if err := c.DecodeForm("limit", &limit); err != nil {
-		return
-	} else if err := c.DecodeForm("offset", &offset); err != nil {
-		return
-	}
-	if limit > maxLimit {
-		limit = maxLimit
-	} else if limit <= 0 {
-		limit = defaultLimit
-	}
-
-	if offset < 0 {
-		offset = 0
-	}
-	return
-}
