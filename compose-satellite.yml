@@ -4,14 +4,16 @@ services:
   satellite:
     build: satellite
     restart: always
-    securityContext:
-    capabilities:
-      add: ["NET_RAW"]
+    cap_add:
+    - NET_RAW
+    - NET_ADMIN
   extramon:
     build: extramon/backend
     restart: always
   nginx:
     build: nginx/satellite
+    networks:
+    - link-root
   redis:
     image: redis:alpine
     restart: always

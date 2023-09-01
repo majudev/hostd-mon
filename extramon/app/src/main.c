@@ -142,6 +142,8 @@ int main(int argc, char * argv[]){
         return 0;
     }
 
+    
+
     curl_global_cleanup();
 
     return 0;
