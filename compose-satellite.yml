@@ -1,0 +1,30 @@
+version: '3.4'
+
+services:
+  satellite:
+    build: satellite
+    restart: always
+  extramon:
+    build: extramon/backend
+    restart: always
+  nginx:
+    build: nginx/satellite
+  redis:
+    image: redis:alpine
+    restart: always
+    command: >
+      --protected-mode no
+      --save ""
+      --appendonly no
+  cloudflared:
+    image: cloudflare/cloudflared
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      TUNNEL_URL: http://nginx:8080
+      TUNNEL_TOKEN: your_token_here
+
+networks:
+  link-root:
+    name: tunnel-root
+    external: true
