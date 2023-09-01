@@ -4,10 +4,10 @@ WORKDIR /app
 
 COPY . .
 
-RUN apt update && apt install -y libcap2-bin
+RUN apt-get update && apt-get install -y libcap2-bin
 
 RUN     go mod download && \
 	go build && \
 	setcap cap_net_raw,cap_net_admin=eip ./satellite
 
-CMD ["/app/satellite"]
+ENTRYPOINT ["/app/satellite"]

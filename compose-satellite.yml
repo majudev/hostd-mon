@@ -4,6 +4,9 @@ services:
   satellite:
     build: satellite
     restart: always
+    securityContext:
+    capabilities:
+      add: ["NET_RAW"]
   extramon:
     build: extramon/backend
     restart: always
