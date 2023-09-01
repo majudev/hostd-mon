@@ -21,10 +21,7 @@ app.use(cookieParser());
 app.use(requestLogger);
 
 /* main router */
-app.use('/api', router);
-
-/* main endpoint */
-app.use('/', (req, res) => res.send('Hello world'));
+app.use('/', router);
 
 /* 404 Not Found handler */
 app.get('*', (req, res) => res.status(404).send('<h1>404 Not Found</h1>'));

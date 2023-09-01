@@ -14,21 +14,19 @@ services:
     env_file:
       - backend/.env
     environment:
-      MYSQL_HOST: mariadb
-      MYSQL_PASSWORD: sakjfsdfasfasersfedfsdfa
+      DATABASE_URL: postgresql://master:sakjfsdfasfasersfedfsdfa@postgres:5432/master?schema=public
       SITE_ORIGIN: https://sia.watch
       WEBAUTHN_RPID: sia.watch
       REDIS_URL: redis://redis:6379
-  mariadb:
-    image: mariadb
+  postgres:
+    image: postgres
     restart: always
     volumes:
-      - './database:/var/lib/mysql'
+      - './database:/var/lib/postgresql/data'
     environment:
-      MARIADB_PASSWORD: sakjfsdfasfasersfedfsdfa
-      MARIADB_USER: master
-      MARIADB_DATABASE: master
-      MARIADB_RANDOM_ROOT_PASSWORD: true
+      POSTGRES_PASSWORD: sakjfsdfasfasersfedfsdfa
+      POSTGRES_USER: master
+      POSTGRES_DATABASE: master
   nginx:
     build: nginx/master
   cloudflared:

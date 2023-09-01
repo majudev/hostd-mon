@@ -4,40 +4,50 @@ import { PrismaClient } from '@prisma/client'
 const router = Router();
 const prisma = new PrismaClient();
 
-interface RegisterUserRequest {
-    email: string;
+interface NewHostRequest {
+    rhpAddress: string | undefined;
+    rhpPubkey: string | undefined;
+    extramonPubkey: string | undefined;
 };
 
 interface LoginUserRequest {
     email: string;
 };
 
-router.post('/register', async (req: Request, res: Response) => {
-    const request: RegisterUserRequest = req.body;
+router.post('/new', async (req: Request, res: Response) => {
+    const request: NewHostRequest = req.body;
 
-    if(request.email === undefined) {
+    if(request.rhpAddress === undefined && request.rhpPubkey === undefined && request.extramonPubkey) {
         res.json({
             status: "error",
-            message: "please provide an email",
+            message: "please provide rhpAddress and rhpPubkey OR extramonPubkey",
         }).status(400);
         return;
     }
 
-    const exists = await prisma.user.count({
+    /*const exists = await prisma.host.count({
         where: {
-            email: request.email,
+            OR: [
+                {
+                    rhpAddress: request.rhpAddress,
+                    rhpPubkey: request.rhpPubkey,
+                },
+                {
+                    extramonPubkey: request.extramonPubkey,
+                }
+            ]
         }
     }) > 0;
 
     if(exists) {
         res.json({
             status: "error",
-            message: "user with this email already exists",
+            message: "host with this data already exists",
         }).status(409);
         return;
-    }
+    }*/
 
-    await prisma.user.create({
+    await prisma.host.create({
         data: {
             email: request.email,
             name: null,
