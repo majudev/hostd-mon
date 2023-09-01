@@ -1,8 +1,9 @@
 #include "urls.h"
 
 const char * satellite_urls[] = {
-    "eu1.hostd.watch",
-    "us1.hostd.watch",
+    "satellite-ca.sia.watch",
+    "satellite-de.sia.watch",
+    "satellite-fr.sia.watch",
     "localhost:9030",
 };
 

@@ -1,0 +1,40 @@
+version: '3.4'
+
+services:
+  frontend:
+    build: frontend
+    restart: always
+    env_file:
+      - frontend/.env
+    environment:
+      REACT_APP_API_URL: http://localhost:8080/api
+  backend:
+    build: backend
+    restart: always
+    env_file:
+      - backend/.env
+    environment:
+      MYSQL_HOST: mariadb
+      MYSQL_PASSWORD: sakjfsdfasfasersfedfsdfa
+      SITE_ORIGIN: https://sia.watch
+      WEBAUTHN_RPID: sia.watch
+      REDIS_URL: redis://redis:6379
+  mariadb:
+    image: mariadb
+    restart: always
+    volumes:
+      - './database:/var/lib/mysql'
+    environment:
+      MARIADB_PASSWORD: sakjfsdfasfasersfedfsdfa
+      MARIADB_USER: master
+      MARIADB_DATABASE: master
+      MARIADB_RANDOM_ROOT_PASSWORD: true
+  nginx:
+    build: nginx/master
+  cloudflared:
+    image: cloudflare/cloudflared
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      TUNNEL_URL: http://nginx:8080
+      TUNNEL_TOKEN: your_token_here
