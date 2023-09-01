@@ -1,10 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import fileUpload from 'express-fileupload';
-import config from '@config';
-import router from '@routes';
-import requestLogger from '@middlewares/requestLogger';
+import config from './config';
+import router from './routes';
+import requestLogger from './middlewares/requestLogger';
 
 const app = express();
 
@@ -17,10 +16,6 @@ app.use(cors({
 /* basic express config */
 app.use(express.json());
 app.use(cookieParser());
-app.use(fileUpload({
-	useTempFiles: true,
-	tempFileDir: '/tmp/'
-}));
 
 /* custom middlewares */
 app.use(requestLogger);

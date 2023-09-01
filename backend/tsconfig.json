@@ -1,24 +1,11 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "esModuleInterop": true,
     "target": "es6",
-    "moduleResolution": "node",
-    "sourceMap": true,
-    "outDir": "dist",
-
+    "module": "commonjs",
+    "outDir": "./dist",
     "strict": true,
-    "noUnusedLocals": false, // mark unused local variables as errors
-    "noUnusedParameters": false, // mark unused parameters as errors
-    "noFallthroughCasesInSwitch": true,
-
-    "baseUrl": "src",
-    "paths": {
-      "@*": ["*"],
-    }
+    "esModuleInterop": true
   },
-  "ts-node": {
-    "require": ["tsconfig-paths/register"]
-  },
-  "lib": ["es2015"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules"]
 }

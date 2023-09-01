@@ -1,6 +1,6 @@
 import winston from 'winston';
-import config from '@config';
-import colors from '@utils/colors';
+import config from '../config';
+import colors from '../utils/colors';
 
 interface ColorMap {
 	[key: string]: string;

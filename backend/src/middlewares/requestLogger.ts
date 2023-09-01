@@ -1,6 +1,6 @@
-import config from '@config';
+import config from '../config';
 import {NextFunction, Response, Request} from 'express';
-import logger from '@utils/logger';
+import logger from '../utils/logger';
 
 /**
  * HTTP request logger - express middleware.

@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import authRouter from '@routes/auth';
-import {HelloWorldHandler} from '@controllers';
+import authRouter from '../routes/auth';
+import {HelloWorldHandler} from '../controllers';
 
 const router = Router();
 
