@@ -2,7 +2,9 @@ FROM golang:1.19
 
 WORKDIR /app
 
-COPY ./* .
+COPY . .
+
+RUN apt update && apt install libcap2-bin
 
 RUN     go mod download && \
 	go build && \
