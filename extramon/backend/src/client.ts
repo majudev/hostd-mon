@@ -17,8 +17,22 @@ interface PingData {
 }
 
 router.post('/ping', async (req: Request, res: Response) => {
+    const startTime = performance.now(); 
     const request : PingRequest = req.body;
+
+    if(request.data === undefined || request.signature === undefined || request.pubkey === undefined){
+        res.status(400).end();
+        return;
+    }
+
     const data = JSON.parse(request.data) as PingData;
+
+    if(data.timestamp === undefined){
+        res.status(400).end();
+        return;
+    }
+
+    console.log('Got ping request signed using pubkey ' + request.pubkey);
     
     const client = createClient({
         url: process.env.REDIS
@@ -27,6 +41,8 @@ router.post('/ping', async (req: Request, res: Response) => {
 
     var pubkeyAllowedRoot = await client.get('allowed.' + request.pubkey);
     if(pubkeyAllowedRoot == null){
+        console.log('Pubkey not in cache, retrieving from upstream...');
+
         const response = await fetch((process.env.MASTER_URL as string) + '/api/satellites/host/by-extramon-pubkey/' + encodeURIComponent(request.pubkey) + '/allowed');
         const status = await response.status;
         //const body = await response.text();
@@ -41,6 +57,7 @@ router.post('/ping', async (req: Request, res: Response) => {
 
     const pubkeyAllowed = (pubkeyAllowedRoot === 'true');
     if(!pubkeyAllowed){
+        console.log('Pubkey not registered');
         res.status(401);
         res.end();
         return;
@@ -55,11 +72,13 @@ router.post('/ping', async (req: Request, res: Response) => {
     const isValid = secp256k1.ecdsaVerify(Uint8Array.from(Buffer.from(request.signature, 'hex')), hash, pubkey);
 
     if(!isValid){
+        console.log('Signature invalid');
         res.status(401);
         res.end();
         return;
     }
 
+    console.log('Storing in incoming cache');
     const incoming = createClient({
         url: process.env.INCOMING_CACHE
     });
@@ -68,16 +87,8 @@ router.post('/ping', async (req: Request, res: Response) => {
     await incoming.set('ping.' + cacheHash, JSON.stringify(request));
     await incoming.disconnect();
 
-    /*await client.set('lastSeen.' + request.pubkey, data.timestamp);
-    var clientEntries = await client.get('pings.' + request.pubkey);
-    if(clientEntries == null){
-        clientEntries = JSON.stringify([]);
-    }
-    var clientEntriesObject = JSON.parse(clientEntries) as {
-        timestamp: number,
-    }[];
-    clientEntriesObject.push({ timestamp: data.timestamp });
-    await client.set('pings.' + request.pubkey, JSON.stringify(clientEntriesObject));*/
+    const endTime = performance.now();
+    console.log('Ping request took ' + (endTime-startTime).toFixed(3) + 'ms');
 
     res.status(200);
     res.end();

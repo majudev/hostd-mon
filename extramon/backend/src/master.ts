@@ -13,46 +13,26 @@ interface CacheUpdateRequest {
     delete: string[];
 };
 
-router.post('/lastseen', async (req: Request, res: Response) => {    
-    const request : LastSeenRequest = req.body;
-
-    const client = createClient({
-        url: process.env.REDIS
-    });
-    await client.connect();
-
-    var response = request.hosts.reduce(async (previous, current) => {
-        const host = current;
-        const historyJSON = await client.get('pings.' + host);
-        await client.del('pings.' + host);
-        const history = (historyJSON != null) ? JSON.parse(historyJSON) : {};
-        return {
-            ...previous,
-            [current] : history,
-        };
-    }, {});
-
-    res.status(200);
-    res.json(response);
-    res.end();
-});
-
 router.get('/cache', async (req: Request, res: Response) => {    
+    const startTime = performance.now();
+
     const incoming = createClient({
         url: process.env.INCOMING_CACHE
     });
     await incoming.connect();
-
     const keys = await incoming.keys('*');
-
     await incoming.disconnect();
+
+    const endTime = performance.now();
+    console.log('Listing cache entries: found ' + keys.length + ' keys, took ' + (endTime-startTime).toFixed(3) + 'ms');
 
     res.status(200);
     res.json(keys);
     res.end();
 });
 
-router.post('/cache-update', async (req: Request, res: Response) => {    
+router.post('/cache-update', async (req: Request, res: Response) => {
+    const startTime = performance.now(); 
     const request: CacheUpdateRequest = req.body;
 
     if(request.delete === undefined || request.get === undefined){
@@ -79,6 +59,9 @@ router.post('/cache-update', async (req: Request, res: Response) => {
     });
 
     await incoming.disconnect();
+
+    const endTime = performance.now();
+    console.log('Flushing cache entries: deleted ' + request.delete + ' keys, retrieved ' + request.get + ' keys, took ' + (endTime-startTime).toFixed(3) + 'ms');
 
     res.status(200);
     res.json(returnSet);
