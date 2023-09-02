@@ -1,5 +1,6 @@
 import { Worker, MessagePort, isMainThread, parentPort, workerData } from 'node:worker_threads';
-import { PrismaClient } from '@prisma/client'
+import logger from '../utils/logger';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -99,7 +100,7 @@ async function workerFunction(){
         });
         const status = response.status;
         if(Math.floor(status / 100) != 2){
-            console.log('Cannot push cache update to satellite ' + satellite);
+            logger.error('Cannot push cache update to satellite ' + satellite);
             break;
         }
         const body = await response.json();
@@ -109,7 +110,7 @@ async function workerFunction(){
             if(key.startsWith('ping.')){
                 const request: PingRequest = body[key];
                 if(request.data === undefined || request.signature === undefined || request.pubkey === undefined){
-                    console.log("Malformed value of key " + key + ", discarding");
+                    logger.warn("Malformed value of key " + key + ", discarding");
                     continue;
                 }
                 const data: PingData = JSON.parse(request.data);
@@ -124,7 +125,7 @@ async function workerFunction(){
                 });
 
                 if(hostId === null){
-                    console.log("No host associated with pubkey, discarding");
+                    logger.warn("No host associated with pubkey, discarding");
                     continue;
                 }
 
@@ -141,7 +142,7 @@ async function workerFunction(){
                     });
 
                     if(satelliteId === null){
-                        console.log("Internal error, satellite with this address not found. Discarding.");
+                        logger.error("Internal error, satellite with this address not found. Discarding.");
                         continue;
                     }
 
@@ -154,7 +155,7 @@ async function workerFunction(){
                     });
                 }
             }else{
-                console.log('Discarding unknown key ' + key);
+                logger.warn('Discarding unknown key ' + key);
             }
         }
     }
