@@ -4,10 +4,6 @@ import { performance } from 'perf_hooks';
 
 const router: Router = express.Router();
 
-interface LastSeenRequest {
-    hosts: string[];
-};
-
 interface CacheUpdateRequest {
     get: string[];
     delete: string[];
@@ -65,6 +61,24 @@ router.post('/cache-update', async (req: Request, res: Response) => {
 
     res.status(200);
     res.json(returnSet);
+    res.end();
+});
+
+router.delete('/invalidate-pubkey/:pubkey', async (req: Request, res: Response) => {
+    const startTime = performance.now(); 
+    const pubkey: string = req.params.pubkey;
+
+    const client = createClient({
+        url: process.env.REDIS
+    });
+    await client.connect();
+    await client.del('allowed.' + pubkey);
+    await client.disconnect();
+
+    const endTime = performance.now();
+    console.log('Invalidated pubkey ' + pubkey + ', took ' + (endTime-startTime).toFixed(3) + 'ms');
+
+    res.status(200);
     res.end();
 });
 
