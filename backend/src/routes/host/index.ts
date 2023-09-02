@@ -47,12 +47,12 @@ router.post('/new', async (req: Request, res: Response) => {
         return;
     }*/
 
-    await prisma.host.create({
+    /*await prisma.host.create({
         data: {
             email: request.email,
             name: null,
         },
-    });
+    });*/
 
 	res.json({
 		status: "success",
