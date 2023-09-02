@@ -10,9 +10,21 @@ services:
   extramon:
     build: extramon/backend
     restart: always
+    env_file:
+      - extramon/backend/.env
+    environment:
+      REDIS: redis://redis:6379
+      INCOMING_CACHE: redis://incoming-cache:6379
   nginx:
     build: nginx/satellite
   redis:
+    image: redis:alpine
+    restart: always
+    command: >
+      --protected-mode no
+      --save ""
+      --appendonly no
+  incoming-cache:
     image: redis:alpine
     restart: always
     command: >
