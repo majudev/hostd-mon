@@ -30,3 +30,12 @@ func (a *api) handlePOSTScan(c jape.Context) {
 	}
 	c.Encode(settings)
 }
+
+func (a *api) handlePOSTPing(c jape.Context) {
+	var req ScanRequest
+	if err := c.Decode(&req); err != nil {
+		return
+	}
+	result := a.bench.PingHost(c.Request.Context(), req.Address, req.HostKey)
+	c.Encode(result)
+}

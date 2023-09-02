@@ -14,6 +14,7 @@ type (
 	// A Benchmark benchmarks hosts and manages contracts
 	Benchmark interface {
 		ScanHost(ctx context.Context, hostAddr string, hostKey types.PublicKey) (benchmark.Settings, error)
+		PingHost(ctx context.Context, hostAddr string, hostKey types.PublicKey) benchmark.PingResult
 	}
 
 	api struct {
@@ -32,5 +33,6 @@ func NewServer(bench Benchmark, log *zap.Logger) http.Handler {
 	return jape.Mux(map[string]jape.Handler{
 		// benchmark endpoints
 		"POST /scan": api.handlePOSTScan,
+		"POST /ping": api.handlePOSTPing,
 	})
 }
