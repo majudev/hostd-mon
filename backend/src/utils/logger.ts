@@ -1,5 +1,4 @@
 import winston from 'winston';
-import config from '../config';
 import colors from '../utils/colors';
 
 interface ColorMap {
@@ -14,7 +13,7 @@ const levelColors: ColorMap = {
 };
 
 const logger = winston.createLogger({
-	level: config.LOGGER.LEVEL,
+	level: process.env.LOGLEVEL !== undefined ? process.env.LOGLEVEL : 'debug',
 	format: winston.format.combine(
 		winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
 		winston.format.printf(({ timestamp, level, message }) => {

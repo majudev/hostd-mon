@@ -1,15 +1,14 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import config from './config';
 import router from './routes';
-import requestLogger from './middlewares/requestLogger';
+import requestLogger from './utils/requestLogger';
 
 const app = express();
 
 /* cross-origin resource sharing config */
 app.use(cors({
-	origin: config.API_WHITELIST,
+	//origin: 'sia.watch',
 	credentials: true
 }));
 

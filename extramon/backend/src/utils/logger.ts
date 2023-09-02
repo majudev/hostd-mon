@@ -13,7 +13,7 @@ const levelColors: ColorMap = {
 };
 
 const logger = winston.createLogger({
-	level: process.env.LOGLEVEL != undefined ? process.env.LOGLEVEL : 'debug',
+	level: process.env.LOGLEVEL !== undefined ? process.env.LOGLEVEL : 'debug',
 	format: winston.format.combine(
 		winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
 		winston.format.printf(({ timestamp, level, message }) => {
