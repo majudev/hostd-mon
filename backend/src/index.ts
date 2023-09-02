@@ -1,9 +1,11 @@
 import server from './server';
 import logger from './utils/logger';
 import {startScheduler} from './poller';
+import {initDB} from './initdb';
 
 import 'dotenv/config';
 
+initDB();
 startScheduler();
 
 const PORT = process.env.PORT || 3000;
