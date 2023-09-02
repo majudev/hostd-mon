@@ -24,7 +24,7 @@ export async function initDB(){
                 },*/
             ]
         });
-    }
+    }else logger.debug('' + satellite_count + ' satellites exist in the database, not adding default one');
     const users_count = await prisma.user.count();
     if(users_count === 0){
         logger.info('Adding default user');
@@ -33,7 +33,7 @@ export async function initDB(){
                 email: 'nobody@all',
             }
         });
-    }
+    }else logger.debug('' + users_count + ' users exist in the database, not adding default one');
 }
 
 export default initDB;
