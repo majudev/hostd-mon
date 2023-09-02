@@ -16,6 +16,8 @@ function extramonWorkerScheduler(){
             });
             worker.on('error', (error) => {
                 extramonWorkerFlag = false;
+                console.log('ExtramonWorker errored out:');
+                console.log(error);
             });
         }else{
             console.log('ExtramonWorker hasn\'t finished work yet, not firing...');

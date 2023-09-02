@@ -15,14 +15,6 @@ interface PingData {
 
 function spawnExtramonWorker() : Worker {
     const worker = new Worker(__filename, { workerData: null });
-    
-    worker.on('message', (result) => {
-        console.log('SHA-256 Hash:', result);
-    });
-    worker.on('error', (error) => {
-        console.error('Worker error:', error);
-    });
-
     return worker;
 }
 
