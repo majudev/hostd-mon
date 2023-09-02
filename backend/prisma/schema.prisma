@@ -11,49 +11,49 @@ datasource db {
 }
 
 model Host {
-  id             Int       @id @default(autoincrement())
-  rhpAddress     String?   @db.VarChar(255) @unique
-  rhpPubkey      String?   @unique
-  extramonPubkey String?   @unique
-  userId         Int
-  User           User      @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  RHPUptimeEntry    RHPUptimeEntry[]
+  id                    Int                   @id @default(autoincrement())
+  rhpAddress            String?               @unique @db.VarChar(255)
+  rhpPubkey             String?               @unique
+  extramonPubkey        String?               @unique
+  userId                Int
+  User                  User                  @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  RHPUptimeEntry        RHPUptimeEntry[]
   ExtramonUptimeEntries ExtramonUptimeEntry[]
 }
 
 model RHPUptimeEntry {
-  id        Int      @id @default(autoincrement())
-  timestamp DateTime @default(now()) @db.Timestamp(6)
-  ping      Boolean
-  rhpv2     Boolean
-  rhpv3     Boolean
+  id          Int       @id @default(autoincrement())
+  timestamp   DateTime  @default(now()) @db.Timestamp(6)
+  ping        Boolean
+  rhpv2       Boolean
+  rhpv3       Boolean
   satelliteId Int
-  Satellite Satellite @relation(fields: [satelliteId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  hostId    Int
-  Host      Host     @relation(fields: [hostId], references: [id], onDelete: NoAction, onUpdate: NoAction) 
+  Satellite   Satellite @relation(fields: [satelliteId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  hostId      Int
+  Host        Host      @relation(fields: [hostId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model ExtramonUptimeEntry {
-  id        Int      @id @default(autoincrement())
-  timestamp DateTime @default(now()) @db.Timestamp(6)
+  id          Int       @id @default(autoincrement())
+  timestamp   DateTime  @default(now()) @db.Timestamp(6)
   satelliteId Int
-  Satellite Satellite @relation(fields: [satelliteId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  hostId    Int
-  Host      Host     @relation(fields: [hostId], references: [id], onDelete: NoAction, onUpdate: NoAction) 
+  Satellite   Satellite @relation(fields: [satelliteId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  hostId      Int
+  Host        Host      @relation(fields: [hostId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model User {
-  id      Int      @id @default(autoincrement())
-  name    String?  @db.VarChar(255)
-  email   String   @unique @db.VarChar(255)
-  Host    Host[]
+  id    Int     @id @default(autoincrement())
+  name  String? @db.VarChar(255)
+  email String  @unique @db.VarChar(255)
+  Host  Host[]
 }
 
 model Satellite {
-  id      Int      @id @default(autoincrement())
-  address String   @unique @db.VarChar(255)
-  name    String   @unique @db.VarChar(255)
-  active  Boolean  @default(true)
-  RHPUptimeEntries RHPUptimeEntry[]
-  ExtramonUptimeEntries ExtramonUptimeEntry[]
+  id                  Int                   @id @default(autoincrement())
+  address             String                @unique @db.VarChar(255)
+  name                String                @unique @db.VarChar(255)
+  active              Boolean               @default(true)
+  RHPUptimeEntries    RHPUptimeEntry[]
+  ExtramonUptimeEntry ExtramonUptimeEntry[]
 }

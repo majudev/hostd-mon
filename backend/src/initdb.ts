@@ -15,13 +15,22 @@ export async function initDB(){
                 },
                 {
                     name: 'CA1 (Beauharnois)',
-                    address: 'satellite-de.sia.watch',
+                    address: 'satellite-ca.sia.watch',
                 },
                 /*{
                     name: 'EU2 (Strasburg)',
                     address: 'satellite-fr.sia.watch',
                 },*/
             ]
+        });
+    }
+    const users_count = await prisma.user.count();
+    if(users_count === 0){
+        console.log('Adding default user');
+        const user = await prisma.user.create({
+            data: {
+                email: 'nobody@all',
+            }
         });
     }
 }
