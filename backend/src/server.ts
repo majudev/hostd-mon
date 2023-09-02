@@ -7,10 +7,10 @@ import requestLogger from './utils/requestLogger';
 const app = express();
 
 /* cross-origin resource sharing config */
-app.use(cors({
+/*app.use(cors({
 	//origin: 'sia.watch',
 	credentials: true
-}));
+}));*/
 
 /* basic express config */
 app.use(express.json());

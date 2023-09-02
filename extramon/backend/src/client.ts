@@ -46,7 +46,7 @@ router.post('/ping', async (req: Request, res: Response) => {
 
         const response = await fetch((process.env.MASTER_URL as string) + '/api/satellites/host/by-extramon-pubkey/' + encodeURIComponent(request.pubkey) + '/allowed');
         const status = await response.status;
-        const body = await response.text();
+        //const body = await response.text();
         pubkeyAllowedRoot = 'false';
         if(Math.floor(status/100) == 2){
             pubkeyAllowedRoot = 'true';
