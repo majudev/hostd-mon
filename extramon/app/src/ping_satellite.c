@@ -149,7 +149,7 @@ int ping_satellite(const char * satellite_url, const unsigned char * privkey){
         printf("Satellite didn't accept out ping, status code %ld\n", http_code);
         curl_easy_cleanup(curl_handle);
         free(chunk.memory);
-        return 3;
+        return http_code;
     }
     
     printf("%lu bytes retrieved\n", (unsigned long)chunk.size);

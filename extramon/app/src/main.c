@@ -129,7 +129,7 @@ int main(int argc, char * argv[]){
         const char * satellite_url = satellite_urls[i];
         int res = ping_satellite(satellite_url, privkey);
         satellite_green = satellite_green || (res == 0);
-        printf(" - %s: %s\n", satellite_url, (res == 0) ? "OK" : "UNAUTHORIZED");
+        printf(" - %s: %s\n", satellite_url, (res == 0) ? "OK" : ((res == 2) ? "SERVER UNREACHABLE" : ((res == 401) ? "UNAUTHORIZED" : ((res / 100 == 5) ? "SERVER ERROR" : "OTHER ERROR"))));
     }
 
     if(!satellite_green){
