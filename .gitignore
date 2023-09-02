@@ -27,4 +27,4 @@ dist-ssr
 #
 compose-local.yml
 database
-pgadmin-data
+#pgadmin-data

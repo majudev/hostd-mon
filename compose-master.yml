@@ -30,13 +30,6 @@ services:
   nginx:
     build: nginx/master
     restart: always
-  pgadmin:
-    image: dpage/pgadmin4
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@sia.watch
-      PGADMIN_DEFAULT_PASSWORD: somepassword
-      PGADMIN_DISABLE_POSTFIX: true
   cloudflared:
     image: cloudflare/cloudflared
     restart: unless-stopped
