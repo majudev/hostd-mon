@@ -2,7 +2,6 @@ import express, { Request, Response, NextFunction, Router } from 'express';
 import crypto from 'crypto';
 import secp256k1 from 'secp256k1';
 import { createClient } from 'redis';
-import fetch from 'node-fetch';
 import { performance } from 'perf_hooks';
 
 const router: Router = express.Router();
