@@ -58,7 +58,7 @@ router.post('/cache-update', async (req: Request, res: Response) => {
     await incoming.disconnect();
 
     const endTime = performance.now();
-    logger.debug('Flushing cache entries: deleted ' + request.delete + ' keys, retrieved ' + request.get + ' keys, took ' + (endTime-startTime).toFixed(3) + 'ms');
+    logger.debug('Flushing cache entries: deleted ' + request.delete.length + ' keys, retrieved ' + request.get.length + ' keys, took ' + (endTime-startTime).toFixed(3) + 'ms');
 
     res.status(200);
     res.json(returnSet);
