@@ -1,5 +1,6 @@
 import { Worker, MessagePort, isMainThread, parentPort, workerData } from 'node:worker_threads';
 import logger from '../utils/logger';
+import {performance} from 'perf_hooks';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -22,12 +23,16 @@ function spawnExtramonWorker() : Worker {
 async function workerFunction(){
     const dataToHash: string = workerData;
 
+    const startTime = performance.now();
+
     const satellites = await prisma.satellite.findMany({
         select: {
             name: true,
             address: true,
         }
     });
+
+    const afterSatellitesFound = performance.now();
 
     const responseArray: Record<string, string[]> = await satellites.reduce(async (previous, current) => {
         const response = await fetch('http://' + current.address + '/extramon/master/cache');
@@ -52,6 +57,8 @@ async function workerFunction(){
         };
     }, {});
 
+    const afterSatellitesQueried = performance.now();
+
     var combinedKeyArray: string[] = [];
     for(const satellite in responseArray){
         combinedKeyArray = [
@@ -64,6 +71,8 @@ async function workerFunction(){
         return index === self.indexOf(elem);
     }).sort();*/
     const filteredKeyArray = [...new Set(combinedKeyArray)].sort();
+
+    const afterArrayPrepared = performance.now();
 
     var cacheLists: Record<string, Record<string, string[]>> = {};
     for(const satellite in responseArray){
@@ -95,6 +104,8 @@ async function workerFunction(){
             }
         }
     });
+
+    const afterCacheListsPrepared = performance.now();
 
     for(const satellite in cacheLists){
         const postData = cacheLists[satellite];
@@ -167,6 +178,15 @@ async function workerFunction(){
             }
         }
     }
+
+    const afterCacheListsCommited = performance.now();
+
+    console.debug('Pulled cache - took ' + (afterCacheListsCommited - startTime).toFixed(3) + 'ms, including:');
+    console.debug('- ' + (afterSatellitesFound-startTime).toFixed(3) + 'ms to retrieve satellites from DB');
+    console.debug('- ' + (afterSatellitesQueried-afterSatellitesFound).toFixed(3) + 'ms to retrieve available cache keys from satellites');
+    console.debug('- ' + (afterArrayPrepared-afterSatellitesQueried).toFixed(3) + 'ms to sort and remove duplicates from list');
+    console.debug('- ' + (afterCacheListsPrepared-afterArrayPrepared).toFixed(3) + 'ms to transform list into cacheList query');
+    console.debug('- ' + (afterCacheListsCommited-afterCacheListsPrepared).toFixed(3) + 'ms to commit changes into local DB');
 
     (parentPort as MessagePort).postMessage(dataToHash);
 }
