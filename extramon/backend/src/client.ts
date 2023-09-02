@@ -1,4 +1,5 @@
 import express, { Request, Response, NextFunction, Router } from 'express';
+import logger from './utils/logger';
 import crypto from 'crypto';
 import secp256k1 from 'secp256k1';
 import { createClient } from 'redis';
@@ -32,7 +33,7 @@ router.post('/ping', async (req: Request, res: Response) => {
         return;
     }
 
-    console.log('Got ping request signed using pubkey ' + request.pubkey);
+    logger.debug('Got ping request signed using pubkey ' + request.pubkey);
     
     const client = createClient({
         url: process.env.REDIS
@@ -41,7 +42,7 @@ router.post('/ping', async (req: Request, res: Response) => {
 
     var pubkeyAllowedRoot = await client.get('allowed.' + request.pubkey);
     if(pubkeyAllowedRoot == null){
-        console.log('Pubkey not in cache, retrieving from upstream...');
+        logger.debug('Pubkey not in cache, retrieving from upstream...');
 
         const response = await fetch((process.env.MASTER_URL as string) + '/api/satellites/host/by-extramon-pubkey/' + encodeURIComponent(request.pubkey) + '/allowed');
         const status = await response.status;
@@ -57,7 +58,7 @@ router.post('/ping', async (req: Request, res: Response) => {
 
     const pubkeyAllowed = (pubkeyAllowedRoot === 'true');
     if(!pubkeyAllowed){
-        console.log('Pubkey not registered');
+        logger.debug('Pubkey not registered');
         res.status(401);
         res.end();
         return;
@@ -72,13 +73,13 @@ router.post('/ping', async (req: Request, res: Response) => {
     const isValid = secp256k1.ecdsaVerify(Uint8Array.from(Buffer.from(request.signature, 'hex')), hash, pubkey);
 
     if(!isValid){
-        console.log('Signature invalid');
+        logger.debug('Signature invalid');
         res.status(401);
         res.end();
         return;
     }
 
-    console.log('Storing in incoming cache');
+    logger.debug('Storing in incoming cache');
     const incoming = createClient({
         url: process.env.INCOMING_CACHE
     });
@@ -88,7 +89,7 @@ router.post('/ping', async (req: Request, res: Response) => {
     await incoming.disconnect();
 
     const endTime = performance.now();
-    console.log('Ping request took ' + (endTime-startTime).toFixed(3) + 'ms');
+    logger.debug('Ping request took ' + (endTime-startTime).toFixed(3) + 'ms');
 
     res.status(200);
     res.end();

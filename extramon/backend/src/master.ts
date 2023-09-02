@@ -1,4 +1,5 @@
 import express, { Request, Response, NextFunction, Router } from 'express';
+import logger from './utils/logger';
 import { createClient } from 'redis';
 import { performance } from 'perf_hooks';
 
@@ -20,7 +21,7 @@ router.get('/cache', async (req: Request, res: Response) => {
     await incoming.disconnect();
 
     const endTime = performance.now();
-    console.log('Listing cache entries: found ' + keys.length + ' keys, took ' + (endTime-startTime).toFixed(3) + 'ms');
+    logger.debug('Listing cache entries: found ' + keys.length + ' keys, took ' + (endTime-startTime).toFixed(3) + 'ms');
 
     res.status(200);
     res.json(keys);
@@ -57,7 +58,7 @@ router.post('/cache-update', async (req: Request, res: Response) => {
     await incoming.disconnect();
 
     const endTime = performance.now();
-    console.log('Flushing cache entries: deleted ' + request.delete + ' keys, retrieved ' + request.get + ' keys, took ' + (endTime-startTime).toFixed(3) + 'ms');
+    logger.debug('Flushing cache entries: deleted ' + request.delete + ' keys, retrieved ' + request.get + ' keys, took ' + (endTime-startTime).toFixed(3) + 'ms');
 
     res.status(200);
     res.json(returnSet);

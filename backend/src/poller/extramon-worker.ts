@@ -32,9 +32,18 @@ async function workerFunction(){
     const responseArray: Record<string, string[]> = await satellites.reduce(async (previous, current) => {
         const response = await fetch('http://' + current.address + '/extramon/master/cache');
         const status = response.status;
+
+        if(Math.floor(status / 100) != 2){
+            logger.warn('Cannot contact satellite ' + current.name + ' (http://' + current.address + ') - status code ' + response.status);
+            return await previous;
+        }
+
         const body = await response.json();
 
-        if(!Array.isArray(body)) return await previous;
+        if(!Array.isArray(body)){
+            logger.error('Bad JSON returned by satellite ' + current.name + ' (http://' + current.address + ')');
+            return await previous;
+        }
 
         body.sort();
         return {
@@ -105,7 +114,6 @@ async function workerFunction(){
         }
         const body = await response.json();
 
-        //TODO
         for(const key in body){
             if(key.startsWith('ping.')){
                 const request: PingRequest = body[key];
