@@ -33,8 +33,6 @@ services:
   pgadmin:
     image: dpage/pgadmin4
     restart: always
-    volumes:
-    - './pgadmin-data:/var/lib/pgadmin'
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@sia.watch
       PGADMIN_DEFAULT_PASSWORD: somepassword
