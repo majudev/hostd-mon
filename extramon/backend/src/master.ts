@@ -45,7 +45,7 @@ router.post('/cache-update', async (req: Request, res: Response) => {
         const key = currentValue;
         const value = await incoming.getDel(key);
         return {
-            ...previousValue,
+            ...await previousValue,
             [key]: value,
         };
     }, {});

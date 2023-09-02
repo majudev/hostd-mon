@@ -3,6 +3,16 @@ import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient();
 
+interface PingRequest {
+    data: string;
+    signature: string;
+    pubkey: string;
+};
+
+interface PingData {
+    timestamp: number;
+}
+
 function spawnExtramonWorker() : Worker {
     const worker = new Worker(__filename, { workerData: null });
     
@@ -103,6 +113,58 @@ async function workerFunction(){
         const body = await response.json();
 
         //TODO
+        for(const key in body){
+            if(key.startsWith('ping.')){
+                const request: PingRequest = body[key];
+                if(request.data === undefined || request.signature === undefined || request.pubkey === undefined){
+                    console.log("Malformed value of key " + key + ", discarding");
+                    continue;
+                }
+                const data: PingData = JSON.parse(request.data);
+                
+                const hostId = await prisma.host.findFirst({
+                    where: {
+                        extramonPubkey: request.pubkey,
+                    },
+                    select: {
+                        id: true,
+                    }
+                });
+
+                if(hostId === null){
+                    console.log("No host associated with pubkey, discarding");
+                    continue;
+                }
+
+                for(const innerSatellite in cacheLists){
+                    if(!cacheLists[innerSatellite].get.includes(key)) continue;
+
+                    const satelliteId = await prisma.satellite.findFirst({
+                        where: {
+                            address: innerSatellite,
+                        },
+                        select: {
+                            id: true,
+                        }
+                    });
+
+                    if(satelliteId === null){
+                        console.log("Internal error, satellite with this address not found. Discarding.");
+                        continue;
+                    }
+
+                    await prisma.extramonUptimeEntry.create({
+                        data: {
+                            timestamp: new Date(data.timestamp * 1000),
+                            satelliteId: satelliteId.id,
+                            hostId: hostId.id,
+                        }
+                    });
+                }
+            }else{
+                console.log('Discarding unknown key ' + key);
+            }
+        }
     }
 
     (parentPort as MessagePort).postMessage(dataToHash);
