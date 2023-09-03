@@ -2,15 +2,17 @@ import { Router, Request, Response } from 'express';
 import logger from '../../../utils/logger';
 import { PrismaClient } from '@prisma/client'
 
-const router = Router();
+const router = Router({
+    mergeParams: true
+});
 const prisma = new PrismaClient();
 
 router.get('/period/:from/:to', async (req: Request, res: Response) => {
-    const hostId: number = parseInt(req.params.hostId);
-    /*const from: Date = new Date(req.params.from);
+    const hostId = Number.parseInt(req.params.hostId);
+    const from: Date = new Date(req.params.from);
     const to: Date = new Date(req.params.to);
 
-    if(Number.isNaN(hostId)) {
+    if(!Number.isInteger(hostId)) {
         res.json({
             status: "error",
             message: "please provide hostId",
@@ -24,7 +26,7 @@ router.get('/period/:from/:to', async (req: Request, res: Response) => {
             message: "/from/ cannot be later than /to/ date",
         }).status(400);
         return;
-    }*/
+    }
 
     const hostPromise = prisma.host.findFirst({
         where: {

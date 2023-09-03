@@ -5,7 +5,7 @@ import { PrismaClient } from '@prisma/client'
 const router = Router();
 const prisma = new PrismaClient();
 
-router.get('/hosts/:id', async (req: Request, res: Response) => {
+router.get('/:id/hosts', async (req: Request, res: Response) => {
     const userId: number = parseInt(req.params.id);
 
     if(Number.isNaN(userId)) {
