@@ -54,7 +54,7 @@ router.post('/ping', async (req: Request, res: Response) => {
         }
     }
 
-    await client.disconnect();
+    if(client.isOpen) await client.disconnect();
 
     const pubkeyAllowed = (pubkeyAllowedRoot === 'true');
     if(!pubkeyAllowed){
@@ -86,7 +86,7 @@ router.post('/ping', async (req: Request, res: Response) => {
     await incoming.connect();
     const cacheHash = crypto.createHash('sha256').update(JSON.stringify(request)).digest('hex');
     await incoming.set('ping.' + cacheHash, JSON.stringify(request));
-    await incoming.disconnect();
+    if(incoming.isOpen) await incoming.disconnect();
 
     const endTime = performance.now();
     logger.debug('Ping request took ' + (endTime-startTime).toFixed(3) + 'ms');
