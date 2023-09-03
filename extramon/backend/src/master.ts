@@ -18,7 +18,7 @@ router.get('/cache', async (req: Request, res: Response) => {
     });
     await incoming.connect();
     const keys = await incoming.keys('*');
-    if(incoming.isOpen) await incoming.disconnect();
+    await incoming.quit();
 
     const endTime = performance.now();
     logger.debug('Listing cache entries: found ' + keys.length + ' keys, took ' + (endTime-startTime).toFixed(3) + 'ms');
@@ -55,7 +55,7 @@ router.post('/cache-update', async (req: Request, res: Response) => {
         await incoming.del(value);
     });
 
-    if(incoming.isOpen) await incoming.quit();
+    await incoming.quit();
 
     const endTime = performance.now();
     logger.debug('Flushing cache entries: deleted ' + request.delete.length + ' keys, retrieved ' + request.get.length + ' keys, took ' + (endTime-startTime).toFixed(3) + 'ms');
@@ -74,7 +74,7 @@ router.delete('/invalidate-pubkey/:pubkey', async (req: Request, res: Response) 
     });
     await client.connect();
     await client.del('allowed.' + pubkey);
-    if(client.isOpen) await client.disconnect();
+    await client.quit();
 
     const endTime = performance.now();
     console.log('Invalidated pubkey ' + pubkey + ', took ' + (endTime-startTime).toFixed(3) + 'ms');
