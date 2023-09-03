@@ -55,8 +55,7 @@ router.post('/cache-update', async (req: Request, res: Response) => {
         await incoming.del(value);
     });
 
-    //TODO: fix?
-    //if(incoming.isOpen) await incoming.disconnect();
+    if(incoming.isOpen) await incoming.quit();
 
     const endTime = performance.now();
     logger.debug('Flushing cache entries: deleted ' + request.delete.length + ' keys, retrieved ' + request.get.length + ' keys, took ' + (endTime-startTime).toFixed(3) + 'ms');
