@@ -35,7 +35,7 @@ static size_t SaveChunkCallback(void *chunk, size_t size, size_t nmemb, void *us
   return realsize;
 }
 
-int ping_satellite(const char * satellite_url, const unsigned char * privkey){
+int ping_satellite(const char * satellite_url, const unsigned char * privkey, double * query_time){
     printf("Pinging satellite %s\n", satellite_url);
 
     secp256k1_context * ctx = secp256k1_context_create(SECP256K1_CONTEXT_SIGN);
@@ -117,6 +117,9 @@ int ping_satellite(const char * satellite_url, const unsigned char * privkey){
     chunk.memory = malloc(1);
     chunk.size = 0;
 
+    double total_time;
+    double nslookup_time;
+
     curl_handle = curl_easy_init();
 
     char * urlbuffer = malloc(sizeof(char) * (strlen(SATELLITE_PROTOCOL) + strlen(satellite_url) + strlen(SATELLITE_PING_PATH) + 1));
@@ -141,6 +144,12 @@ int ping_satellite(const char * satellite_url, const unsigned char * privkey){
         fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
         curl_easy_cleanup(curl_handle);
         return 2;
+    }
+
+    if(query_time != NULL){
+        curl_easy_getinfo(curl_handle, CURLINFO_NAMELOOKUP_TIME, &nslookup_time);
+        curl_easy_getinfo(curl_handle, CURLINFO_TOTAL_TIME, &total_time);
+        (*query_time) = total_time - nslookup_time;
     }
 
     long http_code;

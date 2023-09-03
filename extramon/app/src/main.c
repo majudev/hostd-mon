@@ -127,9 +127,10 @@ int main(int argc, char * argv[]){
     int satellite_green = 0;
     for(int i = 0; i < satellite_urls_size; ++i){
         const char * satellite_url = satellite_urls[i];
-        int res = ping_satellite(satellite_url, privkey);
+        double query_time;
+        int res = ping_satellite(satellite_url, privkey, &query_time);
         satellite_green = satellite_green || (res == 0);
-        printf(" - %s: %s\n", satellite_url, (res == 0) ? "OK" : ((res == 2) ? "SERVER UNREACHABLE" : ((res == 401) ? "UNAUTHORIZED" : ((res / 100 == 5) ? "SERVER ERROR" : "OTHER ERROR"))));
+        printf(" - %s: %s (took %.2fs)\n", satellite_url, (res == 0) ? "OK" : ((res == 2) ? "SERVER UNREACHABLE" : ((res == 401) ? "UNAUTHORIZED" : ((res / 100 == 5) ? "SERVER ERROR" : "OTHER ERROR"))), query_time);
     }
 
     if(!satellite_green){
