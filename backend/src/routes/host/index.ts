@@ -2,8 +2,12 @@ import { Router, Request, Response } from 'express';
 import logger from '../../utils/logger';
 import { PrismaClient } from '@prisma/client'
 
+import uptimeRouter from './uptime';
+
 const router = Router();
 const prisma = new PrismaClient();
+
+router.use('/:hostId/uptime', uptimeRouter);
 
 interface NewHostRequest {
     rhpAddress: string | undefined;

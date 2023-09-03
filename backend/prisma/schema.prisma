@@ -17,7 +17,7 @@ model Host {
   extramonPubkey        String?               @unique
   userId                Int
   User                  User                  @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  RHPUptimeEntry        RHPUptimeEntry[]
+  RHPUptimeEntries      RHPUptimeEntry[]
   ExtramonUptimeEntries ExtramonUptimeEntry[]
 }
 
@@ -46,14 +46,14 @@ model User {
   id    Int     @id @default(autoincrement())
   name  String? @db.VarChar(255)
   email String  @unique @db.VarChar(255)
-  Host  Host[]
+  Hosts Host[]
 }
 
 model Satellite {
-  id                  Int                   @id @default(autoincrement())
-  address             String                @unique @db.VarChar(255)
-  name                String                @unique @db.VarChar(255)
-  active              Boolean               @default(true)
-  RHPUptimeEntries    RHPUptimeEntry[]
-  ExtramonUptimeEntry ExtramonUptimeEntry[]
+  id                    Int                   @id @default(autoincrement())
+  address               String                @unique @db.VarChar(255)
+  name                  String                @unique @db.VarChar(255)
+  active                Boolean               @default(true)
+  RHPUptimeEntries      RHPUptimeEntry[]
+  ExtramonUptimeEntries ExtramonUptimeEntry[]
 }
