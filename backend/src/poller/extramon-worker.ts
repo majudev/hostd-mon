@@ -149,7 +149,7 @@ async function workerFunction(){
                 }
 
                 for(const innerSatellite in cacheLists){
-                    if(!cacheLists[innerSatellite].get.includes(key) && !cacheLists[innerSatellite].get.includes(key)) continue;
+                    if(!cacheLists[innerSatellite].get.includes(key) && !cacheLists[innerSatellite].delete.includes(key)) continue;
 
                     const satelliteId = await prisma.satellite.findFirst({
                         where: {
