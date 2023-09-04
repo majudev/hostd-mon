@@ -42,7 +42,7 @@ router.post('/cache-update', async (req: Request, res: Response) => {
     });
     await incoming.connect();
 
-    const returnSet = request.get.reduce(async (previousValue, currentValue) => {
+    const returnSet = await request.get.reduce(async (previousValue, currentValue) => {
         const key = currentValue;
         const value = await incoming.getDel(key);
         return {

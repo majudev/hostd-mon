@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 
 #include <secp256k1.h>
 #include <curl/curl.h>
@@ -35,7 +34,7 @@ static size_t SaveChunkCallback(void *chunk, size_t size, size_t nmemb, void *us
   return realsize;
 }
 
-int ping_satellite(const char * satellite_url, const unsigned char * privkey, double * query_time){
+int ping_satellite(const char * satellite_url, time_t timestamp, const unsigned char * privkey, double * query_time){
     printf("Pinging satellite %s\n", satellite_url);
 
     secp256k1_context * ctx = secp256k1_context_create(SECP256K1_CONTEXT_SIGN);
@@ -59,7 +58,7 @@ int ping_satellite(const char * satellite_url, const unsigned char * privkey, do
 
     json_error_t error;
     json_t * data_root = json_object();
-    json_object_set_new(data_root, "timestamp", json_integer(time(NULL)));
+    json_object_set_new(data_root, "timestamp", json_integer(timestamp));
 
     char * data_string = json_dumps(data_root, JSON_COMPACT | JSON_ENSURE_ASCII);
 

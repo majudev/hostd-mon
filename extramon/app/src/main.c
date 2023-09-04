@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include <secp256k1.h>
 #include <curl/curl.h>
@@ -124,11 +125,12 @@ int main(int argc, char * argv[]){
     curl_global_init(CURL_GLOBAL_ALL);
 
     printf("Pinging satellites\n");
+    time_t timestamp = time(NULL);
     int satellite_green = 0;
     for(int i = 0; i < satellite_urls_size; ++i){
         const char * satellite_url = satellite_urls[i];
         double query_time;
-        int res = ping_satellite(satellite_url, privkey, &query_time);
+        int res = ping_satellite(satellite_url, timestamp, privkey, &query_time);
         satellite_green = satellite_green || (res == 0);
         printf(" - %s: %s (took %.2fs)\n", satellite_url, (res == 0) ? "OK" : ((res == 2) ? "SERVER UNREACHABLE" : ((res == 401) ? "UNAUTHORIZED" : ((res / 100 == 5) ? "SERVER ERROR" : "OTHER ERROR"))), query_time);
     }

@@ -79,8 +79,8 @@ async function workerFunction(){
         cacheLists = {
             ...cacheLists,
             [satellite]: {
-                get: [],
-                delete: [],
+                get: new Array(),
+                delete: new Array(),
             }
         };
     }
@@ -127,7 +127,7 @@ async function workerFunction(){
 
         for(const key in body){
             if(key.startsWith('ping.')){
-                const request: PingRequest = body[key];
+                const request: PingRequest = JSON.parse(body[key]);
                 if(request.data === undefined || request.signature === undefined || request.pubkey === undefined){
                     logger.warn("Malformed value of key " + key + ", discarding");
                     continue;
@@ -149,7 +149,7 @@ async function workerFunction(){
                 }
 
                 for(const innerSatellite in cacheLists){
-                    if(!cacheLists[innerSatellite].get.includes(key)) continue;
+                    if(!cacheLists[innerSatellite].get.includes(key) && !cacheLists[innerSatellite].get.includes(key)) continue;
 
                     const satelliteId = await prisma.satellite.findFirst({
                         where: {

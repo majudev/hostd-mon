@@ -101,7 +101,7 @@ router.get('/period/:from/:to', async (req: Request, res: Response) => {
         const timestampUniqArray = [...new Set(timestampArray)];
         return timestampUniqArray.map(timestamp => {
             const entries = host.RHPUptimeEntries.filter(entry => {
-                return entry.timestamp == timestamp;
+                return entry.timestamp.getTime() == timestamp.getTime();
             });
             const satellitesMap = satellitesArray.reduce((previous, current) => {
                 return {
@@ -125,7 +125,7 @@ router.get('/period/:from/:to', async (req: Request, res: Response) => {
         const timestampUniqArray = [...new Set(timestampArray)];
         return timestampUniqArray.map(timestamp => {
             const entries = host.ExtramonUptimeEntries.filter(entry => {
-                return entry.timestamp == timestamp;
+                return entry.timestamp.getTime() == timestamp.getTime();
             });
             const satellitesMap = satellitesArray.reduce((previous, current) => {
                 return {
