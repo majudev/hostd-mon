@@ -132,7 +132,7 @@ router.get('/period/:from/:to', async (req: Request, res: Response) => {
                     ...previous,
                     [current]: entries.find(entry => {
                         return entry.Satellite.name === current;
-                    }) === undefined,
+                    }) !== undefined,
                 };
             }, {});
             return {
