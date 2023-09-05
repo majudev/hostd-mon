@@ -27,4 +27,15 @@ router.get('/host/by-extramon-pubkey/:pubkey/allowed', async (req: Request, res:
 	}).status(204);
 });
 
+router.get('/', async (req: Request, res: Response) => {
+    const satellites = await prisma.satellite.findMany({
+        select:{
+            name: true,
+            address: true,
+        }
+    });
+
+	res.json(satellites).status(200);
+});
+
 export default router;
