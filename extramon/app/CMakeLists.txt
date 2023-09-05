@@ -1,4 +1,4 @@
-project(hello-world C)
+project(hello-world C CXX)
 
 cmake_minimum_required(VERSION 3.10)
 
@@ -8,6 +8,8 @@ pkg_check_modules(GTK REQUIRED gtk+-3.0)
 pkg_check_modules(SECP256K1 REQUIRED libsecp256k1)
 pkg_check_modules(JANSSON REQUIRED jansson)
 find_package(CURL REQUIRED)
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
 
 add_executable(extramon 
     src/main.c
@@ -16,15 +18,16 @@ add_executable(extramon
     src/sha256.c
 )
 add_executable(extramon-gui 
-    gui/main.c
-    src/urls.c
-    src/ping_satellite.c
+    gui/main.cpp
+    gui/SatPinger.cpp
     src/sha256.c
 )
 
 
 target_link_libraries(extramon PUBLIC CURL::libcurl)
 target_link_libraries(extramon-gui PUBLIC CURL::libcurl)
+
+target_link_libraries(extramon-gui PUBLIC Threads::Threads)
 
 target_link_libraries(extramon-gui PUBLIC ${GTK_LIBRARIES})
 target_include_directories(extramon-gui PUBLIC ${GTK_INCLUDE_DIRS})

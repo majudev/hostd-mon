@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <float.h>
 
 #include <secp256k1.h>
 #include <curl/curl.h>
@@ -165,4 +166,19 @@ int ping_satellite(const char * satellite_url, time_t timestamp, const unsigned 
     curl_easy_cleanup(curl_handle);
     free(chunk.memory);
     return 0;
+}
+
+int ping_all_satellites(struct ping_result ping_result[], const unsigned char * privkey){
+    time_t timestamp = time(NULL);
+    int best = -1;
+    double bestMs = DBL_MAX;
+    for(size_t i = 0; i < sizeof(ping_result); ++i){
+        double query_time;
+        ping_result[i].ping_status = ping_satellite(ping_result[i].satellite_url, timestamp, privkey, &ping_result[i].ping_time);
+        if(!ping_result[i].ping_status && ping_result[i].ping_time < bestMs){
+            best = i;
+            bestMs = ping_result[i].ping_time;
+        }
+    }
+    return best;
 }
