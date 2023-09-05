@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <cfloat>
+#include <ctime>
 
 extern "C"{
   #include <curl/curl.h>
@@ -89,5 +90,17 @@ std::vector<SatPinger::Satellite> SatPinger::get_satellites(){
 
     curl_easy_cleanup(curl_handle);
     free(chunk.memory);
+
+    this->satellite_cache_age = time(NULL);
+    this->satellite_cache = std::vector<Satellite>(satellites);
+
     return satellites;
+}
+
+std::vector<SatPinger::Satellite> SatPinger::get_satellites_cache(){
+  return this->satellite_cache;
+}
+
+bool SatPinger::is_satellites_cache_fresh(){
+  return this->satellite_cache_age + 600 > time(NULL);
 }

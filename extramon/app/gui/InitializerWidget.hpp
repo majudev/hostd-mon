@@ -52,15 +52,15 @@ class InitWidget {
             }
         }
 
-        void show(){
+        inline void show(){
             gtk_widget_show_all(GTK_WIDGET(this->box));
         }
 
-        void hide(){
+        inline void hide(){
             gtk_widget_hide(GTK_WIDGET(this->box));
         }
 
-        GtkBox * get_container(){
+        inline GtkBox * get_container(){
             return this->box;
         }
 
@@ -75,7 +75,7 @@ class InitWidget {
         const char * privkey_path;
         unsigned char * privkey;
 
-        void load_privkey(){
+        inline void load_privkey(){
             std::cout << "Loading private key..." << std::endl;
 
             std::cout << "Creating and randomizing secp256k1 context\n" << std::endl;
@@ -204,9 +204,11 @@ class InitWidget {
                 }
                 return;
             }
+
+            this->emit_finished();
         }
 
-        static void * privkey_thread_helper(void *context){
+        inline static void * privkey_thread_helper(void *context){
             ((InitWidget *)context)->load_privkey();
             return NULL;
         }
@@ -216,7 +218,7 @@ class InitWidget {
             char* new_text;
         };
 
-        static gboolean update_text_helper(gpointer user_data){
+        inline static gboolean update_text_helper(gpointer user_data){
             struct update_text_helper_input* input = (struct update_text_helper_input*) user_data;
             InitWidget* object = input->ctx;
             char * new_text = input->new_text;
@@ -226,14 +228,14 @@ class InitWidget {
             return false;
         }
 
-        void update_progress_text(std::string text){
+        inline void update_progress_text(std::string text){
             struct update_text_helper_input * input = (struct update_text_helper_input*) malloc(sizeof(struct update_text_helper_input));
             input->ctx = this;
             input->new_text = strdup(text.c_str());
             g_idle_add(&InitWidget::update_text_helper, input);
         }
 
-        static gboolean die_with_error_helper(gpointer user_data){
+        inline static gboolean die_with_error_helper(gpointer user_data){
             struct update_text_helper_input* input = (struct update_text_helper_input*) user_data;
             InitWidget* object = input->ctx;
             char * new_text = input->new_text;
@@ -244,13 +246,23 @@ class InitWidget {
             return false;
         }
 
-        void die_with_error(std::string text){
+        inline void die_with_error(std::string text){
             text += "\nYou can now close the app, this failure is critical.";
             std::cout << text << std::endl;
             struct update_text_helper_input * input = (struct update_text_helper_input*) malloc(sizeof(struct update_text_helper_input));
             input->ctx = this;
             input->new_text = strdup(text.c_str());
             g_idle_add(&InitWidget::die_with_error_helper, input);
+        }
+
+        inline static gboolean emitter_helper(gpointer user_data){
+            InitWidget * object = (InitWidget*) user_data;
+            g_signal_emit_by_name(object->box, "init-complete");
+            return false;
+        }
+
+        inline void emit_finished(){
+            g_idle_add(&InitWidget::emitter_helper, this);
         }
 };
 

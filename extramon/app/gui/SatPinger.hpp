@@ -7,7 +7,9 @@
 
 class SatPinger {
     public:
-        inline SatPinger(std::string user_agent) : user_agent(user_agent){
+        inline SatPinger(std::string user_agent)
+        : user_agent(user_agent),
+          satellite_cache_age(0){
 
         }
 
@@ -22,6 +24,8 @@ class SatPinger {
         };
 
         std::vector<Satellite> get_satellites();
+        std::vector<Satellite> get_satellites_cache();
+        bool is_satellites_cache_fresh();
 
         class PingerException {
             public:
@@ -37,4 +41,6 @@ class SatPinger {
         };
     private:
         std::string user_agent;
+        std::vector<Satellite> satellite_cache;
+        time_t satellite_cache_age;
 };

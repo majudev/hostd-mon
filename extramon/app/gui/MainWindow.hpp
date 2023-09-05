@@ -5,6 +5,7 @@ extern "C"{
 }
 
 #include "InitializerWidget.hpp"
+#include "SatellitesPanel.hpp"
 #include "SatPinger.hpp"
 
 class MainWindow {
@@ -18,8 +19,39 @@ class MainWindow {
 
             init_widget.show();
 
-            gtk_container_add (GTK_CONTAINER(window), GTK_WIDGET(this->init_widget.get_container()));
-            gtk_widget_show(GTK_WIDGET(this->window));
+            this->main_box = GTK_BOX(gtk_box_new(GTK_ORIENTATION_VERTICAL, 0));
+            gtk_box_pack_start(this->main_box, GTK_WIDGET(this->init_widget.get_container()), true, true, 0);
+
+            gtk_container_add (GTK_CONTAINER(window), GTK_WIDGET(this->main_box));
+            
+            gtk_widget_show_all(GTK_WIDGET(this->window));
+
+            g_signal_new("init-complete",
+             G_TYPE_OBJECT, G_SIGNAL_RUN_FIRST,
+             0, NULL, NULL,
+             g_cclosure_marshal_VOID__VOID,
+             G_TYPE_NONE, 0);
+            /*g_signal_new("init-complete",
+             G_TYPE_OBJECT, G_SIGNAL_RUN_FIRST,
+             0, NULL, NULL,
+             g_cclosure_marshal_VOID__POINTER,
+             G_TYPE_NONE, 1, G_TYPE_POINTER);*/
+
+            g_signal_connect(this->init_widget.get_container(), "init-complete", G_CALLBACK(&MainWindow::init_complete_handler), this);
+
+
+            
+            
+            this->logbook_box = GTK_BOX(gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0));
+            this->logbook_spinner = GTK_SPINNER(gtk_spinner_new());
+            gtk_spinner_start(this->logbook_spinner);
+            this->logbook_label = GTK_LABEL(gtk_label_new("Initializing GUI"));
+            gtk_label_set_justify(this->logbook_label, GTK_JUSTIFY_LEFT);
+            gtk_box_pack_start(this->logbook_box, GTK_WIDGET(this->logbook_spinner), false, false, 0);
+            gtk_box_pack_start(this->logbook_box, GTK_WIDGET(this->logbook_label), true, true, 0);
+
+            gtk_box_pack_end(this->main_box, GTK_WIDGET(this->logbook_box), false, true, 0);
+            gtk_widget_hide(GTK_WIDGET(this->logbook_box));
         }
 
     private:
@@ -28,6 +60,35 @@ class MainWindow {
 
         GtkApplicationWindow * window;
 
+        GtkBox * main_box;
+        GtkBox * logbook_box;
+        GtkSpinner * logbook_spinner;
+        GtkLabel * logbook_label;
+
+        GtkBox * satellites_box;
+        std::vector<SatellitePanel> satellite_panels;
+
         InitWidget init_widget;
+
+        inline static void init_complete_handler(GtkWidget *widget, gpointer user_data) {
+            MainWindow* object = (MainWindow*) user_data;
+
+            //gtk_widget_hide(GTK_WIDGET(object->init_widget.get_container()));
+            //gtk_widget_hide(widget);
+            object->init_widget.hide();
+            gtk_widget_show_all(GTK_WIDGET(object->logbook_box));
+
+            object->satellites_box = GTK_BOX(gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0));
+            auto satellites = object->satpinger.get_satellites_cache();
+            for(auto iter = satellites.begin(); iter != satellites.end(); ++iter){
+                object->satellite_panels.push_back(SatellitePanel(object->privkey, *iter, object->satpinger));
+                gtk_box_pack_start(object->satellites_box, GTK_WIDGET(object->satellite_panels.back().get_container()), false, false, 0);
+            }
+
+            gtk_box_pack_start(object->main_box, GTK_WIDGET(object->satellites_box), true, true, 0);
+            gtk_widget_show_all(GTK_WIDGET(object->satellites_box));
+
+            gtk_label_set_text(object->logbook_label, "Pinging satellites...");
+        }
 };
 
