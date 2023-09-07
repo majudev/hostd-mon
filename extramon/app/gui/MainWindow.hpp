@@ -7,12 +7,14 @@ extern "C"{
 #include "InitializerWidget.hpp"
 #include "SatellitesPanel.hpp"
 #include "SatPinger.hpp"
+#include "Watchdog.hpp"
 
 class MainWindow {
     public:
         inline MainWindow(GtkApplication *app, gpointer user_data, const char * privkey_path):
-        satpinger("libcurl-agent/1.0"),
-        init_widget(privkey_path, privkey, satpinger){
+        satpinger("libcurl-agent/1.0", privkey),
+        init_widget(privkey_path, privkey, satpinger),
+        watchdog(satellite_panels, satpinger, logbook_label, logbook_spinner){
             this->window = GTK_APPLICATION_WINDOW(gtk_application_window_new(app));
             gtk_window_set_title(GTK_WINDOW(window), "Sia.Watch Monitor App");
             gtk_window_set_default_size(GTK_WINDOW(window), 400, 400);
@@ -73,6 +75,8 @@ class MainWindow {
 
         InitWidget init_widget;
 
+        Watchdog watchdog;
+
         inline static void init_complete_handler(GtkWidget *widget, gpointer user_data) {
             MainWindow* object = (MainWindow*) user_data;
 
@@ -91,7 +95,8 @@ class MainWindow {
             gtk_box_pack_start(object->main_box, GTK_WIDGET(object->satellites_box), true, true, 0);
             gtk_widget_show(GTK_WIDGET(object->satellites_box));
 
-            gtk_label_set_text(object->logbook_label, "Pinging satellites...");
+            //gtk_label_set_text(object->logbook_label, "Pinging satellites...");
+            object->watchdog.start_worker();
         }
 };
 

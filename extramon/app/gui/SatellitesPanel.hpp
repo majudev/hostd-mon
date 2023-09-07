@@ -7,6 +7,7 @@ extern "C"{
 #include "SatPinger.hpp"
 #include <vector>
 #include <numeric>
+#include <sstream>
 
 class SatellitePanel {
     public:
@@ -21,6 +22,9 @@ class SatellitePanel {
 
             this->name_label = GTK_LABEL(gtk_label_new(this->satellite.name.c_str()));
             gtk_box_pack_start(this->box, GTK_WIDGET(this->name_label), false, false, 0);
+
+            this->flag = this->get_flag_image();
+            if(this->flag) gtk_box_pack_start(this->box, GTK_WIDGET(this->flag), false, false, 0);
 
             this->status_ok = GTK_IMAGE(gtk_image_new_from_file("../imgs/web-check.svg"));
             this->status_syncing = GTK_IMAGE(gtk_image_new_from_file("../imgs/web-sync.svg"));
@@ -120,6 +124,8 @@ class SatellitePanel {
                 gtk_widget_show(GTK_WIDGET(this->status_label_img_no));
                 gtk_widget_hide(GTK_WIDGET(this->status_label_img_yes));
                 gtk_label_set_text(this->status_label, "Status: error");
+
+                gtk_label_set_text(this->last_ping_label, "Last ping: failed");
             }else{
                 gtk_widget_hide(GTK_WIDGET(this->status_ok));
                 gtk_widget_hide(GTK_WIDGET(this->status_syncing));
@@ -140,11 +146,12 @@ class SatellitePanel {
                 gtk_widget_hide(GTK_WIDGET(this->main_label_img_apply));
                 gtk_label_set_text(this->main_label, "Ping-only satellite");
             }
+            this->main = status;
         }
 
         inline void set_ping_ms(double ms){
             std::string text = "Last ping: ";
-            text += std::to_string(ms);
+            text += to_string_with_precision(ms, 3);
             text += "ms";
             gtk_label_set_text(this->last_ping_label, text.c_str());
 
@@ -153,9 +160,9 @@ class SatellitePanel {
             }
             this->pings.push_back(ms);
 
-            double avg_ms = std::accumulate(this->pings.begin(), this->pings.end(), 0) / (double) this->pings.size();
+            double avg_ms = this->pings.size() == 0 ? 0.0 : (std::accumulate(this->pings.begin(), this->pings.end(), 0.0) / this->pings.size());
             text = "Ping average: ";
-            text += std::to_string(avg_ms);
+            text += to_string_with_precision(avg_ms, 3);
             text += "ms";
             gtk_label_set_text(this->last_n_pings_label, text.c_str());
         }
@@ -164,15 +171,30 @@ class SatellitePanel {
             return this->box;
         }
 
+        inline double get_avg_ping(){
+            return this->pings.size() == 0 ? 0.0 : (std::accumulate(this->pings.begin(), this->pings.end(), 0.0) / this->pings.size());
+        }
+
+        inline bool is_main(){
+            return this->main;
+        }
+
+        inline SatPinger::Satellite& get_satellite(){
+            return this->satellite;
+        }
+
     private:
         const unsigned char * privkey;
         SatPinger satpinger;
         SatPinger::Satellite satellite;
 
         std::vector<double> pings;
+        bool main = false;;
 
         GtkBox * box;
         GtkLabel * name_label;
+
+        GtkImage * flag;
         
         GtkImage * status_ok;
         GtkImage * status_syncing;
@@ -197,5 +219,30 @@ class SatellitePanel {
 
         GtkLabel * filler_top;
         GtkLabel * filler_bottom;
+
+        template <typename T>
+        inline static std::string to_string_with_precision(const T a_value, const int n = 6){
+            std::ostringstream out;
+            out.precision(n);
+            out << std::fixed << a_value;
+            return std::move(out).str();
+        }
+
+        inline GtkImage * get_flag_image(){
+            if(this->satellite.address == "satellite-de.sia.watch"){
+                GtkWidget * image = gtk_image_new_from_file("../imgs/flags/de.svg");
+                gtk_widget_show(image);
+                return GTK_IMAGE(image);
+            }else if(this->satellite.address == "satellite-ca.sia.watch"){
+                GtkWidget * image = gtk_image_new_from_file("../imgs/flags/ca.svg");
+                gtk_widget_show(image);
+                return GTK_IMAGE(image);
+            }else if(this->satellite.address == "satellite-fr.sia.watch"){
+                GtkWidget * image = gtk_image_new_from_file("../imgs/flags/fr.svg");
+                gtk_widget_show(image);
+                return GTK_IMAGE(image);
+            }
+            return NULL;
+        }
 };
 

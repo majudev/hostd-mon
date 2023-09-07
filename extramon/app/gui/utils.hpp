@@ -20,7 +20,7 @@ extern "C" {
 #error "Unsupported OS"
 #endif
 
-std::string getDefaultPrivkeyPath(){
+inline std::string getDefaultPrivkeyPath(){
 #ifdef __linux__
     struct passwd *pw = getpwuid(getuid());
     const char * homedir = pw->pw_dir;
