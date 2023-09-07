@@ -47,8 +47,10 @@ class MainWindow {
             gtk_spinner_start(this->logbook_spinner);
             this->logbook_label = GTK_LABEL(gtk_label_new("Initializing GUI"));
             gtk_label_set_justify(this->logbook_label, GTK_JUSTIFY_LEFT);
+            this->logbook_filler = GTK_LABEL(gtk_label_new(""));
             gtk_box_pack_start(this->logbook_box, GTK_WIDGET(this->logbook_spinner), false, false, 0);
-            gtk_box_pack_start(this->logbook_box, GTK_WIDGET(this->logbook_label), true, true, 0);
+            gtk_box_pack_start(this->logbook_box, GTK_WIDGET(this->logbook_label), false, false, 10);
+            gtk_box_pack_start(this->logbook_box, GTK_WIDGET(this->logbook_filler), true, true, 0);
 
             gtk_box_pack_end(this->main_box, GTK_WIDGET(this->logbook_box), false, true, 0);
             gtk_widget_hide(GTK_WIDGET(this->logbook_box));
@@ -64,6 +66,7 @@ class MainWindow {
         GtkBox * logbook_box;
         GtkSpinner * logbook_spinner;
         GtkLabel * logbook_label;
+        GtkLabel * logbook_filler;
 
         GtkBox * satellites_box;
         std::vector<SatellitePanel> satellite_panels;
@@ -82,11 +85,11 @@ class MainWindow {
             auto satellites = object->satpinger.get_satellites_cache();
             for(auto iter = satellites.begin(); iter != satellites.end(); ++iter){
                 object->satellite_panels.push_back(SatellitePanel(object->privkey, *iter, object->satpinger));
-                gtk_box_pack_start(object->satellites_box, GTK_WIDGET(object->satellite_panels.back().get_container()), false, false, 0);
+                gtk_box_pack_start(object->satellites_box, GTK_WIDGET(object->satellite_panels.back().get_container()), true, true, 0);
             }
 
             gtk_box_pack_start(object->main_box, GTK_WIDGET(object->satellites_box), true, true, 0);
-            gtk_widget_show_all(GTK_WIDGET(object->satellites_box));
+            gtk_widget_show(GTK_WIDGET(object->satellites_box));
 
             gtk_label_set_text(object->logbook_label, "Pinging satellites...");
         }

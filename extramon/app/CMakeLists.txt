@@ -22,7 +22,8 @@ add_executable(extramon-gui
     gui/SatPinger.cpp
     src/sha256.c
 )
-
+install(TARGETS extramon extramon-gui DESTINATION bin)
+install(DIRECTORY imgs/ DESTINATION imgs)
 
 target_link_libraries(extramon PUBLIC CURL::libcurl)
 target_link_libraries(extramon-gui PUBLIC CURL::libcurl)
