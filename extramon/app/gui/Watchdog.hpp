@@ -27,7 +27,7 @@ class Watchdog {
     public:
         inline Watchdog(std::vector<SatellitePanel> &satellites, SatPinger &satpinger, GtkLabel * &logbook_label, GtkSpinner * &logbook_spinner):
         satellites(satellites), satpinger(satpinger), logbook_label(logbook_label), logbook_spinner(logbook_spinner){
-            std::cout << "[constructor] pointer: " << this << std::endl;
+            
         }
 
         bool start_worker(){

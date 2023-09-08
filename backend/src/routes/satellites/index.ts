@@ -8,17 +8,19 @@ const prisma = new PrismaClient();
 router.get('/host/by-extramon-pubkey/:pubkey/allowed', async (req: Request, res: Response) => {
     const pubkey: string = req.params.pubkey;
 
-    const exists = await prisma.host.count({
+    const hosts = await prisma.host.count({
         where: {
             extramonPubkey: pubkey
         }
-    }) > 0;
+    });
+
+    const exists = hosts > 0;
 
     if(!exists) {
-        res.json({
+        res.status(401).json({
             status: "error",
             message: "this pubkey is not associated with any host",
-        }).status(401);
+        });
         return;
     }
 
@@ -35,7 +37,7 @@ router.get('/', async (req: Request, res: Response) => {
         }
     });
 
-	res.json(satellites).status(200);
+	res.status(200).json(satellites);
 });
 
 export default router;

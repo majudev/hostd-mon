@@ -13,18 +13,18 @@ router.get('/period/:from/:to', async (req: Request, res: Response) => {
     const to: Date = new Date(req.params.to);
 
     if(!Number.isInteger(hostId)) {
-        res.json({
+        res.status(400).json({
             status: "error",
             message: "please provide hostId",
-        }).status(400);
+        });
         return;
     }
 
     if(from.getTime() > to.getTime()){
-        res.json({
+        res.status(400).json({
             status: "error",
             message: "/from/ cannot be later than /to/ date",
-        }).status(400);
+        });
         return;
     }
 
@@ -72,10 +72,10 @@ router.get('/period/:from/:to', async (req: Request, res: Response) => {
 
     const satellites = await satellitesPromise;
     if(satellites === null){
-        res.json({
+        res.status(404).json({
             status: "error",
             message: "no satellites found",
-        }).status(404);
+        });
         await hostPromise;
         return;
     }
@@ -83,10 +83,10 @@ router.get('/period/:from/:to', async (req: Request, res: Response) => {
 
     const host = await hostPromise;
     if(host === null){
-        res.json({
+        res.status(404).json({
             status: "error",
             message: "host with id " + hostId + " not found",
-        }).status(404);
+        });
         return;
     }
 

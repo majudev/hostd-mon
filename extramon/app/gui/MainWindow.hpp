@@ -56,6 +56,12 @@ class MainWindow {
 
             gtk_box_pack_end(this->main_box, GTK_WIDGET(this->logbook_box), false, true, 0);
             gtk_widget_hide(GTK_WIDGET(this->logbook_box));
+
+            this->pubkey_label = GTK_LABEL(gtk_label_new(""));
+            gtk_label_set_justify(this->pubkey_label, GTK_JUSTIFY_CENTER);
+            gtk_label_set_selectable(this->pubkey_label, true);
+            gtk_box_pack_end(this->main_box, GTK_WIDGET(this->pubkey_label), false, false, 10);
+            gtk_widget_hide(GTK_WIDGET(this->pubkey_label));
         }
 
     private:
@@ -69,6 +75,8 @@ class MainWindow {
         GtkSpinner * logbook_spinner;
         GtkLabel * logbook_label;
         GtkLabel * logbook_filler;
+
+        GtkLabel * pubkey_label;
 
         GtkBox * satellites_box;
         std::vector<SatellitePanel> satellite_panels;
@@ -94,6 +102,9 @@ class MainWindow {
 
             gtk_box_pack_start(object->main_box, GTK_WIDGET(object->satellites_box), true, true, 0);
             gtk_widget_show(GTK_WIDGET(object->satellites_box));
+
+            gtk_label_set_text(object->pubkey_label, (std::string("Pubkey:\n") + object->init_widget.get_pubkey()).c_str());
+            gtk_widget_show(GTK_WIDGET(object->pubkey_label));
 
             //gtk_label_set_text(object->logbook_label, "Pinging satellites...");
             object->watchdog.start_worker();

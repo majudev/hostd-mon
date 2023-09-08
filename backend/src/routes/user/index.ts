@@ -9,10 +9,10 @@ router.get('/:id/hosts', async (req: Request, res: Response) => {
     const userId: number = parseInt(req.params.id);
 
     if(Number.isNaN(userId)) {
-        res.json({
+        res.status(400).json({
             status: "error",
             message: "please provide userId",
-        }).status(400);
+        });
         return;
     }
 
@@ -34,10 +34,10 @@ router.get('/:id/hosts', async (req: Request, res: Response) => {
     });
 
     if(user === null){
-        res.json({
+        res.status(404).json({
             status: "error",
             message: "user with id " + userId + " not found",
-        }).status(404);
+        });
         return;
     }
 

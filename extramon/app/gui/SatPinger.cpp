@@ -164,7 +164,7 @@ double SatPinger::ping_satellite(const std::string satellite_url, time_t timesta
 
     secp256k1_context_destroy(ctx);
 
-    //data_string[5] = 'f';
+    //data_string[15] = 'f';
 
     json_t * root = json_object();
     json_object_set_new(root, "data", json_string(data_string));
@@ -224,6 +224,7 @@ double SatPinger::ping_satellite(const std::string satellite_url, time_t timesta
 
     long http_code;
     curl_easy_getinfo(curl_handle, CURLINFO_RESPONSE_CODE, &http_code);
+    printf("%d\n", http_code);
     if(http_code != 200){
         curl_easy_cleanup(curl_handle);
         free(chunk.memory);

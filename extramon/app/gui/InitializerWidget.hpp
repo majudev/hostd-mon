@@ -64,6 +64,10 @@ class InitWidget {
             return this->box;
         }
 
+        inline std::string get_pubkey(){
+            return std::string(compressed_pubkey_str);
+        }
+
     private:
         SatPinger& satpinger;
 
@@ -74,6 +78,8 @@ class InitWidget {
         GtkSpinner * fullsceen_spinner;
         const char * privkey_path;
         unsigned char * privkey;
+
+        char compressed_pubkey_str[67];
 
         inline void load_privkey(){
             std::cout << "Loading private key..." << std::endl;
@@ -175,7 +181,6 @@ class InitWidget {
             }
             secp256k1_context_destroy(ctx);
 
-            char compressed_pubkey_str[67];
             for(int i = 0; i < len; ++i){
                 sprintf(&compressed_pubkey_str[2*i], "%02x", compressed_pubkey[i]);
             }
@@ -192,6 +197,32 @@ class InitWidget {
                     return;
                 }
                 update_progress_text(std::string("Found ") + std::to_string(satellites.size()) + " satellites");
+
+                time_t timestamp = time(NULL);
+                bool pingOk = false;
+                bool error401 = false;
+                for(auto iter = satellites.begin(); iter != satellites.end(); ++iter){
+                    update_progress_text(std::string("Pinging ") + iter->name + "...");
+                    try{
+                        satpinger.ping_satellite(iter->address, timestamp);
+                        pingOk = true;
+                    }catch(SatPinger::PingerException &error){
+                        update_progress_text(std::string("Couldn't ping ") + iter->name);
+                        if(error.type == SatPinger::PingerException::HTTP_ERROR_CODE && std::stoi(error.details) == 401){
+                            update_progress_text(std::string("Satellite ") + iter->name + " says we're unauthorized...");
+                            error401 = true;
+                            break;
+                        }
+                    }
+                }
+                if(!pingOk && error401){
+                    std::string text;
+                    text += "Please open page <a href=\"https://sia.watch\">https://sia.watch</a> and add this satellite using the following pubkey:\n\n";
+                    text += compressed_pubkey_str;
+                    text += "\n\nThen please restart this app.";
+                    show_pubkey(text.c_str());
+                    return;
+                }
             } catch(SatPinger::PingerException &error){
                 if(error.type == SatPinger::PingerException::ExceptionType::HTTP_ERROR_CODE){
                     die_with_error((std::string("Cannot retrieve available satellites. Server responded with: HTTP/") + error.details).c_str());
@@ -253,6 +284,24 @@ class InitWidget {
             input->ctx = this;
             input->new_text = strdup(text.c_str());
             g_idle_add(&InitWidget::die_with_error_helper, input);
+        }
+
+        inline static gboolean show_pubkey_helper(gpointer user_data){
+            struct update_text_helper_input* input = (struct update_text_helper_input*) user_data;
+            InitWidget* object = input->ctx;
+            char * new_text = input->new_text;
+            gtk_label_set_text(object->progress_label, new_text);
+            gtk_label_set_selectable(object->progress_label, true);
+            free(new_text);
+            free(user_data);
+            return false;
+        }
+
+        inline void show_pubkey(std::string text){
+            struct update_text_helper_input * input = (struct update_text_helper_input*) malloc(sizeof(struct update_text_helper_input));
+            input->ctx = this;
+            input->new_text = strdup(text.c_str());
+            g_idle_add(&InitWidget::show_pubkey_helper, input);
         }
 
         inline static gboolean emitter_helper(gpointer user_data){

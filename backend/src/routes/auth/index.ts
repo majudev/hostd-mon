@@ -17,10 +17,10 @@ router.post('/register', async (req: Request, res: Response) => {
     const request: RegisterUserRequest = req.body;
 
     if(request.email === undefined) {
-        res.json({
+        res.status(400).json({
             status: "error",
             message: "please provide an email",
-        }).status(400);
+        });
         return;
     }
 
@@ -31,10 +31,10 @@ router.post('/register', async (req: Request, res: Response) => {
     }) > 0;
 
     if(exists) {
-        res.json({
+        res.status(409).json({
             status: "error",
             message: "user with this email already exists",
-        }).status(409);
+        });
         return;
     }
 
@@ -45,9 +45,9 @@ router.post('/register', async (req: Request, res: Response) => {
         },
     });
 
-	res.json({
+	res.status(201).json({
 		status: "success",
-	}).status(201);
+	});
 });
 
 router.post('/login', async (req: Request, res: Response) => {
@@ -60,16 +60,16 @@ router.post('/login', async (req: Request, res: Response) => {
     }) > 0;
 
     if(!exists) {
-        res.json({
+        res.status(401).json({
             status: "error",
             message: "user with this email does not exist",
-        }).status(401);
+        });
         return;
     }
 
-	res.json({
+	res.status(200).json({
 		status: "success",
-	}).status(200);
+	});
 });
 
 export default router;
