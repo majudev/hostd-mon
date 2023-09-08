@@ -26,10 +26,10 @@ class SatellitePanel {
             this->flag = this->get_flag_image();
             if(this->flag) gtk_box_pack_start(this->box, GTK_WIDGET(this->flag), false, false, 0);
 
-            this->status_ok = GTK_IMAGE(gtk_image_new_from_file("../imgs/web-check.svg"));
-            this->status_syncing = GTK_IMAGE(gtk_image_new_from_file("../imgs/web-sync.svg"));
-            this->status_error = GTK_IMAGE(gtk_image_new_from_file("../imgs/web-remove.svg"));
-            this->status_unknown = GTK_IMAGE(gtk_image_new_from_file("../imgs/help.svg"));
+            this->status_ok = GTK_IMAGE(gtk_image_new_from_file("../share/siawatch/imgs/web-check.svg"));
+            this->status_syncing = GTK_IMAGE(gtk_image_new_from_file("../share/siawatch/imgs/web-sync.svg"));
+            this->status_error = GTK_IMAGE(gtk_image_new_from_file("../share/siawatch/imgs/web-remove.svg"));
+            this->status_unknown = GTK_IMAGE(gtk_image_new_from_file("../share/siawatch/imgs/help.svg"));
 
             gtk_box_pack_start(this->box, GTK_WIDGET(this->status_ok), false, false, 0);
             gtk_box_pack_start(this->box, GTK_WIDGET(this->status_syncing), false, false, 0);
@@ -230,15 +230,15 @@ class SatellitePanel {
 
         inline GtkImage * get_flag_image(){
             if(this->satellite.address == "satellite-de.sia.watch"){
-                GtkWidget * image = gtk_image_new_from_file("../imgs/flags/de.svg");
+                GtkWidget * image = gtk_image_new_from_file("../share/siawatch/imgs/flags/de.svg");
                 gtk_widget_show(image);
                 return GTK_IMAGE(image);
             }else if(this->satellite.address == "satellite-ca.sia.watch"){
-                GtkWidget * image = gtk_image_new_from_file("../imgs/flags/ca.svg");
+                GtkWidget * image = gtk_image_new_from_file("../share/siawatch/imgs/flags/ca.svg");
                 gtk_widget_show(image);
                 return GTK_IMAGE(image);
             }else if(this->satellite.address == "satellite-fr.sia.watch"){
-                GtkWidget * image = gtk_image_new_from_file("../imgs/flags/fr.svg");
+                GtkWidget * image = gtk_image_new_from_file("../share/siawatch/imgs/flags/fr.svg");
                 gtk_widget_show(image);
                 return GTK_IMAGE(image);
             }

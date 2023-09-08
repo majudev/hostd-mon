@@ -1,0 +1,15 @@
+Source: siawatch-app
+Section: unknown
+Priority: optional
+Maintainer: Maju <>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.5.1
+Homepage: https://github.com/majudev/hostd-mon/
+#Vcs-Browser: https://salsa.debian.org/debian/siawatch-app
+Vcs-Git: https://github.com/majudev/hostd-mon.git
+Rules-Requires-Root: no
+
+Package: siawatch-app
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Helper app for sia.watch monitoring system
