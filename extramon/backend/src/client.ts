@@ -26,7 +26,13 @@ router.post('/ping', async (req: Request, res: Response) => {
         return;
     }
 
-    const data = JSON.parse(request.data) as PingData;
+    var data;
+    try{
+        data = JSON.parse(request.data) as PingData;
+    }catch(e){
+        res.status(400).json(e).end();
+        return;
+    }
 
     if(data.timestamp === undefined){
         res.status(400).end();
