@@ -19,6 +19,10 @@ class MainWindow {
             gtk_window_set_title(GTK_WINDOW(window), "Sia.Watch Monitor App");
             gtk_window_set_default_size(GTK_WINDOW(window), 400, 400);
 
+            /*this->tray_icon = gtk_status_icon_new_from_file("../imgs/web-remove.svg");
+            gtk_status_icon_set_title(this->tray_icon, "Sia.Watch Monitor App");
+            gtk_status_icon_set_visible(this->tray_icon, true);*/
+
             init_widget.show();
 
             this->main_box = GTK_BOX(gtk_box_new(GTK_ORIENTATION_VERTICAL, 0));
@@ -69,6 +73,7 @@ class MainWindow {
         SatPinger satpinger;
 
         GtkApplicationWindow * window;
+        //GtkStatusIcon * tray_icon;
 
         GtkBox * main_box;
         GtkBox * logbook_box;
@@ -105,6 +110,8 @@ class MainWindow {
 
             gtk_label_set_text(object->pubkey_label, (std::string("Pubkey:\n") + object->init_widget.get_pubkey()).c_str());
             gtk_widget_show(GTK_WIDGET(object->pubkey_label));
+
+            gtk_window_resize(GTK_WINDOW(object->window), 1, 1);
 
             //gtk_label_set_text(object->logbook_label, "Pinging satellites...");
             object->watchdog.start_worker();

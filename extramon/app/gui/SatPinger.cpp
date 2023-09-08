@@ -220,11 +220,10 @@ double SatPinger::ping_satellite(const std::string satellite_url, time_t timesta
     double query_time;
     curl_easy_getinfo(curl_handle, CURLINFO_NAMELOOKUP_TIME, &nslookup_time);
     curl_easy_getinfo(curl_handle, CURLINFO_TOTAL_TIME, &total_time);
-    query_time = total_time - nslookup_time;
+    query_time = (total_time - nslookup_time) * 1000.0;
 
     long http_code;
     curl_easy_getinfo(curl_handle, CURLINFO_RESPONSE_CODE, &http_code);
-    printf("%d\n", http_code);
     if(http_code != 200){
         curl_easy_cleanup(curl_handle);
         free(chunk.memory);
