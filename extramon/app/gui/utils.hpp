@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <iostream>
 
 #ifdef __linux__
 #include <cstdlib>
