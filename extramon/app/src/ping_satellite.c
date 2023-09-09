@@ -63,7 +63,7 @@ int ping_satellite(const char * satellite_url, time_t timestamp, const unsigned 
 
     char * data_string = json_dumps(data_root, JSON_COMPACT | JSON_ENSURE_ASCII);
 
-    BYTE hash[SHA256_BLOCK_SIZE];
+    unsigned char hash[SHA256_BLOCK_SIZE];
     SHA256_CTX sha256;
     sha256_init(&sha256);
 	sha256_update(&sha256, data_string, strlen(data_string));

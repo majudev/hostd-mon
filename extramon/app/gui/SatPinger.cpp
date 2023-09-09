@@ -135,10 +135,10 @@ double SatPinger::ping_satellite(const std::string satellite_url, time_t timesta
 
     char * data_string = json_dumps(data_root, JSON_COMPACT | JSON_ENSURE_ASCII);
 
-    BYTE hash[SHA256_BLOCK_SIZE];
+    unsigned char hash[SHA256_BLOCK_SIZE];
     SHA256_CTX sha256;
     sha256_init(&sha256);
-	  sha256_update(&sha256, (const BYTE*) data_string, strlen(data_string));
+	  sha256_update(&sha256, (const unsigned char*) data_string, strlen(data_string));
 	  sha256_final(&sha256, hash);
 
     /*printf("Hash: ");
