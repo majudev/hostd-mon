@@ -54,3 +54,8 @@ target_link_libraries(extramon-gui PUBLIC ${JANSSON_LIBRARIES})
 target_include_directories(extramon-gui PUBLIC ${JANSSON_INCLUDE_DIRS})
 target_link_libraries(extramon PUBLIC ${JANSSON_LIBRARIES})
 target_include_directories(extramon PUBLIC ${JANSSON_INCLUDE_DIRS})
+
+IF (WIN32)
+  target_link_libraries(extramon PUBLIC bcrypt)
+  target_link_libraries(extramon-gui PUBLIC bcrypt)
+ENDIF(WIN32)

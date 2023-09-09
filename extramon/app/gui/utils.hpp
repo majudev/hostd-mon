@@ -15,7 +15,7 @@ extern "C" {
     #include <errno.h>
 }
 #elif defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
-#error "Windows not supported YET"
+#include <Shlobj.h>
 #else
 #error "Unsupported OS"
 #endif
@@ -47,6 +47,17 @@ inline std::string getDefaultPrivkeyPath(){
 
     return tr;
 #else
-#error "Windows not supported YET"
+    TCHAR szPath[MAX_PATH];
+    std::string path;
+    if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_COMMON_APPDATA, NULL, 0, szPath))){
+        path = szPath;
+        path += "/SiaWatch";
+        if (CreateDirectory(path.c_str(), NULL) ||
+        ERROR_ALREADY_EXISTS == GetLastError()){
+            path += "/private.key";
+            return path;
+        }
+    }
+    return "./private.key";
 #endif
 }
