@@ -52,6 +52,9 @@ std::vector<SatPinger::Satellite> SatPinger::get_satellites(){
     curl_easy_setopt(curl_handle, CURLOPT_URL, SATELLITES_GET_URL);
     curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, SaveChunkCallback);
     curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *)&chunk);
+#if defined(_WIN32)
+    curl_easy_setopt(curl_handle, CURLOPT_CAINFO, "curl-ca-bundle.crt");
+#endif
     curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, this->user_agent.c_str());
 
     res = curl_easy_perform(curl_handle);
@@ -204,6 +207,9 @@ double SatPinger::ping_satellite(const std::string satellite_url, time_t timesta
     curl_easy_setopt(curl_handle, CURLOPT_URL, urlbuffer);
     curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, SaveChunkCallback);
     curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *)&chunk);
+#if defined(_WIN32)
+    curl_easy_setopt(curl_handle, CURLOPT_CAINFO, "curl-ca-bundle.crt");
+#endif
     curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, this->user_agent.c_str());
     curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDS, post_string);
 

@@ -33,7 +33,7 @@ add_executable(extramon-gui
     gui/SatPinger.cpp
     src/sha256.c
 )
-install(TARGETS extramon-gui DESTINATION bin)
+install(TARGETS extramon-gui secp256k1 DESTINATION bin)
 install(DIRECTORY share/siawatch/imgs/ DESTINATION share/siawatch/imgs)
 
 target_link_libraries(extramon PUBLIC CURL::libcurl)
