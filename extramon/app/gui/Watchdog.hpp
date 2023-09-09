@@ -55,12 +55,12 @@ class Watchdog {
                     const std::string &name = satellite.name;
                     const std::string &address = satellite.address;
                     this->update_logbook("Pinging satellite " + name + "...", true);
-                    satellites[i].set_status(SatellitePanel::Status::S_SYNCING);
+                    satellites[i].set_status(SatellitePanel::Status::SATPANEL_STATUS_SYNCING);
 
                     try{
                         double ping = satpinger.ping_satellite(address, timestamp);
 
-                        satellites[i].set_status(SatellitePanel::Status::S_OK);
+                        satellites[i].set_status(SatellitePanel::Status::SATPANEL_STATUS_OK);
                         satellites[i].set_ping_ms(ping);
 
                         double avg_ping = satellites[i].get_avg_ping();
@@ -79,7 +79,7 @@ class Watchdog {
                         }else{
                             this->update_logbook("Cannot ping satellite " + name + ": " + error.details, false);
                         }
-                        satellites[i].set_status(SatellitePanel::Status::S_ERROR);
+                        satellites[i].set_status(SatellitePanel::Status::SATPANEL_STATUS_ERROR);
                         sleep(5);
                         continue;
                     }

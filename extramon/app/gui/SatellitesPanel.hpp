@@ -93,11 +93,11 @@ class SatellitePanel {
         }
 
         enum Status {
-            S_OK, S_SYNCING, S_ERROR, S_UNKNOWN
+            SATPANEL_STATUS_OK, SATPANEL_STATUS_SYNCING, SATPANEL_STATUS_ERROR, S_UNKNOWN
         };
 
         inline void set_status(Status status){
-            if(status == S_OK){
+            if(status == SATPANEL_STATUS_OK){
                 gtk_widget_show(GTK_WIDGET(this->status_ok));
                 gtk_widget_hide(GTK_WIDGET(this->status_syncing));
                 gtk_widget_hide(GTK_WIDGET(this->status_error));
@@ -106,7 +106,7 @@ class SatellitePanel {
                 gtk_widget_hide(GTK_WIDGET(this->status_label_img_no));
                 gtk_widget_show(GTK_WIDGET(this->status_label_img_yes));
                 gtk_label_set_text(this->status_label, "Status: OK");
-            }else if(status == S_SYNCING){
+            }else if(status == SATPANEL_STATUS_SYNCING){
                 gtk_widget_hide(GTK_WIDGET(this->status_ok));
                 gtk_widget_show(GTK_WIDGET(this->status_syncing));
                 gtk_widget_hide(GTK_WIDGET(this->status_error));
@@ -115,7 +115,7 @@ class SatellitePanel {
                 gtk_widget_hide(GTK_WIDGET(this->status_label_img_no));
                 gtk_widget_hide(GTK_WIDGET(this->status_label_img_yes));
                 gtk_label_set_text(this->status_label, "Status: syncing...");
-            }else if(status == S_ERROR){
+            }else if(status == SATPANEL_STATUS_ERROR){
                 gtk_widget_hide(GTK_WIDGET(this->status_ok));
                 gtk_widget_hide(GTK_WIDGET(this->status_syncing));
                 gtk_widget_show(GTK_WIDGET(this->status_error));
