@@ -1,0 +1,9 @@
+version: '3.4'
+
+services:
+  windows:
+    image: fedora:38
+    volumes:
+      - './builders/windows:/app'
+      - '.:/source:ro'
+    command: /app/build.sh
