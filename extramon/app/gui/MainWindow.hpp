@@ -1,8 +1,6 @@
 #pragma once
 
-extern "C"{
-  #include <gtk/gtk.h>
-}
+#include <gtk/gtk.h>
 
 #include "InitializerWidget.hpp"
 #include "SatellitesPanel.hpp"

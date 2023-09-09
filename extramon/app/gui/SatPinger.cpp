@@ -6,9 +6,9 @@
 #include <cfloat>
 #include <ctime>
 
+#include <curl/curl.h>
+#include <jansson.h>
 extern "C"{
-  #include <curl/curl.h>
-  #include <jansson.h>
   #include "../src/sha256.h"
 }
 

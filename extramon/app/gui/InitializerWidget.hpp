@@ -1,9 +1,7 @@
 #pragma once
 
-extern "C"{
-  #include <gtk/gtk.h>
-  #include <pthread.h>
-}
+#include <gtk/gtk.h>
+#include <pthread.h>
 
 #include <iostream>
 #include <secp256k1.h>

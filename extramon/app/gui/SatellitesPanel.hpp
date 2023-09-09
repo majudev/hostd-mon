@@ -1,8 +1,6 @@
 #pragma once
 
-extern "C"{
-  #include <gtk/gtk.h>
-}
+#include <gtk/gtk.h>
 
 #include "SatPinger.hpp"
 #include <vector>
@@ -88,12 +86,12 @@ class SatellitePanel {
 
             gtk_widget_show_all(GTK_WIDGET(this->box));
 
-            this->set_status(Status::S_UNKNOWN);
+            this->set_status(Status::SATPANEL_STATUS_UNKNOWN);
             this->set_main(false);
         }
 
         enum Status {
-            SATPANEL_STATUS_OK, SATPANEL_STATUS_SYNCING, SATPANEL_STATUS_ERROR, S_UNKNOWN
+            SATPANEL_STATUS_OK, SATPANEL_STATUS_SYNCING, SATPANEL_STATUS_ERROR, SATPANEL_STATUS_UNKNOWN
         };
 
         inline void set_status(Status status){

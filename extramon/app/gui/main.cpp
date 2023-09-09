@@ -1,6 +1,6 @@
+#include <gtk/gtk.h>
+#include <curl/curl.h>
 extern "C"{
-  #include <gtk/gtk.h>
-  #include <curl/curl.h>
   #include "../src/ping_satellite.h"
 }
 
