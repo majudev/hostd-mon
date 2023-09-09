@@ -15,7 +15,7 @@ extern "C" {
     #include <errno.h>
 }
 #elif defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
-#include <Shlobj.h>
+#include <shlobj.h>
 #else
 #error "Unsupported OS"
 #endif
