@@ -16,6 +16,7 @@ extern "C" {
 }
 #elif defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
 #include <shlobj.h>
+#include <windows.h>
 #else
 #error "Unsupported OS"
 #endif
@@ -60,4 +61,34 @@ inline std::string getDefaultPrivkeyPath(){
     }
     return "./private.key";
 #endif
+}
+
+inline void setWorkdir(){
+#ifdef __linux__
+    char szPath[4096];
+    readlink("/proc/self/exe", szPath, 4095);
+    std::string filename = szPath;
+    const size_t last_slash_idx = filename.rfind('\\');
+    if (std::string::npos != last_slash_idx){
+        std::string directory = filename.substr(0, last_slash_idx);
+        std::cout << "Changing workdir to " << directory << std::endl;
+        chdir(directory.c_str());
+        return;
+    }
+#else
+    TCHAR szPath[MAX_PATH];
+    DWORD result = GetModuleFileName(0, szPath, MAX_PATH - 1);
+    if(result > 0){
+        std::string filename = szPath;
+        std::string directory;
+        const size_t last_slash_idx = filename.rfind('\\');
+        if (std::string::npos != last_slash_idx){
+            directory = filename.substr(0, last_slash_idx);
+            std::cout << "Changing workdir to " << directory << std::endl;
+            chdir(directory.c_str());
+            return;
+        }
+    }
+#endif
+    std::cout << "Couldn't change workdir" << std::endl;
 }

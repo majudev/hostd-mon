@@ -18,6 +18,7 @@ int main (int argc, char **argv){
 #ifdef _WIN32
   putenv("GTK_CSD=0");
 #endif
+  setWorkdir();
 
   const std::string pk_path = getDefaultPrivkeyPath();
   privkey_path = pk_path.c_str();
@@ -30,7 +31,7 @@ int main (int argc, char **argv){
 
   curl_global_init(CURL_GLOBAL_ALL);
 
-  GtkApplication * app = gtk_application_new("watch.sia.extramon", G_APPLICATION_DEFAULT_FLAGS);
+  GtkApplication * app = gtk_application_new("watch.sia.extramon", G_APPLICATION_FLAGS_NONE);
   g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);
   int status = g_application_run(G_APPLICATION(app), argc, argv);
   delete window;
