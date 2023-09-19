@@ -9,13 +9,22 @@ const prisma = new PrismaClient();
 
 router.get('/period/:from/:to', async (req: Request, res: Response) => {
     const hostId = Number.parseInt(req.params.hostId);
-    const from: Date = new Date(req.params.from);
-    const to: Date = new Date(req.params.to);
 
     if(!Number.isInteger(hostId)) {
         res.status(400).json({
             status: "error",
             message: "please provide hostId",
+        });
+        return;
+    }
+
+    const from: Date = new Date(req.params.from);
+    const to: Date = (req.params.to == 'now') ? new Date() : new Date(req.params.to);
+
+    if(req.params.to === undefined || typeof req.params.to !== 'string' || isNaN(from.valueOf()) || req.params.from === undefined || typeof req.params.from !== 'string' || isNaN(to.valueOf())){
+        res.status(400).json({
+            status: "error",
+            message: "please provide valid date range",
         });
         return;
     }
@@ -31,6 +40,14 @@ router.get('/period/:from/:to', async (req: Request, res: Response) => {
     const hostPromise = prisma.host.findFirst({
         where: {
             id: hostId,
+            RHPUptimeEntries: {
+                every: {
+                    timestamp: {
+                        gte: from,
+                        lte: to,
+                    }
+                }
+            }
         },
         select: {
             id: true,
