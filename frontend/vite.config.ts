@@ -9,12 +9,16 @@ export default defineConfig({
   resolve: {
     alias: {
       // Map the custom paths to their respective directories
-      '@assets': '/src/assets',
-      '@components': '/src/components',
-      '@pages': '/src/pages',
-      '@styles': '/src/styles',
-      '@types': '/src/types',
-      '@utils': '/src/utils'
+      '@/api': '/src/api',
+      '@/assets': '/src/assets',
+      '@/components': '/src/components',
+      '@/config': '/src/config',
+      '@/context': '/src/context',
+      '@/hooks': '/src/hooks',
+      '@/pages': '/src/pages',
+      '@/styles': '/src/styles',
+      '@/types': '/src/types',
+      '@/utils': '/src/utils'
     },
   },
   server: {
