@@ -9,7 +9,7 @@ const requestLogger = (req: Request, res: Response, next: NextFunction) => {
 	const ip = (cloudflareIp !== undefined) ? cloudflareIp : req.ip;
 	const authenticated = res.locals.authenticated ? 'A' : 'U';
 
-	logger.info('[' + ip + '/' + authenticated + ']' + req.method + ' ' + req.originalUrl);
+	logger.info('[' + ip + '-' + authenticated + '] ' + req.method + ' ' + req.originalUrl);
 
 	next();
 };
