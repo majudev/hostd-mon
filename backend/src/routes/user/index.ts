@@ -6,6 +6,11 @@ const router = Router();
 const prisma = new PrismaClient();
 
 router.get('/:id/hosts', async (req: Request, res: Response) => {
+    if(!res.locals.authenticated){
+        res.status(401).end();
+        return;
+    }
+
     const userId: number = parseInt(req.params.id);
 
     if(Number.isNaN(userId)) {
@@ -13,6 +18,15 @@ router.get('/:id/hosts', async (req: Request, res: Response) => {
             status: "error",
             message: "please provide userId",
         });
+        return;
+    }
+
+    // User can only view his hosts, admin can view everything
+    if(userId != res.locals.auth_user.userId && !res.locals.auth_user.admin){
+        res.status(403).json({
+            status: "error",
+            message: "you don't have permissions to view this userId",
+        }).end();
         return;
     }
 

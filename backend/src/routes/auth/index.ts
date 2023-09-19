@@ -1,6 +1,9 @@
 import { Router, Request, Response } from 'express';
 import logger from '../../utils/logger';
 import { PrismaClient } from '@prisma/client'
+import jwt from 'jsonwebtoken';
+import {v4 as uuidv4} from 'uuid';
+import { JWT_EXPIRATION_DAYS, JWT_SECRET } from './jwt_secret';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -53,11 +56,18 @@ router.post('/register', async (req: Request, res: Response) => {
 router.post('/login', async (req: Request, res: Response) => {
     const request: LoginUserRequest = req.body;
 
-    const exists = await prisma.user.count({
+    const userObject = await prisma.user.findFirst({
+        select: {
+            id: true,
+            email: true,
+            admin: true,
+        },
         where: {
             email: request.email,
         }
-    }) > 0;
+    });
+
+    const exists = (userObject !== null);
 
     if(!exists) {
         res.status(401).json({
@@ -66,6 +76,23 @@ router.post('/login', async (req: Request, res: Response) => {
         });
         return;
     }
+
+    var authToken = await jwt.sign({
+        id: uuidv4(),
+        userId: userObject.id,
+        email: userObject.email,
+        admin: userObject.admin,
+    }, await JWT_SECRET(), {
+        expiresIn: (await JWT_EXPIRATION_DAYS()) + "d",
+    });
+
+    const expirationDate = new Date();
+    expirationDate.setDate(expirationDate.getDate() + Number.parseInt(await JWT_EXPIRATION_DAYS()));
+    res.cookie("SIAWATCH_COOKIE", authToken, {
+        secure: true,
+        httpOnly: true,
+        expires: expirationDate,
+    });
 
 	res.status(200).json({
 		status: "success",

@@ -46,6 +46,7 @@ model User {
   id    Int     @id @default(autoincrement())
   name  String? @db.VarChar(255)
   email String  @unique @db.VarChar(255)
+  admin Boolean @default(false)
   Hosts Host[]
 }
 
@@ -56,4 +57,10 @@ model Satellite {
   active                Boolean               @default(true)
   RHPUptimeEntries      RHPUptimeEntry[]
   ExtramonUptimeEntries ExtramonUptimeEntry[]
+}
+
+model Settings {
+  id  Int @id @default(autoincrement())
+  key String @db.VarChar(255) @unique
+  value String @db.VarChar(255)
 }

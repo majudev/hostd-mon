@@ -1,22 +1,17 @@
 import express from 'express';
-import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import router from './routes';
 import requestLogger from './utils/requestLogger';
+import cookieMonster from './utils/cookieMonster';
 
 const app = express();
-
-/* cross-origin resource sharing config */
-/*app.use(cors({
-	//origin: 'sia.watch',
-	credentials: true
-}));*/
 
 /* basic express config */
 app.use(express.json());
 app.use(cookieParser());
 
 /* custom middlewares */
+app.use(cookieMonster);
 app.use(requestLogger);
 
 /* main router */

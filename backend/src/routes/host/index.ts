@@ -20,9 +20,14 @@ interface LoginUserRequest {
 };
 
 router.post('/new', async (req: Request, res: Response) => {
+    if(!res.locals.authenticated){
+        res.status(401).end();
+        return;
+    }
+
     const request: NewHostRequest = req.body;
 
-    if(request.rhpAddress === undefined && request.rhpPubkey === undefined && request.extramonPubkey) {
+    if(request.extramonPubkey === undefined && (request.rhpAddress === undefined || request.rhpPubkey === undefined)) {
         res.json({
             status: "error",
             message: "please provide rhpAddress and rhpPubkey OR extramonPubkey",
@@ -62,28 +67,6 @@ router.post('/new', async (req: Request, res: Response) => {
 	res.json({
 		status: "success",
 	}).status(201);
-});
-
-router.post('/login', async (req: Request, res: Response) => {
-    const request: LoginUserRequest = req.body;
-
-    const exists = await prisma.user.count({
-        where: {
-            email: request.email,
-        }
-    }) > 0;
-
-    if(!exists) {
-        res.json({
-            status: "error",
-            message: "user with this email does not exist",
-        }).status(401);
-        return;
-    }
-
-	res.json({
-		status: "success",
-	}).status(200);
 });
 
 export default router;

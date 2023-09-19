@@ -27,6 +27,13 @@ services:
       POSTGRES_PASSWORD: sakjfsdfasfasersfedfsdfa
       POSTGRES_USER: master
       POSTGRES_DATABASE: master
+  redis:
+    image: redis:alpine
+    restart: always
+    command: >
+      --protected-mode no
+      --save ""
+      --appendonly no
   nginx:
     build: nginx/master
     restart: always

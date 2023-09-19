@@ -5,6 +5,12 @@ import { PrismaClient } from '@prisma/client'
 const router = Router();
 const prisma = new PrismaClient();
 
+/**
+ * These endpoints are not protected, because they
+ * are available only through encrypted VPN tunnel
+ * and end user cannot access them.
+ */
+
 router.get('/host/by-extramon-pubkey/:pubkey/allowed', async (req: Request, res: Response) => {
     const pubkey: string = req.params.pubkey;
 
@@ -24,9 +30,9 @@ router.get('/host/by-extramon-pubkey/:pubkey/allowed', async (req: Request, res:
         return;
     }
 
-	res.json({
+	res.status(204).json({
 		status: "success",
-	}).status(204);
+	});
 });
 
 router.get('/', async (req: Request, res: Response) => {
