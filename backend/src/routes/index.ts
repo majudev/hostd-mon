@@ -14,11 +14,11 @@ router.use('/user', userRouter);
 // router.get, etc HERE
 
 /* test endpoint */
-router.get('/', async (req: Request, res: Response) => {
+/*router.get('/', async (req: Request, res: Response) => {
 	res.json({
 		success: true,
 		msg: 'hello world from /api'
 	});
-});
+});*/
 
 export default router;

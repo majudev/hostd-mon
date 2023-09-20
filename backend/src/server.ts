@@ -18,6 +18,9 @@ app.use(requestLogger);
 app.use('/', router);
 
 /* 404 Not Found handler */
-app.get('*', (req, res) => res.status(404).send('<h1>404 Not Found</h1>'));
+app.get('*', (req, res) => res.status(404).json({
+    status: "error",
+    message: "endpoint not found",
+}));
 
 export default app;

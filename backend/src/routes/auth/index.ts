@@ -50,6 +50,7 @@ router.post('/register', async (req: Request, res: Response) => {
 
 	res.status(201).json({
 		status: "success",
+        data: null,
 	});
 });
 
@@ -96,7 +97,7 @@ router.post('/login', async (req: Request, res: Response) => {
 
 	res.status(200).json({
 		status: "success",
-        userObject: userObject,
+        data: userObject,
 	});
 });
 
