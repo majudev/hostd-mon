@@ -19,13 +19,15 @@ export type HostConfigFormFields = Omit<Host, 'id'> & { sia: boolean, extramon: 
 type HostConfigFormProps = React.ComponentProps<'form'> & {
 	handleSubmit?: (formData: HostConfigFormFields) => any,
 	defaultFormValues?: HostConfigFormFields,
-	disableSubmitButton?: boolean
+	disableForm?: boolean,
+	errorFields?: Array<string>
 };
 
 const HostConfigForm: React.FC<HostConfigFormProps> = ({
 	                                                       handleSubmit,
 	                                                       defaultFormValues,
-	                                                       disableSubmitButton
+	                                                       disableForm,
+	                                                       errorFields
                                                        }) => {
 	const {formData, handleInputChange, setNewFormValues} = useForm<HostConfigFormFields>(defaultFormValues ?? {
 		name: '',
@@ -68,7 +70,9 @@ const HostConfigForm: React.FC<HostConfigFormProps> = ({
 				required
 				label="Host name"
 				name="name"
+				error={errorFields?.includes('name')}
 				onChange={handleInputChange}
+				disabled={disableForm}
 				value={formData.name}
 				fullWidth
 				sx={{mb: 2, mt: 1}}
@@ -76,7 +80,7 @@ const HostConfigForm: React.FC<HostConfigFormProps> = ({
 
 			<Divider/>
 
-			<FormControlLabel control={
+			<FormControlLabel disabled={disableForm} control={
 				<Switch name="sia" onChange={e => {
 					handleInputChange(e);
 					onCheckboxChange && onCheckboxChange(e);
@@ -90,8 +94,9 @@ const HostConfigForm: React.FC<HostConfigFormProps> = ({
 				name="rhpAddress"
 				onChange={handleInputChange}
 				value={formData.rhpAddress}
-				disabled={!formData.sia}
+				disabled={!formData.sia || disableForm}
 				required={formData.sia}
+				error={errorFields?.includes('rhpAddress')}
 				fullWidth
 				sx={{mb: 4}}
 			/>
@@ -103,13 +108,14 @@ const HostConfigForm: React.FC<HostConfigFormProps> = ({
 				name="rhpPubkey"
 				onChange={handleInputChange}
 				value={formData.rhpPubkey}
-				disabled={!formData.sia}
+				disabled={!formData.sia || disableForm}
 				required={formData.sia}
+				error={errorFields?.includes('rhpPubkey')}
 				fullWidth
 				sx={{mb: 2}}
 			/>
 
-			<FormControl disabled={!formData.sia} required={formData.sia} fullWidth sx={{my: 2}}>
+			<FormControl error={errorFields?.includes('rhpDeadtime')} disabled={!formData.sia || disableForm} required={formData.sia} fullWidth sx={{my: 2}}>
 				<InputLabel id="rhpDeadtime">rhp dead time</InputLabel>
 				<Select
 					labelId="demo-simple-select-label"
@@ -134,7 +140,7 @@ const HostConfigForm: React.FC<HostConfigFormProps> = ({
 
 			<Divider/>
 
-			<FormControlLabel control={
+			<FormControlLabel disabled={disableForm} control={
 				<Switch name="extramon" onChange={e => {
 					handleInputChange(e);
 					onCheckboxChange && onCheckboxChange(e);
@@ -148,16 +154,17 @@ const HostConfigForm: React.FC<HostConfigFormProps> = ({
 				name="extramonPubkey"
 				onChange={handleInputChange}
 				value={formData.extramonPubkey}
-				disabled={!formData.extramon}
+				disabled={!formData.extramon || disableForm}
 				required={formData.extramon}
+				error={errorFields?.includes('extramonPubkey')}
 				fullWidth
 				sx={{mb: 2}}
 			/>
 
 			<Divider/>
 
-			<FormControl disabled={!formData.extramon} required={formData.extramon} fullWidth sx={{my: 2}}>
-				<InputLabel id="extramonDeadtime">Extramon dead time</InputLabel>
+			<FormControl error={errorFields?.includes('extramonDeadtime')} disabled={!formData.extramon || disableForm} required={formData.extramon} fullWidth sx={{my: 2}}>
+				<InputLabel id="extramonDeadtime">extramon dead time</InputLabel>
 				<Select
 					labelId="demo-simple-select-label"
 					id="extramonDeadtime"
@@ -181,7 +188,7 @@ const HostConfigForm: React.FC<HostConfigFormProps> = ({
 
 		</FormGroup>
 
-		<Button variant="outlined" type="submit" disabled={disableSubmitButton ?? false} fullWidth>Submit</Button>
+		<Button variant="outlined" type="submit" disabled={disableForm ?? false} fullWidth>Submit</Button>
 	</form>;
 };
 

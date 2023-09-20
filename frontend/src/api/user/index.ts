@@ -1,30 +1,21 @@
-import api from '@/api';
+import api, {ApiResponse} from '@/api';
+import Host from '@/types/Host.ts';
 
 export const getHostsByUserId = async (userId: number) => {
 
 	try {
-		const {data} = await api.get(`/user/${userId}/hosts`);
+		const {data: res}: { data: ApiResponse<Array<Host>> } = await api.get(`/user/${userId}/hosts`);
 
-		if (!(data instanceof Array)) {
-			return null;
-		}
-
-		const requests = data.map(host => api.get(`/host/${host.id}`));
+		const requests = res.data.map(host => api.get(`/host/${host.id}`));
 		const responses = await Promise.all(requests);
 
-		return responses.map(res => res.data);
+		return responses.map(res => res.data.data) as Array<Host>;
 	} catch (error) {
-		return null;
+		return Promise.reject(error);
 	}
 }
 
-export const getUserByUserId = async (userId: number) => {
-
-	try {
-		const {data} = await api.get(`/user/${userId}`);
-
-		return data;
-	} catch (error) {
-		return null;
-	}
+export const getUserById = async (userId: number) => {
+	const {data} = await api.get(`/user/${userId}`);
+	return data;
 }

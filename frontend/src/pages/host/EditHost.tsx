@@ -4,14 +4,18 @@ import {HostDmonContext, useHostDmon} from '@/context/HostDmonContext.tsx';
 import Host from '@/types/Host.ts';
 import {useParams} from 'react-router-dom';
 import HostConfigForm, {HostConfigFormFields} from '@/components/host/HostConfigForm.tsx';
+import {updateHost} from '@/api/host';
+import Grid from '@mui/material/Grid';
+import DeleteHostButton from '@/components/host/DeleteHostButton.tsx';
 
 const EditHost: React.FC = () => {
 	const {id: hostId} = useParams();
-	const {hosts} = useHostDmon() as HostDmonContext;
+	const {hosts, setHosts} = useHostDmon() as HostDmonContext;
 
-	const hostToEdit = hosts.find((host: Host) => host.id === parseInt('' + hostId));
+	const hostToEdit = hosts?.find((host: Host) => host.id === parseInt('' + hostId));
 
 	const [defaultFormValues, setDefaultFormValues] = useState<HostConfigFormFields | null>(null);
+
 
 	useEffect(() => {
 		if (hostToEdit == null) return;
@@ -32,20 +36,80 @@ const EditHost: React.FC = () => {
 		}
 	}, [hostToEdit]);
 
+	const [loading, setLoading] = useState<boolean>(false);
+	const [errorFields, setErrorFields] = useState<Array<string>>([]);
 
-	function handleSubmit(formData: HostConfigFormFields) {
-		// TODO: add action and API call
-		console.log(formData);
+	const handleSubmit = (formData: HostConfigFormFields) => {
+		if (hostId == null) return;
+
+		const {name, sia, rhpAddress, rhpPubkey, rhpDeadtime, extramon, extramonPubkey, extramonDeadtime} = formData;
+
+		if (name == null || name.length === 0) {
+			return alert('Name is required');
+		}
+
+		if (sia && (rhpAddress == null || rhpAddress.length === 0 || rhpPubkey == null || rhpPubkey.length === 0 || rhpDeadtime == null)) {
+			return alert('rhpAddress, rhpPubkey and rhp dead time are required');
+		}
+
+		if (extramon && (extramonPubkey == null || extramonPubkey.length === 0 || extramonDeadtime == null)) {
+			return alert('extramonPubkey and extramon dead time are required');
+		}
+
+		setLoading(true);
+
+		const hostToUpdate = {
+			id: parseInt(hostId),
+			name,
+			rhpAddress: sia ? rhpAddress : null,
+			rhpPubkey: sia ? rhpPubkey : null,
+			rhpDeadtime: sia ? rhpDeadtime : undefined,
+			extramonPubkey: extramon ? extramonPubkey : null,
+			extramonDeadtime: extramon ? extramonDeadtime : undefined,
+		};
+
+		updateHost(hostToUpdate).then(res => {
+			setErrorFields([]);
+
+			const updatedHost = res?.data;
+
+			setHosts(prev => {
+				if (prev == null) return null;
+
+				return prev.map(host => host.id === parseInt(hostId) ? updatedHost : host);
+			});
+
+			setLoading(false);
+		}).catch(error => {
+			console.error(error);
+			setLoading(false);
+
+			const {data} = error?.response;
+
+			if (data == null) return;
+
+			setErrorFields([data?.duplicate]);
+			alert(data?.message ?? error ?? 'Server error');
+		});
 	}
 
 	return <>
-		<Title>Edit host</Title>
+		<Grid container mb={1}>
+			<Grid item xs={12} md={6}>
+				<Title>Edit host #{hostId}</Title>
+			</Grid>
+			<Grid item xs={12} md={6} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+				<DeleteHostButton />
+			</Grid>
+		</Grid>
 
 		{
 			defaultFormValues != null &&
           <HostConfigForm
               handleSubmit={handleSubmit}
               defaultFormValues={defaultFormValues}
+              disableForm={loading}
+              errorFields={errorFields}
           />
 		}
 	</>;

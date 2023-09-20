@@ -1,11 +1,11 @@
 type Host = {
 	id: number,
 	name: string,
-	rhpAddress: string | null,
-	rhpPubkey: string | null,
-	rhpDeadtime: number,
-	extramonPubkey: string | null,
-	extramonDeadtime: number
+	rhpAddress: string | null | undefined,
+	rhpPubkey: string | null | undefined,
+	rhpDeadtime: number | undefined,
+	extramonPubkey: string | null | undefined,
+	extramonDeadtime: number | undefined
 };
 
 export default Host;

@@ -6,8 +6,8 @@ import EditHost from '@/pages/host/EditHost.tsx';
 const HostOverview: React.FC = () => {
 	// const {id: hostId} = useParams();
 
-	return <>
-		<Grid item xs={12} md={8} lg={9}>
+	return <Grid container spacing={3}>
+		<Grid item xs={6} md={6} lg={6}>
 			<Paper
 				sx={{
 					p: 2,
@@ -19,7 +19,7 @@ const HostOverview: React.FC = () => {
 				<EditHost/>
 			</Paper>
 		</Grid>
-	</>;
+	</Grid>;
 };
 
 export default HostOverview;
