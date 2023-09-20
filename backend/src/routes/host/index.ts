@@ -9,10 +9,6 @@ const prisma = new PrismaClient();
 
 router.use('/:hostId/uptime', uptimeRouter);
 
-interface LoginUserRequest {
-    email: string;
-};
-
 router.post('/new', async (req: Request, res: Response) => {
     if(!res.locals.authenticated){
         res.status(401).end();
@@ -33,6 +29,10 @@ router.post('/new', async (req: Request, res: Response) => {
     if(res.locals.auth_user.admin && req.body.userId !== undefined){
         request.userId = req.body.userId;
     }
+
+    if(request.extramonPubkey === null) request.extramonPubkey = undefined;
+    if(request.rhpPubkey === null) request.rhpPubkey = undefined;
+    if(request.rhpAddress === null) request.rhpAddress = undefined;
 
     if(request.extramonPubkey === undefined && (request.rhpAddress === undefined || request.rhpPubkey === undefined)) {
         res.status(400).json({
