@@ -62,13 +62,13 @@ router.get('/:id', async (req: Request, res: Response) => {
     res.status(200).json(user).end();
 });
 
-router.patch('/:id', async (req: Request, res: Response) => {
+router.patch('/:userId', async (req: Request, res: Response) => {
     if(!res.locals.authenticated){
         res.status(401).end();
         return;
     }
 
-    const userId: number = parseInt(req.params.id);
+    const userId: number = parseInt(req.params.userId);
 
     if(Number.isNaN(userId)) {
         res.status(400).json({

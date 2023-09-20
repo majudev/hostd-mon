@@ -127,7 +127,7 @@ router.get('/:hostId', async (req: Request, res: Response) => {
     res.status(200).json(host).end();
 });
 
-router.patch('/:id', async (req: Request, res: Response) => {
+router.patch('/:hostId', async (req: Request, res: Response) => {
     if(!res.locals.authenticated){
         res.status(401).end();
         return;
