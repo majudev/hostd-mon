@@ -163,17 +163,17 @@ router.patch('/:hostId', async (req: Request, res: Response) => {
         return;
     }
 
-    if(await prisma.host.count({ where: { AND: [{rhpAddress: updateQuery.rhpAddress},{id: {not: hostId}}] } }) > 0){
+    if(updateQuery.rhpAddress !== undefined && updateQuery.rhpAddress !== null && await prisma.host.count({ where: { AND: [{rhpAddress: updateQuery.rhpAddress},{id: {not: hostId}}] } }) > 0){
         fail_duplicate_entry(res, "rhpAddress", null);
         return;
     }
 
-    if(await prisma.host.count({ where: { AND: [{rhpAddress: updateQuery.rhpPubkey},{id: {not: hostId}}] } }) > 0){
+    if(updateQuery.rhpPubkey !== undefined && updateQuery.rhpPubkey !== null && await prisma.host.count({ where: { AND: [{rhpAddress: updateQuery.rhpPubkey},{id: {not: hostId}}] } }) > 0){
         fail_duplicate_entry(res, "rhpPubkey", null);
         return;
     }
 
-    if(await prisma.host.count({ where: { AND: [{rhpAddress: updateQuery.extramonPubkey},{id: {not: hostId}}] } }) > 0){
+    if(updateQuery.extramonPubkey !== undefined && updateQuery.extramonPubkey !== null && await prisma.host.count({ where: { AND: [{rhpAddress: updateQuery.extramonPubkey},{id: {not: hostId}}] } }) > 0){
         fail_duplicate_entry(res, "extramonPubkey", null);
         return;
     }
