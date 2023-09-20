@@ -110,6 +110,9 @@ router.get('/:hostId', async (req: Request, res: Response) => {
             rhpAddress: true,
             rhpPubkey: true,
             extramonPubkey: true,
+
+            rhpDeadtime: true,
+            extramonDeadtime: true,
         },
     });
 
@@ -122,6 +125,58 @@ router.get('/:hostId', async (req: Request, res: Response) => {
     }
 
     res.status(200).json(host).end();
+});
+
+router.get('/:hostId/alerts', async (req: Request, res: Response) => {
+    if(!res.locals.authenticated){
+        res.status(401).end();
+        return;
+    }
+
+    const hostId = Number.parseInt(req.params.hostId);
+
+    if(!Number.isInteger(hostId)) {
+        res.status(400).json({
+            status: "error",
+            message: "please provide hostId",
+        });
+        return;
+    }
+
+    // User can view only his own hosts, admin can view everything
+    const hostOwner = await prisma.host.count({
+        where:{
+            userId: res.locals.auth_user.userId,
+            id: hostId,
+        }
+    }) > 0;
+    if(!hostOwner && !res.locals.auth_user.admin){
+        res.status(403).json({
+            status: "error",
+            message: "you don't have permissions to view this hostId",
+        }).end();
+        return;
+    }
+
+    const alerts = await prisma.alert.findMany({
+        where: {
+            hostId: hostId,
+        },
+        select: {
+            id: true,
+            timestamp: true,
+            message: true,
+            sentTo: true,
+            Host: {
+                select: {
+                    id: true,
+                    name: true,
+                }
+            }
+        },
+    });
+
+    res.status(200).json(alerts).end();
 });
 
 export default router;
