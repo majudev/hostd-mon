@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {Link, To, LinkProps} from "react-router-dom";
+import {Link, LinkProps} from "react-router-dom";
 
 type RouterLinkProps = {
 	children?: React.ReactNode
