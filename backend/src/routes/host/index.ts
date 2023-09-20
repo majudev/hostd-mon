@@ -26,7 +26,7 @@ router.post('/new', async (req: Request, res: Response) => {
         RHPUptimeEntries: ____,
         ExtramonUptimeEntries: _____,
         Alerts: ______,
-        request
+        ...request
     } = req.body;
 
     if(request.extramonPubkey === undefined && (request.rhpAddress === undefined || request.rhpPubkey === undefined)) {
@@ -179,7 +179,7 @@ router.patch('/:hostId', async (req: Request, res: Response) => {
         RHPUptimeEntries: ____,
         ExtramonUptimeEntries: _____,
         Alerts: ______,
-        updateQuery
+        ...updateQuery
     } = req.body;
 
     if(updateQuery === undefined || Object.keys(updateQuery).length == 0){

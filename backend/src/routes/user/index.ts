@@ -107,7 +107,7 @@ router.patch('/:userId', async (req: Request, res: Response) => {
         Hosts: ___,
         Alerts: ____,
         email: _____,
-        updateQuery
+        ...updateQuery
     } = req.body;
     if(res.locals.auth_user.admin && 'admin' in req.body){
         updateQuery.admin = req.body.admin;
