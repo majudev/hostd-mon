@@ -13,42 +13,42 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import {Link as RouterLink} from "react-router-dom";
 
 export const MainListItems = () => {
-	return <React.Fragment>
-			<RouterLink to="/test">
-		<ListItemButton>
+	return <>
+		<RouterLink to="/test">
+			<ListItemButton>
 				<ListItemIcon>
 					<DashboardIcon/>
 				</ListItemIcon>
 				<ListItemText>
 					test route
 				</ListItemText>
-		</ListItemButton>
-			</RouterLink>
-		<ListItemButton>
-			<ListItemIcon>
-				<ShoppingCartIcon/>
-			</ListItemIcon>
-			<ListItemText primary="Orders"/>
-		</ListItemButton>
-		<ListItemButton>
-			<ListItemIcon>
-				<PeopleIcon/>
-			</ListItemIcon>
-			<ListItemText primary="Customers"/>
-		</ListItemButton>
-		<ListItemButton>
-			<ListItemIcon>
-				<BarChartIcon/>
-			</ListItemIcon>
-			<ListItemText primary="Reports"/>
-		</ListItemButton>
-		<ListItemButton>
-			<ListItemIcon>
-				<LayersIcon/>
-			</ListItemIcon>
-			<ListItemText primary="Integrations"/>
-		</ListItemButton>
-	</React.Fragment>
+			</ListItemButton>
+		</RouterLink>
+		{/*<ListItemButton>*/}
+		{/*	<ListItemIcon>*/}
+		{/*		<ShoppingCartIcon/>*/}
+		{/*	</ListItemIcon>*/}
+		{/*	<ListItemText primary="Orders"/>*/}
+		{/*</ListItemButton>*/}
+		{/*<ListItemButton>*/}
+		{/*	<ListItemIcon>*/}
+		{/*		<PeopleIcon/>*/}
+		{/*	</ListItemIcon>*/}
+		{/*	<ListItemText primary="Customers"/>*/}
+		{/*</ListItemButton>*/}
+		{/*<ListItemButton>*/}
+		{/*	<ListItemIcon>*/}
+		{/*		<BarChartIcon/>*/}
+		{/*	</ListItemIcon>*/}
+		{/*	<ListItemText primary="Reports"/>*/}
+		{/*</ListItemButton>*/}
+		{/*<ListItemButton>*/}
+		{/*	<ListItemIcon>*/}
+		{/*		<LayersIcon/>*/}
+		{/*	</ListItemIcon>*/}
+		{/*	<ListItemText primary="Integrations"/>*/}
+		{/*</ListItemButton>*/}
+	</>
 };
 
 export const SecondaryListItems = () => {

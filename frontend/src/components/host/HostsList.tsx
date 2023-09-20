@@ -24,8 +24,8 @@ const HostsList = () => {
 		</ListSubheader>
 
 		<Box ml={2}>
-			{hosts?.map((host: Host) =>
-				<RouterLink to={`/host/${host.id}`} key={host.id}>
+			{hosts?.map((host: Host, idx) =>
+				<RouterLink to={`/host/${host.id}`} key={idx}>
 					<ListItemButton>
 						{/*<ListItemIcon>*/}
 						{/*<PeopleIcon/>*/}
