@@ -4,7 +4,7 @@ WORKDIR /frontend
 
 COPY . .
 
-RUN npm install
+RUN npm install && npm run build
 
 RUN npm install -g serve
 
