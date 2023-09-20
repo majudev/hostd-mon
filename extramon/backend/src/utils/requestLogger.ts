@@ -5,7 +5,9 @@ import logger from '../utils/logger';
  * HTTP request logger - express middleware.
  */
 const requestLogger = (req: Request, res: Response, next: NextFunction) => {
-	logger.info(req.method + ' ' + req.originalUrl);
+	const ip = req.header('CF-Connecting-IP') ?? req.ip
+
+	logger.info('[' + ip + '] ' + req.method + ' ' + req.originalUrl);
 
 	next();
 };
