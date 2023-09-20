@@ -14,7 +14,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import {MainListItems} from '@/components/demo/ListItems.tsx';
-import HostsList from '@/components/HostsList.tsx';
+import HostsList from '@/components/host/HostsList.tsx';
 import {ReactNode} from 'react';
 import Container from '@mui/material/Container';
 
