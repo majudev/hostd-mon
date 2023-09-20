@@ -28,10 +28,10 @@ router.post('/new', async (req: Request, res: Response) => {
     const request: NewHostRequest = req.body;
 
     if(request.extramonPubkey === undefined && (request.rhpAddress === undefined || request.rhpPubkey === undefined)) {
-        res.json({
+        res.status(400).json({
             status: "error",
             message: "please provide rhpAddress and rhpPubkey OR extramonPubkey",
-        }).status(400);
+        });
         return;
     }
 
@@ -125,6 +125,89 @@ router.get('/:hostId', async (req: Request, res: Response) => {
     }
 
     res.status(200).json(host).end();
+});
+
+router.patch('/:id', async (req: Request, res: Response) => {
+    if(!res.locals.authenticated){
+        res.status(401).end();
+        return;
+    }
+
+    const hostId = Number.parseInt(req.params.hostId);
+
+    if(!Number.isInteger(hostId)) {
+        res.status(400).json({
+            status: "error",
+            message: "please provide hostId",
+        });
+        return;
+    }
+
+    // User can edit only his own hosts, admin can edit everything
+    const hostOwner = await prisma.host.count({
+        where:{
+            userId: res.locals.auth_user.userId,
+            id: hostId,
+        }
+    }) > 0;
+    if(!hostOwner && !res.locals.auth_user.admin){
+        res.status(403).json({
+            status: "error",
+            message: "you don't have permissions to view this hostId",
+        }).end();
+        return;
+    }
+
+    const exists = await prisma.host.count({
+        where: {
+            id: hostId,
+        }
+    }) > 0;
+
+    if(!exists){
+        res.status(404).json({
+            status: "error",
+            message: "host with id " + hostId + " not found",
+        });
+        return;
+    }
+
+    const {
+        id: _,
+        userId: __,
+        User: ___,
+        RHPUptimeEntries: ____,
+        ExtramonUptimeEntries: _____,
+        Alerts: ______,
+        updateQuery
+    } = req.body;
+
+    /*if(updatedObject.extramonPubkey === undefined && (updatedObject.rhpAddress === undefined || updatedObject.rhpPubkey === undefined)) {
+        res.status(400).json({
+            status: "error",
+            message: "please provide rhpAddress and rhpPubkey OR extramonPubkey",
+        });
+        return;
+    }*/
+
+    const updatedObject = await prisma.host.update({
+        where: {
+            id: hostId,
+        },
+        data: updateQuery,
+        select: {
+            id: true,
+            name: true,
+            rhpAddress: true,
+            rhpPubkey: true,
+            extramonPubkey: true,
+
+            rhpDeadtime: true,
+            extramonDeadtime: true,
+        },
+    });
+
+    res.status(200).json(updatedObject).end();
 });
 
 router.get('/:hostId/alerts', async (req: Request, res: Response) => {

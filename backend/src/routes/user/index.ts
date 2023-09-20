@@ -62,6 +62,82 @@ router.get('/:id', async (req: Request, res: Response) => {
     res.status(200).json(user).end();
 });
 
+router.patch('/:id', async (req: Request, res: Response) => {
+    if(!res.locals.authenticated){
+        res.status(401).end();
+        return;
+    }
+
+    const userId: number = parseInt(req.params.id);
+
+    if(Number.isNaN(userId)) {
+        res.status(400).json({
+            status: "error",
+            message: "please provide userId",
+        });
+        return;
+    }
+
+    // User can only edit himself, admin can edit everything
+    if(userId != res.locals.auth_user.userId && !res.locals.auth_user.admin){
+        res.status(403).json({
+            status: "error",
+            message: "you don't have permissions to view this userId",
+        }).end();
+        return;
+    }
+
+    const exists = await prisma.user.count({
+        where: {
+            id: userId,
+        }
+    }) > 0;
+
+    if(!exists){
+        res.status(404).json({
+            status: "error",
+            message: "user with id " + userId + " not found",
+        });
+        return;
+    }
+
+    const {
+        id: _,
+        admin: __,
+        Hosts: ___,
+        Alerts: ____,
+        email: _____,
+        updateQuery
+    } = req.body;
+    if(res.locals.auth_user.admin && 'admin' in req.body){
+        updateQuery.admin = req.body.admin;
+    }
+
+    const updatedObject = await prisma.user.update({
+        where: {
+            id: userId,
+        },
+        data: updateQuery,
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            admin: true,
+            alertEmail: true,
+            alertPhoneNumber: true,
+            globallyDisableEmailAlerts: true,
+            globallyDisablePhoneAlerts: true,
+            Hosts: {
+                select: {
+                    id: true,
+                },
+            },
+        },
+    });
+
+    res.status(200).json(updatedObject).end();
+});
+
 router.get('/:id/hosts', async (req: Request, res: Response) => {
     if(!res.locals.authenticated){
         res.status(401).end();
