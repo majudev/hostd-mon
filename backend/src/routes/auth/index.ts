@@ -12,7 +12,7 @@ import { ClientCredentials, ResourceOwnerPassword, AuthorizationCode } from 'sim
 const router = Router();
 const prisma = new PrismaClient();
 
-const client = new AuthorizationCode({
+const google = new AuthorizationCode({
     client: {
         id: process.env.OAUTH_GOOGLE_ID as string,
         secret: process.env.OAUTH_GOOGLE_SECRET as string,
@@ -26,7 +26,7 @@ const client = new AuthorizationCode({
 });
 
 router.get('/google', async (req: Request, res: Response) => {
-    const authorizationUri = client.authorizeURL({
+    const authorizationUri = google.authorizeURL({
         redirect_uri: process.env.OAUTH_GOOGLE_CALLBACK,
         scope: 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile',
         state: randomBytes(16).toString('hex'),
@@ -44,19 +44,20 @@ router.get('/google/callback', async (req: Request, res: Response) => {
     };
 
     try {
-        const accessToken = await client.getToken(options);
+        const accessToken = await google.getToken(options);
 
-        console.log('The resulting token: ', accessToken.token);
+        //console.log('The resulting token: ', accessToken.token);
 
         const response = await fetch('https://www.googleapis.com/oauth2/v1/userinfo?access_token=' + encodeURIComponent(accessToken.token.access_token as string),{
             method: "GET",
         });
         const status = response.status;
         if(status !== 200){
-            res.status(401).json({
+            /*res.status(401).json({
                 status: "error",
                 message: "invalid OAuth2 code provided",
-            }).end();
+            }).end();*/
+            res.redirect((process.env.LOGIN_SUCCESSFUL_CALLBACK as string) + '?status=error&code=401&message=invalid+OAuth2+code+provided');
             return;
         }
         const body = await response.json();
@@ -64,12 +65,14 @@ router.get('/google/callback', async (req: Request, res: Response) => {
         const name = body.name;
 
         if(email === undefined || email === null || name === undefined || name === null){
-            fail_internal_error(res, "google returned unsupported reply");
+            //fail_internal_error(res, "google returned unsupported reply");
+            res.redirect((process.env.LOGIN_SUCCESSFUL_CALLBACK as string) + '?status=error&code=500&message=google+provided+unsupported+reply');
         }
         loginUser(req, res, email, name);
-        res.redirect(process.env.LOGIN_SUCCESSFUL_CALLBACK as string);
+        res.redirect((process.env.LOGIN_SUCCESSFUL_CALLBACK as string) + '?status=success');
     } catch (error: any) {
-      fail_internal_error(res, "authentication failed");
+      //fail_internal_error(res, "authentication failed");
+      res.redirect((process.env.LOGIN_SUCCESSFUL_CALLBACK as string) + '?status=error&code=401&message=authentication+failed');
       return;
     }
 });
