@@ -35,7 +35,7 @@ const client = new AuthorizationCode({
 router.get('/google', async (req: Request, res: Response) => {
     const authorizationUri = client.authorizeURL({
         redirect_uri: process.env.OAUTH_GOOGLE_CALLBACK,
-        scope: 'https://www.googleapis.com/auth/userinfo.profile',
+        scope: 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile',
         state: randomBytes(16).toString('hex'),
     });
 
@@ -46,7 +46,7 @@ router.get('/google/callback', async (req: Request, res: Response) => {
     const { code } = req.query;
     const options = {
         redirect_uri: process.env.OAUTH_GOOGLE_CALLBACK as string,
-        scope: 'https://www.googleapis.com/auth/userinfo.email',
+        scope: 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile',
         code: code as string,
     };
 
