@@ -20,6 +20,8 @@ model Host {
   User                  User                  @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   RHPUptimeEntries      RHPUptimeEntry[]
   ExtramonUptimeEntries ExtramonUptimeEntry[]
+
+  Alerts Alert[]
 }
 
 model RHPUptimeEntry {
@@ -48,7 +50,14 @@ model User {
   name  String? @db.VarChar(255)
   email String  @unique @db.VarChar(255)
   admin Boolean @default(false)
+
+  alertPhoneNumber String? @db.VarChar(20)
+  alertEmail String? @db.VarChar(255)
+  globallyDisablePhoneAlerts Boolean @default(false)
+  globallyDisableEmailAlerts Boolean @default(false)
+
   Hosts Host[]
+  Alerts Alert[]
 }
 
 model Satellite {
@@ -64,4 +73,17 @@ model Settings {
   id  Int @id @default(autoincrement())
   key String @db.VarChar(255) @unique
   value String @db.VarChar(255)
+}
+
+model Alert {
+  id      Int @id @default(autoincrement())
+  timestamp   DateTime  @default(now()) @db.Timestamp(6)
+  message String
+  sentTo  String[]
+
+  userId  Int
+  hostId  Int
+  User    User @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Host    Host @relation(fields: [hostId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
 }
