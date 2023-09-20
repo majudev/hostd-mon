@@ -1,8 +1,6 @@
 import express, { Request, Response } from 'express';
 import requestLogger from './utils/requestLogger';
 
-import 'dotenv/config';
-
 const app = express();
 
 app.use(express.json());
