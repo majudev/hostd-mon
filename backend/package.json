@@ -25,12 +25,14 @@
     "@types/cookie-parser": "^1.4.3",
     "@types/cors": "^2.8.13",
     "@types/jsonwebtoken": "^9.0.3",
+    "@types/simple-oauth2": "^5.0.4",
     "@types/uuid": "^9.0.4",
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
     "redis": "^4.6.8",
+    "simple-oauth2": "^5.0.0",
     "uuid": "^9.0.1",
     "winston": "^3.10.0"
   }

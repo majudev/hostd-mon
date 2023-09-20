@@ -4,6 +4,9 @@ import { PrismaClient } from '@prisma/client'
 import jwt from 'jsonwebtoken';
 import {v4 as uuidv4} from 'uuid';
 import { JWT_EXPIRATION_DAYS, JWT_SECRET } from './jwt_secret';
+import { randomBytes } from 'crypto';
+  
+import { ClientCredentials, ResourceOwnerPassword, AuthorizationCode } from 'simple-oauth2';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -15,6 +18,49 @@ interface RegisterUserRequest {
 interface LoginUserRequest {
     email: string;
 };
+
+const client = new AuthorizationCode({
+    client: {
+        id: process.env.OAUTH_GOOGLE_ID as string,
+        secret: process.env.OAUTH_GOOGLE_SECRET as string,
+    },
+    auth: {
+        tokenHost: 'https://oauth2.googleapis.com',
+        tokenPath: '/token',
+        authorizeHost: 'https://accounts.google.com',
+        authorizePath: '/o/oauth2/v2/auth',
+    },
+});
+
+router.get('/google', async (req: Request, res: Response) => {
+    const authorizationUri = client.authorizeURL({
+        redirect_uri: process.env.OAUTH_GOOGLE_CALLBACK,
+        scope: 'https://www.googleapis.com/auth/userinfo.email',
+        state: randomBytes(16).toString('hex'),
+    });
+
+    res.redirect(authorizationUri);
+});
+
+router.get('/google/callback', async (req: Request, res: Response) => {
+    const { code } = req.query;
+    const options = {
+        redirect_uri: process.env.OAUTH_GOOGLE_CALLBACK as string,
+        scope: 'https://www.googleapis.com/auth/userinfo.email',
+        code: code as string,
+    };
+
+    try {
+      const accessToken = await client.getToken(options);
+
+      console.log('The resulting token: ', accessToken.token);
+
+      return res.status(200).json(accessToken.token);
+    } catch (error: any) {
+      console.error('Access Token Error', error.message);
+      return res.status(500).json('Authentication failed');
+    }
+});
 
 router.post('/register', async (req: Request, res: Response) => {
     const request: RegisterUserRequest = req.body;
