@@ -52,10 +52,10 @@ router.post('/new', async (req: Request, res: Response) => {
     }) > 0;
 
     if(exists) {
-        res.json({
+        res.status(409).json({
             status: "error",
             message: "host with this data already exists",
-        }).status(409);
+        });
         return;
     }
 
