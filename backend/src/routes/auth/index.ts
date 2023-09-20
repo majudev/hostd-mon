@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 import {v4 as uuidv4} from 'uuid';
 import { JWT_EXPIRATION_DAYS, JWT_SECRET } from './jwt_secret';
 import { randomBytes } from 'crypto';
+import { fail_internal_error } from '../../utils/http_code_helper';
   
 import { ClientCredentials, ResourceOwnerPassword, AuthorizationCode } from 'simple-oauth2';
 
@@ -35,7 +36,7 @@ const client = new AuthorizationCode({
 router.get('/google', async (req: Request, res: Response) => {
     const authorizationUri = client.authorizeURL({
         redirect_uri: process.env.OAUTH_GOOGLE_CALLBACK,
-        scope: 'https://www.googleapis.com/auth/userinfo.email',
+        scope: 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile',
         state: randomBytes(16).toString('hex'),
     });
 
@@ -46,19 +47,38 @@ router.get('/google/callback', async (req: Request, res: Response) => {
     const { code } = req.query;
     const options = {
         redirect_uri: process.env.OAUTH_GOOGLE_CALLBACK as string,
-        scope: 'https://www.googleapis.com/auth/userinfo.email',
+        scope: 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile',
         code: code as string,
     };
 
     try {
-      const accessToken = await client.getToken(options);
+        const accessToken = await client.getToken(options);
 
-      console.log('The resulting token: ', accessToken.token);
+        console.log('The resulting token: ', accessToken.token);
 
-      return res.status(200).json(accessToken.token);
+        //return res.status(200).json(accessToken.token);
+        const response = await fetch('https://www.googleapis.com/oauth2/v1/userinfo?access_token=' + encodeURIComponent(accessToken.token.access_token as string),{
+            method: "GET",
+        });
+        const status = response.status;
+        if(status !== 200){
+            res.status(401).json({
+                status: "error",
+                message: "invalid OAuth2 code provided",
+            }).end();
+            return;
+        }
+        const body = await response.json();
+        const email = body.email;
+        const name = body.name;
+
+        res.status(200).json({
+            email: email,
+            name: name,
+        });
     } catch (error: any) {
-      console.error('Access Token Error', error.message);
-      return res.status(500).json('Authentication failed');
+      fail_internal_error(res, "Authentication failed");
+      return;
     }
 });
 
