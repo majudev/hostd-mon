@@ -189,7 +189,7 @@ router.patch('/:id', async (req: Request, res: Response) => {
         });
         return;
     }*/
-
+    
     const updatedObject = await prisma.host.update({
         where: {
             id: hostId,
