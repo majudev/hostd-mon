@@ -18,6 +18,7 @@ async function populateDB(){
     const host = await prisma.host.create({
         data: {
             userId: user.id,
+            name: 'Dummy host pubkey=' + process.argv[2],
             extramonPubkey: process.argv[2],
         }
     });
