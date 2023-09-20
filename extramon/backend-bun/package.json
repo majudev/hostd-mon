@@ -5,6 +5,9 @@
   "devDependencies": {
     "bun-types": "latest"
   },
+  "scripts": {
+    "start": "bun src/app.ts"
+  },
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
