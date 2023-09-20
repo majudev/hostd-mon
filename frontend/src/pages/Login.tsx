@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {HostDmonContext, useHostDmon} from '@/context/HostDmonContext.tsx';
 import {useNavigate} from 'react-router-dom';
 import Container from '@mui/material/Container';
@@ -11,6 +11,8 @@ import {useForm} from '@/hooks/useForm.ts';
 const Login: React.FC = () => {
 	const navigate = useNavigate();
 	const {currentUser, setCurrentUser} = useHostDmon() as HostDmonContext;
+
+	const [isLoading, setIsLoading] = useState<boolean>(false);
 
 	useEffect(() => {
 		if (currentUser) {
@@ -25,8 +27,11 @@ const Login: React.FC = () => {
 
 	const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
+		setIsLoading(true);
 
 		login(formData).then(res => {
+			setIsLoading(false);
+
 			if (res.error) {
 				return alert(res.error);
 			}
@@ -75,6 +80,7 @@ const Login: React.FC = () => {
 					type="submit"
 					fullWidth
 					variant="contained"
+					disabled={isLoading}
 					sx={{mt: 3, mb: 2}}
 				>
 					Log In

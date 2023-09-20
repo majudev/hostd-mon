@@ -31,7 +31,7 @@ const HostsList = () => {
 						{/*<PeopleIcon/>*/}
 						{/*</ListItemIcon>*/}
 						<ListItemText sx={{textAlign: 'center'}}>
-							{`Host #${host.id}`}
+							{host.name}
 						</ListItemText>
 					</ListItemButton>
 				</RouterLink>

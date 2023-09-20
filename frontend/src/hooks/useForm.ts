@@ -6,7 +6,10 @@ export function useForm<T>(initialValues: T) {
 	const handleInputChange = (
 		e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
 	) => {
-		const {name, value} = e.target;
+		const {name, value: inputValue, type} = e.target;
+
+		const isCheckbox = type === 'checkbox';
+		const checkboxValue = (e.target as HTMLInputElement)?.checked;
 
 		if (name == null || name?.length === 0) {
 			return console.error('Input field name must not be null');
@@ -14,7 +17,7 @@ export function useForm<T>(initialValues: T) {
 
 		setFormData((prevData) => ({
 			...prevData,
-			[name]: value,
+			[name]: isCheckbox ? checkboxValue : inputValue,
 		}));
 	};
 
