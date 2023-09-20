@@ -16,6 +16,10 @@ model Host {
   rhpAddress            String?               @unique @db.VarChar(255)
   rhpPubkey             String?               @unique @db.VarChar(255)
   extramonPubkey        String?               @unique @db.VarChar(255)
+
+  rhpDeadtime           Int                   @default(300)
+  extramonDeadtime      Int                   @default(300)
+
   userId                Int
   User                  User                  @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   RHPUptimeEntries      RHPUptimeEntry[]
