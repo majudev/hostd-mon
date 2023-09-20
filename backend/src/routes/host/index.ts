@@ -41,17 +41,17 @@ router.post('/new', async (req: Request, res: Response) => {
         return;
     }
 
-    if(request.rhpAddress !== null && await prisma.host.count({ where: { rhpAddress: request.rhpAddress } }) > 0){
+    if(request.rhpAddress !== undefined && await prisma.host.count({ where: { rhpAddress: request.rhpAddress } }) > 0){
         fail_duplicate_entry(res, "rhpAddress", null);
         return;
     }
 
-    if(request.rhpPubkey !== null && await prisma.host.count({ where: { rhpPubkey: request.rhpPubkey } }) > 0){
+    if(request.rhpPubkey !== undefined && await prisma.host.count({ where: { rhpPubkey: request.rhpPubkey } }) > 0){
         fail_duplicate_entry(res, "rhpPubkey", null);
         return;
     }
 
-    if(request.extramonPubkey !== null && await prisma.host.count({ where: { rhpPubkey: request.extramonPubkey } }) > 0){
+    if(request.extramonPubkey !== undefined && await prisma.host.count({ where: { rhpPubkey: request.extramonPubkey } }) > 0){
         fail_duplicate_entry(res, "extramonPubkey", null);
         return;
     }
