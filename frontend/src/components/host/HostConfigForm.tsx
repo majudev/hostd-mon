@@ -110,10 +110,10 @@ const HostConfigForm: React.FC<HostConfigFormProps> = ({
 			/>
 
 			<FormControl disabled={!formData.sia} required={formData.sia} fullWidth sx={{my: 2}}>
-				<InputLabel id="deadTime">rhp dead time</InputLabel>
+				<InputLabel id="rhpDeadtime">rhp dead time</InputLabel>
 				<Select
 					labelId="demo-simple-select-label"
-					id="deadTime"
+					id="rhpDeadtime"
 					value={formData.rhpDeadtime}
 					label="rhp dead time"
 					onChange={(event: SelectChangeEvent<number>) => {
@@ -157,10 +157,10 @@ const HostConfigForm: React.FC<HostConfigFormProps> = ({
 			<Divider/>
 
 			<FormControl disabled={!formData.extramon} required={formData.extramon} fullWidth sx={{my: 2}}>
-				<InputLabel id="deadTime">Extramon dead time</InputLabel>
+				<InputLabel id="extramonDeadtime">Extramon dead time</InputLabel>
 				<Select
 					labelId="demo-simple-select-label"
-					id="deadTime"
+					id="extramonDeadtime"
 					value={formData.extramonDeadtime}
 					label="Extramon dead time"
 					onChange={(event: SelectChangeEvent<number>) => {
