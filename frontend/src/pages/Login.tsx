@@ -7,7 +7,6 @@ import { Box, Button, TextField, Typography} from '@mui/material';
 import {login} from '@/api/auth';
 import User from '@/types/User.ts';
 import {useForm} from '@/hooks/useForm.ts';
-import {ApiResponse} from '@/api';
 
 const Login: React.FC = () => {
 	const navigate = useNavigate();
@@ -30,15 +29,18 @@ const Login: React.FC = () => {
 		event.preventDefault();
 		setIsLoading(true);
 
-		login(formData).then((res: ApiResponse<User>) => {
+		login(formData).then(res => {
 			setIsLoading(false);
 
-			if (res.status === 'success') {
-				return setCurrentUser(res.data);
+			if (res?.status === 'success') {
+				return setCurrentUser(res?.data);
 			}
 		}).catch(error => {
 			console.error(error);
-			alert(error?.response?.data?.message ?? 'Server error');
+			const {data} = error?.response;
+			if (data == null) return;
+
+			alert(data?.message ?? error ?? 'Server error');
 			setIsLoading(false);
 		});
 	};
