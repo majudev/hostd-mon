@@ -69,4 +69,59 @@ router.post('/new', async (req: Request, res: Response) => {
 	}).status(201);
 });
 
+router.get('/:hostId', async (req: Request, res: Response) => {
+    if(!res.locals.authenticated){
+        res.status(401).end();
+        return;
+    }
+
+    const hostId = Number.parseInt(req.params.hostId);
+
+    if(!Number.isInteger(hostId)) {
+        res.status(400).json({
+            status: "error",
+            message: "please provide hostId",
+        });
+        return;
+    }
+
+    // User can view only his own hosts, admin can view everything
+    const hostOwner = await prisma.host.count({
+        where:{
+            userId: res.locals.auth_user.userId,
+            id: hostId,
+        }
+    }) > 0;
+    if(!hostOwner && !res.locals.auth_user.admin){
+        res.status(403).json({
+            status: "error",
+            message: "you don't have permissions to view this hostId",
+        }).end();
+        return;
+    }
+
+    const host = await prisma.host.findFirst({
+        where: {
+            id: hostId,
+        },
+        select: {
+            id: true,
+            name: true,
+            rhpAddress: true,
+            rhpPubkey: true,
+            extramonPubkey: true,
+        },
+    });
+
+    if(host === null){
+        res.status(404).json({
+            status: "error",
+            message: "host with id " + hostId + " not found",
+        });
+        return;
+    }
+
+    res.status(200).json(host).end();
+});
+
 export default router;

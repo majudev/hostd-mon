@@ -12,9 +12,10 @@ datasource db {
 
 model Host {
   id                    Int                   @id @default(autoincrement())
+  name                  String                @db.VarChar(255)
   rhpAddress            String?               @unique @db.VarChar(255)
-  rhpPubkey             String?               @unique
-  extramonPubkey        String?               @unique
+  rhpPubkey             String?               @unique @db.VarChar(255)
+  extramonPubkey        String?               @unique @db.VarChar(255)
   userId                Int
   User                  User                  @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   RHPUptimeEntries      RHPUptimeEntry[]
