@@ -182,6 +182,14 @@ router.patch('/:hostId', async (req: Request, res: Response) => {
         updateQuery
     } = req.body;
 
+    if(updateQuery === undefined || Object.keys(updateQuery).length == 0){
+        res.status(400).json({
+            status: "error",
+            message: "bad body provided",
+        });
+        return;
+    }
+
     /*if(updatedObject.extramonPubkey === undefined && (updatedObject.rhpAddress === undefined || updatedObject.rhpPubkey === undefined)) {
         res.status(400).json({
             status: "error",

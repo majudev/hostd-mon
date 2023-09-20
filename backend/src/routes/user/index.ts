@@ -113,6 +113,14 @@ router.patch('/:userId', async (req: Request, res: Response) => {
         updateQuery.admin = req.body.admin;
     }
 
+    if(updateQuery === undefined || Object.keys(updateQuery).length == 0){
+        res.status(400).json({
+            status: "error",
+            message: "bad body provided",
+        });
+        return;
+    }
+
     const updatedObject = await prisma.user.update({
         where: {
             id: userId,
