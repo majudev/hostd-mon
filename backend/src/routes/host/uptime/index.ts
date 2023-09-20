@@ -38,8 +38,10 @@ router.get('/period/:from/:to', async (req: Request, res: Response) => {
         return;
     }
 
-    const from: Date = new Date(req.params.from);
-    const to: Date = (req.params.to == 'now') ? new Date() : new Date(req.params.to);
+    const fromNumber = Number.parseInt(req.params.from);
+    const toNumber = Number.parseInt(req.params.to);
+    const from: Date = new Date(fromNumber);
+    const to: Date = (req.params.to == 'now') ? new Date() : new Date(toNumber);
 
     if(req.params.to === undefined || typeof req.params.to !== 'string' || isNaN(from.valueOf()) || req.params.from === undefined || typeof req.params.from !== 'string' || isNaN(to.valueOf())){
         res.status(400).json({
