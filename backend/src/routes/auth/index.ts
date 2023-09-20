@@ -92,6 +92,7 @@ router.post('/login', async (req: Request, res: Response) => {
     res.cookie("SIAWATCH_COOKIE", authToken, {
         secure: true,
         httpOnly: true,
+        sameSite: "strict",
         expires: expirationDate,
     });
 
