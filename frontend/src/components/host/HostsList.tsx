@@ -5,8 +5,8 @@ import AddIcon from '@mui/icons-material/Add';
 import ListItemText from '@mui/material/ListItemText';
 import {HostDmonContext, useHostDmon} from '@/context/HostDmonContext.tsx';
 import {Box, Button} from '@mui/material';
-import {Link as RouterLink} from "react-router-dom";
 import Host from '@/types/Host.ts';
+import RouterLink from '@/components/RouterLink.tsx';
 
 const HostsList = () => {
 	const {hosts} = useHostDmon() as HostDmonContext;
