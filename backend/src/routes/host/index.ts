@@ -9,12 +9,6 @@ const prisma = new PrismaClient();
 
 router.use('/:hostId/uptime', uptimeRouter);
 
-interface NewHostRequest {
-    rhpAddress: string | undefined;
-    rhpPubkey: string | undefined;
-    extramonPubkey: string | undefined;
-};
-
 interface LoginUserRequest {
     email: string;
 };
@@ -25,7 +19,15 @@ router.post('/new', async (req: Request, res: Response) => {
         return;
     }
 
-    const request: NewHostRequest = req.body;
+    const {
+        id: _,
+        userId: __,
+        User: ___,
+        RHPUptimeEntries: ____,
+        ExtramonUptimeEntries: _____,
+        Alerts: ______,
+        request
+    } = req.body;
 
     if(request.extramonPubkey === undefined && (request.rhpAddress === undefined || request.rhpPubkey === undefined)) {
         res.status(400).json({
@@ -35,7 +37,7 @@ router.post('/new', async (req: Request, res: Response) => {
         return;
     }
 
-    /*const exists = await prisma.host.count({
+    const exists = await prisma.host.count({
         where: {
             OR: [
                 {
@@ -55,18 +57,16 @@ router.post('/new', async (req: Request, res: Response) => {
             message: "host with this data already exists",
         }).status(409);
         return;
-    }*/
+    }
 
-    /*await prisma.host.create({
-        data: {
-            email: request.email,
-            name: null,
-        },
-    });*/
+    const host = await prisma.host.create({
+        data: request,
+    });
 
-	res.json({
+	res.status(201).json({
 		status: "success",
-	}).status(201);
+        host: host,
+	});
 });
 
 router.get('/:hostId', async (req: Request, res: Response) => {
@@ -189,7 +189,7 @@ router.patch('/:id', async (req: Request, res: Response) => {
         });
         return;
     }*/
-    
+
     const updatedObject = await prisma.host.update({
         where: {
             id: hostId,
