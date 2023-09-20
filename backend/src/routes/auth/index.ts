@@ -12,14 +12,6 @@ import { ClientCredentials, ResourceOwnerPassword, AuthorizationCode } from 'sim
 const router = Router();
 const prisma = new PrismaClient();
 
-interface RegisterUserRequest {
-    email: string;
-};
-
-interface LoginUserRequest {
-    email: string;
-};
-
 const client = new AuthorizationCode({
     client: {
         id: process.env.OAUTH_GOOGLE_ID as string,
@@ -56,7 +48,6 @@ router.get('/google/callback', async (req: Request, res: Response) => {
 
         console.log('The resulting token: ', accessToken.token);
 
-        //return res.status(200).json(accessToken.token);
         const response = await fetch('https://www.googleapis.com/oauth2/v1/userinfo?access_token=' + encodeURIComponent(accessToken.token.access_token as string),{
             method: "GET",
         });
@@ -72,17 +63,61 @@ router.get('/google/callback', async (req: Request, res: Response) => {
         const email = body.email;
         const name = body.name;
 
-        res.status(200).json({
-            email: email,
-            name: name,
-        });
+        if(email === undefined || email === null || name === undefined || name === null){
+            fail_internal_error(res, "google returned unsupported reply");
+        }
+        loginUser(req, res, email, name);
+        res.redirect(process.env.LOGIN_SUCCESSFUL_CALLBACK as string);
     } catch (error: any) {
-      fail_internal_error(res, "Authentication failed");
+      fail_internal_error(res, "authentication failed");
       return;
     }
 });
 
-router.post('/register', async (req: Request, res: Response) => {
+async function loginUser(req: Request, res: Response, email: string, name: string){
+    var userObject = await prisma.user.findFirst({
+        select: {
+            id: true,
+            email: true,
+            admin: true,
+        },
+        where: {
+            email: email,
+        }
+    });
+
+    if(userObject === null) {
+        userObject = await prisma.user.create({
+            data: {
+                email: email,
+                name: name,
+            },
+        });
+    }
+
+    var authToken = await jwt.sign({
+        id: uuidv4(),
+        userId: userObject.id,
+        email: userObject.email,
+        admin: userObject.admin,
+    }, await JWT_SECRET(), {
+        expiresIn: (await JWT_EXPIRATION_DAYS()) + "d",
+    });
+
+    const expirationDate = new Date();
+    expirationDate.setDate(expirationDate.getDate() + Number.parseInt(await JWT_EXPIRATION_DAYS()));
+    res.cookie("SIAWATCH_COOKIE", authToken, {
+        secure: true,
+        httpOnly: true,
+        sameSite: "strict",
+        expires: expirationDate,
+    });
+
+    return userObject;
+}
+
+/// TODO: Delete this endpoint
+/*router.post('/register', async (req: Request, res: Response) => {
     const request: RegisterUserRequest = req.body;
 
     if(request.email === undefined) {
@@ -118,12 +153,19 @@ router.post('/register', async (req: Request, res: Response) => {
 		status: "success",
         data: null,
 	});
-});
+});*/
 
+/// TODO: delete this endpoint
 router.post('/login', async (req: Request, res: Response) => {
-    const request: LoginUserRequest = req.body;
+//    const request: LoginUserRequest = req.body;
 
-    const userObject = await prisma.user.findFirst({
+    const userObject = loginUser(req, res, req.body.email, req.body.email);
+    res.status(200).json({
+		status: "success",
+        data: userObject,
+	});
+
+    /*const userObject = await prisma.user.findFirst({
         select: {
             id: true,
             email: true,
@@ -165,7 +207,7 @@ router.post('/login', async (req: Request, res: Response) => {
 	res.status(200).json({
 		status: "success",
         data: userObject,
-	});
+	});*/
 });
 
 export default router;
