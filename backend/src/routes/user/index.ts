@@ -82,7 +82,7 @@ router.patch('/:userId', async (req: Request, res: Response) => {
     if(userId != res.locals.auth_user.userId && !res.locals.auth_user.admin){
         res.status(403).json({
             status: "error",
-            message: "you don't have permissions to view this userId",
+            message: "you don't have permissions to edit this userId",
         }).end();
         return;
     }
