@@ -16,10 +16,7 @@ export function check_login(res: Response): boolean{
 }
 
 export function fail_missing_params(res: Response, missingFields: String[], message: String | null){
-    var msg = '';
-    for(var i = 0; i < missingFields.length; ++i){
-        msg += missingFields[i] + ', ';
-    }
+    const msg = missingFields.join(', ')
 
     res.status(400).json({
         status: "error",
