@@ -1,0 +1,17 @@
+{
+  "name": "extramon-backend",
+  "module": "src/app.ts",
+  "type": "module",
+  "devDependencies": {
+    "bun-types": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "redis": "^4.6.9",
+    "secp256k1": "^5.0.0",
+    "winston": "^3.10.0"
+  }
+}
