@@ -23,7 +23,8 @@ const EditHost: React.FC = () => {
 			rhpPubkey: hostToEdit.rhpPubkey ?? '',
 			extramon: hostToEdit.extramonPubkey != null && hostToEdit.extramonPubkey !== '',
 			extramonPubkey: hostToEdit.extramonPubkey ?? '',
-			deadTime: 300
+			rhpDeadtime: hostToEdit.rhpDeadtime ?? 300,
+			extramonDeadtime: hostToEdit.extramonDeadtime ?? 300
 		});
 
 		return () => {

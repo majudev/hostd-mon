@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import Divider from '@mui/material/Divider';
 
-export type HostConfigFormFields = Omit<Host, 'id'> & { sia: boolean, extramon: boolean, deadTime: number };
+export type HostConfigFormFields = Omit<Host, 'id'> & { sia: boolean, extramon: boolean };
 
 type HostConfigFormProps = React.ComponentProps<'form'> & {
 	handleSubmit?: (formData: HostConfigFormFields) => any,
@@ -34,7 +34,8 @@ const HostConfigForm: React.FC<HostConfigFormProps> = ({
 		rhpPubkey: '',
 		extramon: false,
 		extramonPubkey: '',
-		deadTime: 300
+		rhpDeadtime: 300,
+		extramonDeadtime: 300
 	});
 
 	useEffect(() => {
@@ -70,7 +71,7 @@ const HostConfigForm: React.FC<HostConfigFormProps> = ({
 				onChange={handleInputChange}
 				value={formData.name}
 				fullWidth
-				sx={{mb: 2}}
+				sx={{mb: 2, mt: 1}}
 			/>
 
 			<Divider/>
@@ -108,6 +109,29 @@ const HostConfigForm: React.FC<HostConfigFormProps> = ({
 				sx={{mb: 2}}
 			/>
 
+			<FormControl disabled={!formData.sia} required={formData.sia} fullWidth sx={{my: 2}}>
+				<InputLabel id="deadTime">rhp dead time</InputLabel>
+				<Select
+					labelId="demo-simple-select-label"
+					id="deadTime"
+					value={formData.rhpDeadtime}
+					label="rhp dead time"
+					onChange={(event: SelectChangeEvent<number>) => {
+						setNewFormValues({
+							...formData,
+							rhpDeadtime: event.target.value as number
+						});
+					}}
+				>
+					<MenuItem value={300}>5 min</MenuItem>
+					<MenuItem value={900}>10 min</MenuItem>
+					<MenuItem value={1800}>15 min</MenuItem>
+					<MenuItem value={3600}>1 hr</MenuItem>
+					<MenuItem value={7200}>2 hrs</MenuItem>
+					<MenuItem value={10800}>3 hrs</MenuItem>
+				</Select>
+			</FormControl>
+
 			<Divider/>
 
 			<FormControlLabel control={
@@ -132,17 +156,17 @@ const HostConfigForm: React.FC<HostConfigFormProps> = ({
 
 			<Divider/>
 
-			<FormControl required fullWidth sx={{my: 2}}>
-				<InputLabel id="deadTime">Dead time</InputLabel>
+			<FormControl disabled={!formData.extramon} required={formData.extramon} fullWidth sx={{my: 2}}>
+				<InputLabel id="deadTime">Extramon dead time</InputLabel>
 				<Select
 					labelId="demo-simple-select-label"
 					id="deadTime"
-					value={formData.deadTime}
-					label="Dead time"
+					value={formData.extramonDeadtime}
+					label="Extramon dead time"
 					onChange={(event: SelectChangeEvent<number>) => {
 						setNewFormValues({
 							...formData,
-							deadTime: event.target.value as number
+							extramonDeadtime: event.target.value as number
 						});
 					}}
 				>
