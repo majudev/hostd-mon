@@ -29,6 +29,11 @@ router.post('/new', async (req: Request, res: Response) => {
         ...request
     } = req.body;
 
+    request.userId = res.locals.auth_user.userId;
+    if(res.locals.auth_user.admin && req.body.userId !== undefined){
+        request.userId = req.body.userId;
+    }
+
     if(request.extramonPubkey === undefined && (request.rhpAddress === undefined || request.rhpPubkey === undefined)) {
         res.status(400).json({
             status: "error",
