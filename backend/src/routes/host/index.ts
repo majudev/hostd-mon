@@ -51,7 +51,7 @@ router.post('/new', async (req: Request, res: Response) => {
         return;
     }
 
-    if(request.extramonPubkey !== undefined && await prisma.host.count({ where: { rhpPubkey: request.extramonPubkey } }) > 0){
+    if(request.extramonPubkey !== undefined && await prisma.host.count({ where: { extramonPubkey: request.extramonPubkey } }) > 0){
         fail_duplicate_entry(res, "extramonPubkey", null);
         return;
     }
@@ -168,12 +168,12 @@ router.patch('/:hostId', async (req: Request, res: Response) => {
         return;
     }
 
-    if(updateQuery.rhpPubkey !== undefined && updateQuery.rhpPubkey !== null && await prisma.host.count({ where: { AND: [{rhpAddress: updateQuery.rhpPubkey},{id: {not: hostId}}] } }) > 0){
+    if(updateQuery.rhpPubkey !== undefined && updateQuery.rhpPubkey !== null && await prisma.host.count({ where: { AND: [{rhpPubkey: updateQuery.rhpPubkey},{id: {not: hostId}}] } }) > 0){
         fail_duplicate_entry(res, "rhpPubkey", null);
         return;
     }
 
-    if(updateQuery.extramonPubkey !== undefined && updateQuery.extramonPubkey !== null && await prisma.host.count({ where: { AND: [{rhpAddress: updateQuery.extramonPubkey},{id: {not: hostId}}] } }) > 0){
+    if(updateQuery.extramonPubkey !== undefined && updateQuery.extramonPubkey !== null && await prisma.host.count({ where: { AND: [{extramonPubkey: updateQuery.extramonPubkey},{id: {not: hostId}}] } }) > 0){
         fail_duplicate_entry(res, "extramonPubkey", null);
         return;
     }
