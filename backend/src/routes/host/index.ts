@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import logger from '../../utils/logger';
 import { PrismaClient } from '@prisma/client'
+import { check_login, fail_missing_params, fail_no_permissions, fail_entity_not_found, fail_duplicate_entry } from '../../utils/http_code_helper';
 
 import uptimeRouter from './uptime';
 
@@ -10,10 +11,7 @@ const prisma = new PrismaClient();
 router.use('/:hostId/uptime', uptimeRouter);
 
 router.post('/new', async (req: Request, res: Response) => {
-    if(!res.locals.authenticated){
-        res.status(401).end();
-        return;
-    }
+    if(!check_login(res)) return;
 
     const {
         id: _,
@@ -26,7 +24,11 @@ router.post('/new', async (req: Request, res: Response) => {
     } = req.body;
 
     request.userId = res.locals.auth_user.userId;
-    if(res.locals.auth_user.admin && req.body.userId !== undefined){
+    if(req.body.userId !== undefined && req.body.userId != request.userId){
+        if(!res.locals.auth_user.admin){
+            fail_no_permissions(res, "you don't have permissions to create new host for this userId");
+            return;
+        }
         request.userId = req.body.userId;
     }
 
@@ -35,32 +37,22 @@ router.post('/new', async (req: Request, res: Response) => {
     if(request.rhpAddress === null) request.rhpAddress = undefined;
 
     if(request.extramonPubkey === undefined && (request.rhpAddress === undefined || request.rhpPubkey === undefined)) {
-        res.status(400).json({
-            status: "error",
-            message: "please provide rhpAddress and rhpPubkey OR extramonPubkey",
-        });
+        fail_missing_params(res, ["extramonPubkey", "rhpAddress", "rhpPubkey"], "please provide either pair of rhpAddress AND rhpPubkey; OR extramonPubkey");
         return;
     }
 
-    const exists = await prisma.host.count({
-        where: {
-            OR: [
-                {
-                    rhpAddress: request.rhpAddress,
-                    rhpPubkey: request.rhpPubkey,
-                },
-                {
-                    extramonPubkey: request.extramonPubkey,
-                }
-            ]
-        }
-    }) > 0;
+    if(await prisma.host.count({ where: { rhpAddress: request.rhpAddress } }) > 0){
+        fail_duplicate_entry(res, "rhpAddress", null);
+        return;
+    }
 
-    if(exists) {
-        res.status(409).json({
-            status: "error",
-            message: "host with this data already exists",
-        });
+    if(await prisma.host.count({ where: { rhpPubkey: request.rhpPubkey } }) > 0){
+        fail_duplicate_entry(res, "rhpPubkey", null);
+        return;
+    }
+
+    if(await prisma.host.count({ where: { rhpPubkey: request.extramonPubkey } }) > 0){
+        fail_duplicate_entry(res, "extramonPubkey", null);
         return;
     }
 
@@ -70,23 +62,17 @@ router.post('/new', async (req: Request, res: Response) => {
 
 	res.status(201).json({
 		status: "success",
-        host: host,
+        data: host,
 	});
 });
 
 router.get('/:hostId', async (req: Request, res: Response) => {
-    if(!res.locals.authenticated){
-        res.status(401).end();
-        return;
-    }
+    if(!check_login(res)) return;
 
     const hostId = Number.parseInt(req.params.hostId);
 
     if(!Number.isInteger(hostId)) {
-        res.status(400).json({
-            status: "error",
-            message: "please provide hostId",
-        });
+        fail_missing_params(res, ["hostId"], null);
         return;
     }
 
@@ -98,10 +84,7 @@ router.get('/:hostId', async (req: Request, res: Response) => {
         }
     }) > 0;
     if(!hostOwner && !res.locals.auth_user.admin){
-        res.status(403).json({
-            status: "error",
-            message: "you don't have permissions to view this hostId",
-        }).end();
+        fail_no_permissions(res, "you don't have permissions to view this hostId");
         return;
     }
 
@@ -122,29 +105,23 @@ router.get('/:hostId', async (req: Request, res: Response) => {
     });
 
     if(host === null){
-        res.status(404).json({
-            status: "error",
-            message: "host with id " + hostId + " not found",
-        });
+        fail_entity_not_found(res, "host with id " + hostId + " not found");
         return;
     }
 
-    res.status(200).json(host).end();
+    res.status(200).json({
+        status: "success",
+        data: host
+    }).end();
 });
 
 router.patch('/:hostId', async (req: Request, res: Response) => {
-    if(!res.locals.authenticated){
-        res.status(401).end();
-        return;
-    }
+    if(!check_login(res)) return;
 
     const hostId = Number.parseInt(req.params.hostId);
 
     if(!Number.isInteger(hostId)) {
-        res.status(400).json({
-            status: "error",
-            message: "please provide hostId",
-        });
+        fail_missing_params(res, ["hostId"], null);
         return;
     }
 
@@ -156,10 +133,7 @@ router.patch('/:hostId', async (req: Request, res: Response) => {
         }
     }) > 0;
     if(!hostOwner && !res.locals.auth_user.admin){
-        res.status(403).json({
-            status: "error",
-            message: "you don't have permissions to edit this hostId",
-        }).end();
+        fail_no_permissions(res, "you don't have permissions to edit this hostId");
         return;
     }
 
@@ -170,10 +144,7 @@ router.patch('/:hostId', async (req: Request, res: Response) => {
     }) > 0;
 
     if(!exists){
-        res.status(404).json({
-            status: "error",
-            message: "host with id " + hostId + " not found",
-        });
+        fail_entity_not_found(res, "host with id " + hostId + " not found");
         return;
     }
 
@@ -188,10 +159,22 @@ router.patch('/:hostId', async (req: Request, res: Response) => {
     } = req.body;
 
     if(updateQuery === undefined || Object.keys(updateQuery).length == 0){
-        res.status(400).json({
-            status: "error",
-            message: "bad body provided",
-        });
+        fail_missing_params(res, [], "no body provided");
+        return;
+    }
+
+    if(await prisma.host.count({ where: { AND: [{rhpAddress: updateQuery.rhpAddress},{id: {not: hostId}}] } }) > 0){
+        fail_duplicate_entry(res, "rhpAddress", null);
+        return;
+    }
+
+    if(await prisma.host.count({ where: { AND: [{rhpAddress: updateQuery.rhpPubkey},{id: {not: hostId}}] } }) > 0){
+        fail_duplicate_entry(res, "rhpPubkey", null);
+        return;
+    }
+
+    if(await prisma.host.count({ where: { AND: [{rhpAddress: updateQuery.extramonPubkey},{id: {not: hostId}}] } }) > 0){
+        fail_duplicate_entry(res, "extramonPubkey", null);
         return;
     }
 
@@ -220,22 +203,19 @@ router.patch('/:hostId', async (req: Request, res: Response) => {
         },
     });
 
-    res.status(200).json(updatedObject).end();
+    res.status(200).json({
+        status: "success",
+        data: updatedObject
+    }).end();
 });
 
 router.get('/:hostId/alerts', async (req: Request, res: Response) => {
-    if(!res.locals.authenticated){
-        res.status(401).end();
-        return;
-    }
+    if(!check_login(res)) return;
 
     const hostId = Number.parseInt(req.params.hostId);
 
     if(!Number.isInteger(hostId)) {
-        res.status(400).json({
-            status: "error",
-            message: "please provide hostId",
-        });
+        fail_missing_params(res, ["hostId"], null);
         return;
     }
 
@@ -247,10 +227,7 @@ router.get('/:hostId/alerts', async (req: Request, res: Response) => {
         }
     }) > 0;
     if(!hostOwner && !res.locals.auth_user.admin){
-        res.status(403).json({
-            status: "error",
-            message: "you don't have permissions to view this hostId",
-        }).end();
+        fail_no_permissions(res, "you don't have permissions to view this hostId");
         return;
     }
 
@@ -272,22 +249,19 @@ router.get('/:hostId/alerts', async (req: Request, res: Response) => {
         },
     });
 
-    res.status(200).json(alerts).end();
+    res.status(200).json({
+        status: "success",
+        data: alerts
+    }).end();
 });
 
 router.delete('/:hostId', async (req: Request, res: Response) => {
-    if(!res.locals.authenticated){
-        res.status(401).end();
-        return;
-    }
+    if(!check_login(res)) return;
 
     const hostId = Number.parseInt(req.params.hostId);
 
     if(!Number.isInteger(hostId)) {
-        res.status(400).json({
-            status: "error",
-            message: "please provide hostId",
-        });
+        fail_missing_params(res, ["hostId"], null);
         return;
     }
 
@@ -299,10 +273,7 @@ router.delete('/:hostId', async (req: Request, res: Response) => {
         }
     }) > 0;
     if(!hostOwner && !res.locals.auth_user.admin){
-        res.status(403).json({
-            status: "error",
-            message: "you don't have permissions to delete this hostId",
-        }).end();
+        fail_no_permissions(res, "you don't have permissions to delete this hostId");
         return;
     }
 
@@ -312,7 +283,10 @@ router.delete('/:hostId', async (req: Request, res: Response) => {
         },
     });
 
-    res.status(204).end();
+    res.status(204).json({
+        status: "success",
+        data: null,
+    }).end();
 });
 
 export default router;

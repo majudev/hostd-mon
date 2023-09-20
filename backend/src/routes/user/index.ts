@@ -1,32 +1,24 @@
 import { Router, Request, Response } from 'express';
 import logger from '../../utils/logger';
 import { PrismaClient } from '@prisma/client'
+import { check_login, fail_missing_params, fail_no_permissions, fail_entity_not_found } from '../../utils/http_code_helper';
 
 const router = Router();
 const prisma = new PrismaClient();
 
 router.get('/:id', async (req: Request, res: Response) => {
-    if(!res.locals.authenticated){
-        res.status(401).end();
-        return;
-    }
+    if(!check_login(res)) return;
 
     const userId: number = parseInt(req.params.id);
 
     if(Number.isNaN(userId)) {
-        res.status(400).json({
-            status: "error",
-            message: "please provide userId",
-        });
+        fail_missing_params(res, ["userId"], null);
         return;
     }
 
     // User can only view his hosts, admin can view everything
     if(userId != res.locals.auth_user.userId && !res.locals.auth_user.admin){
-        res.status(403).json({
-            status: "error",
-            message: "you don't have permissions to view this userId",
-        }).end();
+        fail_no_permissions(res, "you don't have permissions to view this userId");
         return;
     }
 
@@ -52,38 +44,29 @@ router.get('/:id', async (req: Request, res: Response) => {
     });
 
     if(user === null){
-        res.status(404).json({
-            status: "error",
-            message: "user with id " + userId + " not found",
-        });
+        fail_entity_not_found(res, "user with id " + userId + " not found");
         return;
     }
 
-    res.status(200).json(user).end();
+    res.status(200).json({
+        status: "success",
+        data: user
+    }).end();
 });
 
 router.patch('/:userId', async (req: Request, res: Response) => {
-    if(!res.locals.authenticated){
-        res.status(401).end();
-        return;
-    }
+    if(!check_login(res)) return;
 
     const userId: number = parseInt(req.params.userId);
 
     if(Number.isNaN(userId)) {
-        res.status(400).json({
-            status: "error",
-            message: "please provide userId",
-        });
+        fail_missing_params(res, ["userId"], null);
         return;
     }
 
     // User can only edit himself, admin can edit everything
     if(userId != res.locals.auth_user.userId && !res.locals.auth_user.admin){
-        res.status(403).json({
-            status: "error",
-            message: "you don't have permissions to edit this userId",
-        }).end();
+        fail_no_permissions(res, "you don't have permissions to edit this userId");
         return;
     }
 
@@ -94,10 +77,7 @@ router.patch('/:userId', async (req: Request, res: Response) => {
     }) > 0;
 
     if(!exists){
-        res.status(404).json({
-            status: "error",
-            message: "user with id " + userId + " not found",
-        });
+        fail_entity_not_found(res, "user with id " + userId + " not found");
         return;
     }
 
@@ -114,10 +94,7 @@ router.patch('/:userId', async (req: Request, res: Response) => {
     }
 
     if(updateQuery === undefined || Object.keys(updateQuery).length == 0){
-        res.status(400).json({
-            status: "error",
-            message: "bad body provided",
-        });
+        fail_missing_params(res, [], "no body provided");
         return;
     }
 
@@ -143,31 +120,25 @@ router.patch('/:userId', async (req: Request, res: Response) => {
         },
     });
 
-    res.status(200).json(updatedObject).end();
+    res.status(200).json({
+        status: "success",
+        data: updatedObject
+    }).end();
 });
 
 router.get('/:id/hosts', async (req: Request, res: Response) => {
-    if(!res.locals.authenticated){
-        res.status(401).end();
-        return;
-    }
+    if(!check_login(res)) return;
 
     const userId: number = parseInt(req.params.id);
 
     if(Number.isNaN(userId)) {
-        res.status(400).json({
-            status: "error",
-            message: "please provide userId",
-        });
+        fail_missing_params(res, ["userId"], null);
         return;
     }
 
     // User can only view his hosts, admin can view everything
     if(userId != res.locals.auth_user.userId && !res.locals.auth_user.admin){
-        res.status(403).json({
-            status: "error",
-            message: "you don't have permissions to view this userId",
-        }).end();
+        fail_no_permissions(res, "you don't have permissions to view this userId");
         return;
     }
 
@@ -189,38 +160,29 @@ router.get('/:id/hosts', async (req: Request, res: Response) => {
     });
 
     if(user === null){
-        res.status(404).json({
-            status: "error",
-            message: "user with id " + userId + " not found",
-        });
+        fail_entity_not_found(res, "user with id " + userId + " not found");
         return;
     }
 
-    res.status(200).json(user.Hosts).end();
+    res.status(200).json({
+        status: "success",
+        data: user.Hosts
+    }).end();
 });
 
 router.get('/:id/alerts', async (req: Request, res: Response) => {
-    if(!res.locals.authenticated){
-        res.status(401).end();
-        return;
-    }
+    if(!check_login(res)) return;
 
     const userId: number = parseInt(req.params.id);
 
     if(Number.isNaN(userId)) {
-        res.status(400).json({
-            status: "error",
-            message: "please provide userId",
-        });
+        fail_missing_params(res, ["userId"], null);
         return;
     }
 
     // User can only view his hosts, admin can view everything
     if(userId != res.locals.auth_user.userId && !res.locals.auth_user.admin){
-        res.status(403).json({
-            status: "error",
-            message: "you don't have permissions to view this userId",
-        }).end();
+        fail_no_permissions(res, "you don't have permissions to view this userId");
         return;
     }
 
@@ -242,7 +204,10 @@ router.get('/:id/alerts', async (req: Request, res: Response) => {
         },
     });
 
-    res.status(200).json(alerts).end();
+    res.status(200).json({
+        status: "success",
+        data: alerts
+    }).end();
 });
 
 export default router;

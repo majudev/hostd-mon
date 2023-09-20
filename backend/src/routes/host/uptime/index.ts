@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import logger from '../../../utils/logger';
 import { PrismaClient } from '@prisma/client'
+import { check_login, fail_missing_params, fail_no_permissions, fail_entity_not_found, fail_internal_error } from '../../../utils/http_code_helper';
 
 const router = Router({
     mergeParams: true
@@ -8,18 +9,12 @@ const router = Router({
 const prisma = new PrismaClient();
 
 router.get('/period/:from/:to', async (req: Request, res: Response) => {
-    if(!res.locals.authenticated){
-        res.status(401).end();
-        return;
-    }
+    if(!check_login(res)) return;
 
     const hostId = Number.parseInt(req.params.hostId);
 
     if(!Number.isInteger(hostId)) {
-        res.status(400).json({
-            status: "error",
-            message: "please provide hostId",
-        });
+        fail_missing_params(res, ["hostId"], null);
         return;
     }
 
@@ -31,10 +26,7 @@ router.get('/period/:from/:to', async (req: Request, res: Response) => {
         }
     }) > 0;
     if(!hostOwner && !res.locals.auth_user.admin){
-        res.status(403).json({
-            status: "error",
-            message: "you don't have permissions to view this hostId",
-        }).end();
+        fail_no_permissions(res, "you don't have permissions to view this hostId");
         return;
     }
 
@@ -44,18 +36,12 @@ router.get('/period/:from/:to', async (req: Request, res: Response) => {
     const to: Date = (req.params.to == 'now') ? new Date() : new Date(toNumber);
 
     if(req.params.to === undefined || typeof req.params.to !== 'string' || isNaN(from.valueOf()) || req.params.from === undefined || typeof req.params.from !== 'string' || isNaN(to.valueOf())){
-        res.status(400).json({
-            status: "error",
-            message: "please provide valid date range",
-        });
+        fail_missing_params(res, ["to", "from"], "please provide valid date range");
         return;
     }
 
     if(from.getTime() > to.getTime()){
-        res.status(400).json({
-            status: "error",
-            message: "/from/ cannot be later than /to/ date",
-        });
+        fail_missing_params(res, ["to", "from"], "/from/ cannot be later than /to/ date");
         return;
     }
 
@@ -111,10 +97,7 @@ router.get('/period/:from/:to', async (req: Request, res: Response) => {
 
     const satellites = await satellitesPromise;
     if(satellites === null){
-        res.status(404).json({
-            status: "error",
-            message: "no satellites found",
-        });
+        fail_internal_error(res, "no satellites found");
         await hostPromise;
         return;
     }
@@ -122,10 +105,7 @@ router.get('/period/:from/:to', async (req: Request, res: Response) => {
 
     const host = await hostPromise;
     if(host === null){
-        res.status(404).json({
-            status: "error",
-            message: "host with id " + hostId + " not found",
-        });
+        fail_entity_not_found(res, "host with id " + hostId + " not found");
         return;
     }
 
@@ -186,7 +166,10 @@ router.get('/period/:from/:to', async (req: Request, res: Response) => {
     uptimeMap.RHPUptimeEntries = await rhpPromise;
     uptimeMap.ExtramonUptimeEntries = await extramonPromise;
 
-    res.status(200).json(uptimeMap).end();
+    res.status(200).json({
+        status: "success",
+        data: uptimeMap
+    }).end();
 });
 
 export default router;
