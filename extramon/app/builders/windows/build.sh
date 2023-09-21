@@ -79,6 +79,8 @@ for f in /app/sysroot/bin/*; do
 	fi
 done
 
+x86_64-w64-mingw32-strip /app/sysroot/bin/*.dll
+
 wget https://curl.se/ca/cacert.pem -O /app/sysroot/bin/curl-ca-bundle.crt
 
 cd /app/sysroot
