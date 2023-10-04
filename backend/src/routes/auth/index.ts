@@ -69,7 +69,9 @@ router.get('/google/callback', async (req: Request, res: Response) => {
             res.redirect((process.env.LOGIN_SUCCESSFUL_CALLBACK as string) + '?status=error&code=500&message=google+provided+unsupported+reply');
         }
         await loginUser(req, res, email, name);
-        res.redirect((process.env.LOGIN_SUCCESSFUL_CALLBACK as string) + '?status=success');
+        //res.redirect((process.env.LOGIN_SUCCESSFUL_CALLBACK as string) + '?status=success');
+        res.set('Content-Type', 'text/html');
+        res.send(Buffer.from('<html><head><META http-equiv="refresh" content="0;' + (process.env.LOGIN_SUCCESSFUL_CALLBACK as string) + '?status=success"></head></html>'));
     } catch (error: any) {
       //fail_internal_error(res, "authentication failed");
       res.redirect((process.env.LOGIN_SUCCESSFUL_CALLBACK as string) + '?status=error&code=401&message=authentication+failed');
