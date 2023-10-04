@@ -112,7 +112,8 @@ async function loginUser(req: Request, res: Response, email: string, name: strin
     res.cookie("SIAWATCH_COOKIE", authToken, {
         secure: true,
         httpOnly: true,
-        sameSite: "strict",
+        //sameSite: "strict",
+        sameSite: "lax",
         expires: expirationDate,
     });
 
