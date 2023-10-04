@@ -113,8 +113,8 @@ async function loginUser(req: Request, res: Response, email: string, name: strin
         secure: true,
         httpOnly: true,
         //sameSite: "strict",
-        sameSite: "lax",
-        //sameSite: "none",
+        //sameSite: "lax",
+        sameSite: "none",
         expires: expirationDate,
     });
 
