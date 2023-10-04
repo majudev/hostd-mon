@@ -110,7 +110,7 @@ async function loginUser(req: Request, res: Response, email: string, name: strin
     const expirationDate = new Date();
     expirationDate.setDate(expirationDate.getDate() + Number.parseInt(await JWT_EXPIRATION_DAYS()));
     res.cookie("SIAWATCH_COOKIE", authToken, {
-        secure: true,
+        //secure: true,
         httpOnly: true,
         //sameSite: "strict",
         //sameSite: "lax",
