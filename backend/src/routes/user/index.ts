@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
 router.get('/:id', async (req: Request, res: Response) => {
     if(!check_login(res)) return;
 
-    const userId: number = parseInt(req.params.id);
+    var userId: number = parseInt(req.params.id === 'me' ? res.locals.auth_id : req.params.id);
 
     if(Number.isNaN(userId)) {
         fail_missing_params(res, ["userId"], null);
