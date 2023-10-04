@@ -68,7 +68,7 @@ router.get('/google/callback', async (req: Request, res: Response) => {
             //fail_internal_error(res, "google returned unsupported reply");
             res.redirect((process.env.LOGIN_SUCCESSFUL_CALLBACK as string) + '?status=error&code=500&message=google+provided+unsupported+reply');
         }
-        loginUser(req, res, email, name);
+        await loginUser(req, res, email, name);
         res.redirect((process.env.LOGIN_SUCCESSFUL_CALLBACK as string) + '?status=success');
     } catch (error: any) {
       //fail_internal_error(res, "authentication failed");
