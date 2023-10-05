@@ -1,22 +1,42 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {HostDmonContext, useHostDmon} from '@/context/HostDmonContext.tsx';
-import {useNavigate, useParams, useSearchParams} from 'react-router-dom';
+import {useNavigate, useSearchParams} from 'react-router-dom';
 import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
 import {Box, Button, Typography} from '@mui/material';
 import config from '@/config';
-import api from '@/api';
+import {getUser} from '@/api/user';
+import User from '@/types/User.ts';
 
 const Login: React.FC = () => {
 	const navigate = useNavigate();
 	const {currentUser, setCurrentUser} = useHostDmon() as HostDmonContext;
+	const [loading, setLoading] = useState<boolean>(false);
 
 	const [searchParams, setSearchParams] = useSearchParams();
 	const status = searchParams.get('status');
 
-	if (status === 'success') {
-		api.get('/user/me').then(({data}) => console.log(data))
-	}
+	useEffect(() => {
+		if (currentUser != null) return;
+		if (status !== 'success') return;
+		if (loading) return;
+
+		setLoading(true);
+
+		getUser().then(data => {
+			const user = data?.data;
+
+			if (user == null) return;
+
+			setCurrentUser(user as User);
+		}).catch(error => {
+			navigate('/login');
+			alert('Server error. Try again later.');
+			console.error(error);
+		});
+
+		setLoading(false);
+	}, [status, currentUser]);
 
 	useEffect(() => {
 		if (currentUser) {
@@ -43,7 +63,7 @@ const Login: React.FC = () => {
 			</Typography>
 
 			<Box sx={{mt: 1}}>
-				<Button onClick={handleGoogleLogin}>
+				<Button disabled={loading} onClick={handleGoogleLogin}>
 					with Google
 				</Button>
 			</Box>
