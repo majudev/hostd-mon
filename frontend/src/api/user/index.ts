@@ -19,3 +19,8 @@ export const getUserById = async (userId: number) => {
 	const {data} = await api.get(`/user/${userId}`);
 	return data;
 }
+
+export const getUser = async () => {
+	const {data} = await api.get('/user/me');
+	return data;
+}
