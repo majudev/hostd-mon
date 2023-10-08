@@ -5,6 +5,7 @@ import HostConfigForm, {HostConfigFormFields} from '@/components/host/HostConfig
 import {HostDmonContext, useHostDmon} from '@/context/HostDmonContext.tsx';
 import {createHost} from '@/api/host';
 import {useNavigate} from 'react-router-dom';
+import {getErrorMessageIfHostParamsNotValid} from '@/utils/hostsParams/getErrorMessageIfHostParamsNotValid.ts';
 
 const AddHost: React.FC = () => {
 	const {setHosts} = useHostDmon() as HostDmonContext;
@@ -13,21 +14,15 @@ const AddHost: React.FC = () => {
 	const navigate = useNavigate();
 
 	const handleSubmit = (formData: HostConfigFormFields) => {
-		const {name, sia, rhpAddress, rhpPubkey, rhpDeadtime, extramon, extramonPubkey, extramonDeadtime} = formData;
+		const errorMessage = getErrorMessageIfHostParamsNotValid(formData);
 
-		if (name == null || name.length === 0) {
-			return alert('Name is required');
-		}
-
-		if (sia && (rhpAddress == null || rhpAddress.length === 0 || rhpPubkey == null || rhpPubkey.length === 0 || rhpDeadtime == null)) {
-			return alert('rhpAddress, rhpPubkey and rhp dead time are required');
-		}
-
-		if (extramon && (extramonPubkey == null || extramonPubkey.length === 0 || extramonDeadtime == null)) {
-			return alert('extramonPubkey and extramon dead time are required');
+		if (errorMessage != null) {
+			return alert(errorMessage);
 		}
 
 		setLoading(true);
+
+		const {name, sia, rhpAddress, rhpPubkey, rhpDeadtime, extramon, extramonPubkey, extramonDeadtime} = formData;
 
 		const newHost = {
 			name,

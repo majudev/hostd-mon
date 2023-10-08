@@ -7,6 +7,7 @@ import HostConfigForm, {HostConfigFormFields} from '@/components/host/HostConfig
 import {updateHost} from '@/api/host';
 import Grid from '@mui/material/Grid';
 import DeleteHostButton from '@/components/host/DeleteHostButton.tsx';
+import {getErrorMessageIfHostParamsNotValid} from '@/utils/hostsParams/getErrorMessageIfHostParamsNotValid.ts';
 
 const EditHost: React.FC = () => {
 	const {id: hostId} = useParams();
@@ -15,7 +16,6 @@ const EditHost: React.FC = () => {
 	const hostToEdit = hosts?.find((host: Host) => host.id === parseInt('' + hostId));
 
 	const [defaultFormValues, setDefaultFormValues] = useState<HostConfigFormFields | null>(null);
-
 
 	useEffect(() => {
 		if (hostToEdit == null) return;
@@ -42,21 +42,15 @@ const EditHost: React.FC = () => {
 	const handleSubmit = (formData: HostConfigFormFields) => {
 		if (hostId == null) return;
 
-		const {name, sia, rhpAddress, rhpPubkey, rhpDeadtime, extramon, extramonPubkey, extramonDeadtime} = formData;
+		const errorMessage = getErrorMessageIfHostParamsNotValid(formData);
 
-		if (name == null || name.length === 0) {
-			return alert('Name is required');
-		}
-
-		if (sia && (rhpAddress == null || rhpAddress.length === 0 || rhpPubkey == null || rhpPubkey.length === 0 || rhpDeadtime == null)) {
-			return alert('rhpAddress, rhpPubkey and rhp dead time are required');
-		}
-
-		if (extramon && (extramonPubkey == null || extramonPubkey.length === 0 || extramonDeadtime == null)) {
-			return alert('extramonPubkey and extramon dead time are required');
+		if (errorMessage != null) {
+			return alert(errorMessage);
 		}
 
 		setLoading(true);
+
+		const {name, sia, rhpAddress, rhpPubkey, rhpDeadtime, extramon, extramonPubkey, extramonDeadtime} = formData;
 
 		const hostToUpdate = {
 			id: parseInt(hostId),
@@ -96,7 +90,7 @@ const EditHost: React.FC = () => {
 	return <>
 		<Grid container mb={1}>
 			<Grid item xs={12} md={6}>
-				<Title>Edit host #{hostId}</Title>
+				<Title>Edit {hostToEdit?.name ?? `host #${hostId}`}</Title>
 			</Grid>
 			<Grid item xs={12} md={6} style={{ display: 'flex', justifyContent: 'flex-end' }}>
 				<DeleteHostButton />

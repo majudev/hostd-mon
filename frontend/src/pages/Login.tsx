@@ -17,8 +17,13 @@ const Login: React.FC = () => {
 	const status = searchParams.get('status');
 
 	useEffect(() => {
+		if (status == null) return;
+
+		if (status !== 'success') {
+			return alert(`Error: ${status}`);
+		}
+
 		if (currentUser != null) return;
-		if (status !== 'success') return;
 		if (loading) return;
 
 		setLoading(true);
@@ -39,7 +44,7 @@ const Login: React.FC = () => {
 	}, [status, currentUser]);
 
 	useEffect(() => {
-		if (currentUser) {
+		if (currentUser) { // is user logged in
 			return navigate('/');
 		}
 	}, [currentUser]);

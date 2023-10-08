@@ -6,8 +6,8 @@ export const getUptimeByHostId = async ({hostId, from, to}: {
 	from: Date,
 	to: Date | 'now'
 }) => {
-	const encodedUrl = encodeURIComponent(`/host/${hostId}/uptime/period/${from.getTime()}/${to instanceof Date ? to.getTime() : to}`);
-	const {data} = await api.get(encodedUrl);
+	const url = `/host/${hostId}/uptime/period/${from.getTime()}/${to instanceof Date ? to.getTime() : to}`;
+	const {data} = await api.get(url);
 	return data;
 }
 
