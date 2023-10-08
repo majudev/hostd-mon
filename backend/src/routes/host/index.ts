@@ -277,16 +277,40 @@ router.delete('/:hostId', async (req: Request, res: Response) => {
         return;
     }
 
-    await prisma.host.delete({
+    const host = await prisma.host.delete({
         where: {
             id: hostId,
         },
+        select: {
+            id: true,
+            extramonPubkey: true,
+        }
     });
 
     res.status(204).json({
         status: "success",
         data: null,
     }).end();
+
+    // Async delete from caches
+    if(host.extramonPubkey === null) return;
+
+    const satellites = await prisma.satellite.findMany({
+        select: {
+            name: true,
+            address: true,
+        }
+    });
+    satellites.forEach(async (current, index) => {
+        const response = await fetch('http://' + current.address + '/extramon/master/invalidate-pubkey/' + encodeURIComponent(host.extramonPubkey as string));
+        const status = response.status;
+
+        if(status !== 200){
+            logger.debug('Dropped pubkey ' + host.extramonPubkey + ' from satellite ' + current.name);
+        }else{
+            logger.debug('Error dropping pubkey ' + host.extramonPubkey + ' from satellite ' + current.name + ': code ' + status);
+        }
+    });
 });
 
 export default router;
