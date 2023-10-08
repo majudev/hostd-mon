@@ -51,7 +51,7 @@ const UptimeChart: React.FC = () => {
 						<p>{data.datetime}</p>
 						<p>
 							<span>status: </span>
-							<span style={{color: data.up ? 'green' : 'red'}}>{data.up ? 'up' : 'down'}</span>
+							<span style={{color: data.up ? 'green' : 'red', fontWeight: 'bold'}}>{data.up ? 'up' : 'down'}</span>
 						</p>
 					</div>
 				);
