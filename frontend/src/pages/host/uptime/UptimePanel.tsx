@@ -5,13 +5,15 @@ import Title from '@/components/Title.tsx';
 import {getUptimeByHostId} from '@/api/host';
 import {useParams} from 'react-router-dom';
 import {UptimeResponse} from '@/types/Uptime.tsx';
-import subtractTimeFromDate, {SubtractTimeOptions} from '@/utils/subtractTimeFromDate.ts';
+import subtractTimeFromDate from '@/utils/subtractTimeFromDate.ts';
 import UptimeChart from '@/pages/host/uptime/UptimeChart.tsx';
 import {HostDmonContext, useHostDmon} from '@/context/HostDmonContext.tsx';
 import {v4 as uuidv4} from 'uuid';
 import config from '@/config';
 
-const parseFromDurationButtonTextFormat = (duration: string): Date => {
+type Duration = typeof config.CHARTS.DURATION_BUTTONS[number];
+
+const parseDurationTextToDate = (duration: Duration): Date => {
 	return duration === 'max' ?
 		new Date(0) :
 		subtractTimeFromDate(
@@ -29,8 +31,7 @@ const UptimePanel: React.FC = () => {
 
 	const {setUptimeEntries} = useHostDmon() as HostDmonContext;
 
-	const durationButtonTexts = ['24h', '7d', '30d', '14d', '90d', '180d', '1y', 'max'] as const;
-	const [selectedDuration, setSelectedDuration] = useState<typeof durationButtonTexts[number]>(durationButtonTexts[0]);
+	const [selectedDuration, setSelectedDuration] = useState<Duration>(config.CHARTS.DURATION_BUTTONS[0]);
 
 	const [loading, setLoading] = useState<boolean>(false);
 
@@ -43,7 +44,7 @@ const UptimePanel: React.FC = () => {
 
 			getUptimeByHostId({
 				hostId: parseInt(hostId),
-				from: parseFromDurationButtonTextFormat(selectedDuration),
+				from: parseDurationTextToDate(selectedDuration),
 				to: 'now'
 			}).then((data: UptimeResponse) => {
 				setUptimeEntries(data.data);
@@ -70,7 +71,7 @@ const UptimePanel: React.FC = () => {
 			</Grid>
 			<Grid item xs={12} md={6} style={{display: 'flex', justifyContent: 'flex-end'}}>
 				<ButtonGroup>
-					{durationButtonTexts
+					{config.CHARTS.DURATION_BUTTONS
 						.map(text => <Button
 							sx={{textTransform: 'capitalize'}}
 							size="small"
