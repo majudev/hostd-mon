@@ -1,17 +1,21 @@
 import React, {useState} from 'react';
-import Paper from '@mui/material/Paper';
-import Grid from '@mui/material/Grid';
-import HostConfigForm, {HostConfigFormFields} from '@/components/host/HostConfigForm.tsx';
-import {HostDmonContext, useHostDmon} from '@/context/HostDmonContext.tsx';
+import HostConfigForm, {HostConfigFormFields} from '@/components/host/HostConfigForm';
+import {HostDmonContext, useHostDmon} from '@/context/HostDmonContext';
 import {createHost} from '@/api/host';
 import {useNavigate} from 'react-router-dom';
-import {getErrorMessageIfHostParamsNotValid} from '@/utils/hostsParams/getErrorMessageIfHostParamsNotValid.ts';
+import {getErrorMessageIfHostParamsNotValid} from '@/utils/hostsParams/getErrorMessageIfHostParamsNotValid';
 
-const AddHost: React.FC = () => {
-	const {setHosts} = useHostDmon() as HostDmonContext;
+type AddHostProps = {
+	userId?: number /* if userId is not undefined it means admin is adding host for this specific user */
+};
+
+const AddHost: React.FC<AddHostProps> = ({userId}) => {
+	const {setHosts, currentUser} = useHostDmon() as HostDmonContext;
 	const [loading, setLoading] = useState<boolean>(false);
 	const [errorFields, setErrorFields] = useState<Array<string>>([]);
 	const navigate = useNavigate();
+
+	if (currentUser == null) return <></>;
 
 	const handleSubmit = (formData: HostConfigFormFields) => {
 		const errorMessage = getErrorMessageIfHostParamsNotValid(formData);
@@ -33,12 +37,12 @@ const AddHost: React.FC = () => {
 			extramonDeadtime: extramon ? extramonDeadtime : undefined,
 		};
 
-		createHost(newHost).then((res) => {
+		createHost(newHost, currentUser.admin ? userId : undefined).then((res) => {
 			setErrorFields([]);
 
 			const createdHost = res.data;
 
-			setHosts(prev => {
+			userId == null && setHosts(prev => {
 				if (prev == null) return null;
 
 				return [...prev, createdHost];
@@ -60,24 +64,11 @@ const AddHost: React.FC = () => {
 		});
 	}
 
-	return <>
-		<Grid item xs={12} md={8} lg={9}>
-			<Paper
-				sx={{
-					p: 2,
-					display: 'flex',
-					flexDirection: 'column',
-					// height: 240,
-				}}
-			>
-				<HostConfigForm
-					handleSubmit={handleSubmit}
-					disableForm={loading}
-					errorFields={errorFields}
-				/>
-			</Paper>
-		</Grid>
-	</>;
+	return <HostConfigForm
+		handleSubmit={handleSubmit}
+		disableForm={loading}
+		errorFields={errorFields}
+	/>;
 };
 
 export default AddHost;

@@ -1,11 +1,12 @@
 import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
-import DrawerView from '@/pages/DrawerView.tsx';
 import PrivateRoute from '@/components/PrivateRoute';
-import {HostDmonProvider} from '@/context/HostDmonContext.tsx';
-import Login from '@/pages/Login.tsx';
-import AddHost from '@/pages/host/AddHost.tsx';
-import HostOverview from '@/pages/host/HostOverview.tsx';
-import AccountOverview from '@/pages/account/AccountOverview.tsx';
+import {HostDmonProvider} from '@/context/HostDmonContext';
+import Login from '@/pages/Login';
+import AddHost from '@/pages/host/AddHost';
+import DrawerView from '@/pages/DrawerView';
+import HostOverview from '@/pages/host/HostOverview';
+import AccountOverview from '@/pages/account/AccountOverview';
+import Panel from '@/components/Panel';
 
 const App = () => {
 	return <Router>
@@ -15,7 +16,7 @@ const App = () => {
 					<Route path="" element={<DrawerView/>}/>
 					<Route path="host/add/" element={
 						<DrawerView pageTitle="Add new host">
-							<AddHost/>
+							<Panel><AddHost/></Panel>
 						</DrawerView>
 					}/>
 

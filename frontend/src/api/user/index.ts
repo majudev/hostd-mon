@@ -10,7 +10,11 @@ export const getHostsByUserId = async (userId: number) => {
 		const requests = res.data.map((host: Host) => api.get(`/host/${host.id}`));
 		const responses = await Promise.all(requests);
 
-		return responses.map(res => res.data.data) as Array<Host>;
+		const hosts = responses.map(res => res.data.data) as Array<Host>;
+
+		hosts.sort((a, b) => a.id > b.id ? 1 : -1);
+
+		return hosts;
 	} catch (error) {
 		return Promise.reject(error);
 	}
