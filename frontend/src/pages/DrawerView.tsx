@@ -1,22 +1,29 @@
-import * as React from 'react';
+import React, {ReactNode, useState} from 'react';
 import {styled, createTheme, ThemeProvider} from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import MuiDrawer from '@mui/material/Drawer';
-import Box from '@mui/material/Box';
-import MuiAppBar, {AppBarProps as MuiAppBarProps} from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import List from '@mui/material/List';
-import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import Badge from '@mui/material/Badge';
+import {
+	ListItemButton,
+	ListItemIcon,
+	ListItemText,
+	Container,
+	Badge,
+	IconButton,
+	Divider,
+	Typography,
+	List,
+	Toolbar,
+	CssBaseline,
+	Box,
+	Drawer as MuiDrawer,
+	AppBar as MuiAppBar,
+	AppBarProps as MuiAppBarProps,
+} from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import {MainListItems} from '@/components/demo/ListItems.tsx';
+import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import HostsList from '@/components/host/HostsList.tsx';
-import {ReactNode} from 'react';
-import Container from '@mui/material/Container';
+import RouterLink from '@/components/RouterLink.tsx';
+import {HostDmonContext, useHostDmon} from '@/context/HostDmonContext.tsx';
 
 const drawerWidth: number = 240;
 
@@ -77,10 +84,14 @@ type DraweViewProps = {
 };
 
 const DrawerView: React.FC<DraweViewProps> = ({children, pageTitle}) => {
-	const [open, setOpen] = React.useState(true);
+	const [open, setOpen] = useState(true);
 	const toggleDrawer = () => {
 		setOpen(!open);
 	};
+
+	const {currentUser} = useHostDmon() as HostDmonContext;
+
+	if (currentUser == null) return <></>;
 
 	return (
 		<ThemeProvider theme={defaultTheme}>
@@ -141,8 +152,31 @@ const DrawerView: React.FC<DraweViewProps> = ({children, pageTitle}) => {
 					<Divider/>
 					<List component="nav">
 						<HostsList/>
+
 						<Divider sx={{my: 1}}/>
-						<MainListItems/>
+
+						<RouterLink to={`/user/${currentUser.id}`}>
+							<ListItemButton>
+								<ListItemIcon>
+									<AccountCircleOutlinedIcon/>
+								</ListItemIcon>
+								<ListItemText>
+									Account
+								</ListItemText>
+							</ListItemButton>
+						</RouterLink>
+
+						<RouterLink to={`/user/2`}> {/* TODO: remove in production */}
+							<ListItemButton>
+								<ListItemIcon>
+									<AccountCircleOutlinedIcon/>
+								</ListItemIcon>
+								<ListItemText>
+									Account of user 2.
+								</ListItemText>
+							</ListItemButton>
+						</RouterLink>
+
 					</List>
 				</Drawer>
 				<Box

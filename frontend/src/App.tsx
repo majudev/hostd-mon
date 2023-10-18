@@ -4,8 +4,8 @@ import PrivateRoute from '@/components/PrivateRoute';
 import {HostDmonProvider} from '@/context/HostDmonContext.tsx';
 import Login from '@/pages/Login.tsx';
 import AddHost from '@/pages/host/AddHost.tsx';
-import Dashboard2 from '@/components/demo/Dashboard2.tsx';
 import HostOverview from '@/pages/host/HostOverview.tsx';
+import AccountOverview from '@/pages/account/AccountOverview.tsx';
 
 const App = () => {
 	return <Router>
@@ -24,7 +24,12 @@ const App = () => {
 							<HostOverview/>
 						</DrawerView>
 					}/>
-					<Route path="test" element={<DrawerView><Dashboard2/></DrawerView>}/>
+
+					<Route path="user/:id" element={
+						<DrawerView pageTitle="Account">
+							<AccountOverview />
+						</DrawerView>
+					}/>
 				</Route>
 				<Route path="/login" element={<Login/>}/>
 				<Route path="*" element={<div>404 Not Found</div>}/>

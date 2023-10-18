@@ -7,7 +7,7 @@ const api = axios.create({
 });
 
 api.interceptors.response.use(res => res, async error => {
-	if (error.response.status === 401) {
+	if (error?.response?.status === 401) {
 		alert('Please log in');
 		window.location.href = '/login';
 	}

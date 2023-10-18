@@ -1,10 +1,16 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {HostDmonContext, useHostDmon} from '@/context/HostDmonContext.tsx';
 import formatDate from '@/utils/formatDate.ts';
 import {ScatterChart, Scatter, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell} from 'recharts';
 import {v4 as uuidv4} from 'uuid';
 import {Box, Typography} from '@mui/material';
 import Grid from '@mui/material/Grid';
+import {UptimeResponse, UptimeResponseDataObject} from '@/types/Uptime.tsx';
+import {getUptimeByHostId} from '@/api/host';
+import config from '@/config';
+import {useParams} from 'react-router-dom';
+import subtractTimeFromDate from '@/utils/subtractTimeFromDate.ts';
+import Duration from '@/types/Duration.tsx';
 
 type ChartDataRecord = {
 	datetime: string,
@@ -16,8 +22,60 @@ type SatelliteUptimeData = {
 	entries: Array<ChartDataRecord>
 };
 
-const UptimeChart: React.FC = () => {
-		const {uptimeEntries, satellites} = useHostDmon() as HostDmonContext;
+const parseDurationTextToDate = (duration: Duration): Date => {
+	return duration === 'max' ?
+		new Date(0) :
+		subtractTimeFromDate(
+			new Date(),
+			{
+				hours: duration.endsWith('h') ? parseInt(duration?.split('h')[0] ?? '0') : undefined,
+				days: duration.endsWith('d') ? parseInt(duration?.split('d')[0] ?? '0') : undefined,
+				years: duration.endsWith('y') ? parseInt(duration?.split('y')[0] ?? '0') : undefined,
+			}
+		);
+};
+
+type UptimeChartProps = {
+	selectedDuration: Duration,
+	loading: boolean,
+	setLoading: React.Dispatch<React.SetStateAction<boolean>>
+};
+
+const UptimeChart: React.FC<UptimeChartProps> = ({selectedDuration, loading, setLoading}) => {
+		const {id: hostId} = useParams();
+
+		const {satellites} = useHostDmon() as HostDmonContext;
+
+		const [uptimeEntries, setUptimeEntries] = useState<UptimeResponseDataObject | null>(null);
+
+		useEffect(() => {
+			if (hostId == null) return;
+			const getUptimeHandler = () => {
+				if (loading) return;
+
+				setLoading(true);
+
+				getUptimeByHostId({
+					hostId: parseInt(hostId),
+					from: parseDurationTextToDate(selectedDuration),
+					to: 'now'
+				}).then((data: UptimeResponse) => {
+					setUptimeEntries(data.data);
+				}).catch(console.error);
+
+				setLoading(false);
+			};
+
+			getUptimeHandler();
+
+			const interval = setInterval(getUptimeHandler, config.CHARTS.REFRESH_DATA_INTERVAL_MS);
+
+			return () => {
+				if (interval != null) {
+					clearInterval(interval);
+				}
+			};
+		}, [hostId, selectedDuration]);
 
 		if (uptimeEntries == null || satellites == null) return <></>;
 
@@ -25,7 +83,7 @@ const UptimeChart: React.FC = () => {
 		const satellitesUptimeData = satellites.map(satellite => {
 			return {
 				satelliteName: satellite.name,
-				entries: uptimeEntries.ExtramonUptimeEntries.map((entry, i) => {
+				entries: uptimeEntries.ExtramonUptimeEntries.map(entry => {
 					return {
 						datetime: formatDate(entry.timestamp),
 						up: entry.satellites[satellite.name] ? 1 : 0,

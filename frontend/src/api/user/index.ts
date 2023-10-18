@@ -1,5 +1,6 @@
 import api from '@/api';
 import Host from '@/types/Host.ts';
+import {AccountSettingsFormFields} from '@/pages/account/AccountSettingsForm.tsx';
 
 export const getHostsByUserId = async (userId: number) => {
 
@@ -24,3 +25,8 @@ export const getUser = async () => {
 	const {data} = await api.get('/user/me');
 	return data;
 }
+
+export const updateUserById = async (userId: number, fieldsToUpdate: AccountSettingsFormFields) => {
+	const {data} = await api.patch(`/user/${userId}`, fieldsToUpdate);
+	return data;
+};
