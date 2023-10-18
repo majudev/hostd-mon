@@ -4,6 +4,7 @@ import formatDate from '@/utils/formatDate.ts';
 import {ScatterChart, Scatter, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell} from 'recharts';
 import {v4 as uuidv4} from 'uuid';
 import {Box, Typography} from '@mui/material';
+import Grid from '@mui/material/Grid';
 
 type ChartDataRecord = {
 	datetime: string,
@@ -62,9 +63,9 @@ const UptimeChart: React.FC = () => {
 
 		return <>
 			{
-				satellitesUptimeData.map(satelliteUptimeData => <Box key={uuidv4()}>
-						<Typography mt={2}>{satelliteUptimeData.satelliteName}</Typography>
-						<ResponsiveContainer width="100%" height={40}>
+				satellitesUptimeData.map(satelliteUptimeData => <Box key={uuidv4()} mt={2} mb={1}>
+						<Typography>{satelliteUptimeData.satelliteName}</Typography>
+						<ResponsiveContainer width="100%" height={30}>
 							<ScatterChart
 								width={800}
 								height={100}
@@ -103,6 +104,27 @@ const UptimeChart: React.FC = () => {
 								</Scatter>
 							</ScatterChart>
 						</ResponsiveContainer>
+
+						{
+							satelliteUptimeData.entries.length > 0 &&
+                      <Grid container spacing={2} columns={3}>
+                          <Grid item xs={1}>
+                              <Typography variant="caption">
+											{satelliteUptimeData.entries[0]?.datetime}
+                              </Typography>
+                          </Grid>
+                          <Grid item xs={1} sx={{textAlign: 'center'}}>
+                              <Typography variant="caption">
+											{satelliteUptimeData.entries[Math.round(satelliteUptimeData.entries.length / 2)]?.datetime}
+                              </Typography>
+                          </Grid>
+                          <Grid item xs={1} sx={{textAlign: 'right'}}>
+                              <Typography variant="caption">
+											{satelliteUptimeData.entries.pop()?.datetime}
+                              </Typography>
+                          </Grid>
+                      </Grid>
+						}
 					</Box>
 				)
 			}
