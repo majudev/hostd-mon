@@ -22,19 +22,17 @@ const AccountOverview: React.FC = () => {
 		</Panel>
 
 		<Panel item xs={6} md={6} lg={6}>
-			<Title>{editingMyAccount ? 'Settings' : `Edit user #${userToEditId}`}</Title>
+			<Title mb={2}>{editingMyAccount ? 'Settings' : `Edit user #${userToEditId}`}</Title>
 
 			<AccountSettingsForm/>
 		</Panel>
 
 		{
-			currentUser.admin && !editingMyAccount && <Grid item xs={6} md={6} lg={6}>
-              <Panel>
-                  <Title>Add new host for this user</Title>
+			currentUser.admin && !editingMyAccount && <Panel item xs={6} md={6} lg={6}>
+              <Title>Add new host for this user</Title>
 
-                  <AddHost userId={parseInt(userToEditId as string)}/>
-              </Panel>
-          </Grid>
+              <AddHost userId={parseInt(userToEditId as string)}/>
+          </Panel>
 		}
 	</Grid>;
 };

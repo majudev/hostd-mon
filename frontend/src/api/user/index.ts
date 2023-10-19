@@ -34,3 +34,8 @@ export const updateUserById = async (userId: number, fieldsToUpdate: AccountSett
 	const {data} = await api.patch(`/user/${userId}`, fieldsToUpdate);
 	return data;
 };
+
+export const getAllUsers = async () => {
+	const {data} = await api.get(`/users`);
+	return data;
+}

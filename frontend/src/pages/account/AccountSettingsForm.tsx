@@ -114,7 +114,7 @@ const AccountSettingsForm: React.FC = () => {
 				sx={{mb: 4}}
 			/>
 
-			<Typography mb={3}>Admin: {currentUser.admin ? 'YES' : 'NO'}</Typography>
+			<Typography mb={3}>Admin: {currentUser.admin ? 'Yes' : 'No'}</Typography>
 
 			<FormControlLabel disabled={loading} control={
 				<Switch name="globallyDisableEmailAlerts" onChange={e => {

@@ -1,15 +1,11 @@
 import React, {ReactNode, useState} from 'react';
 import {styled, createTheme, ThemeProvider} from '@mui/material/styles';
 import {
-	ListItemButton,
-	ListItemIcon,
-	ListItemText,
 	Container,
 	Badge,
 	IconButton,
 	Divider,
 	Typography,
-	List,
 	Toolbar,
 	CssBaseline,
 	Box,
@@ -20,10 +16,8 @@ import {
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
-import HostsList from '@/components/host/HostsList';
-import RouterLink from '@/components/RouterLink';
-import {useHostDmon} from '@/context/HostDmonContext';
+import SidebarNavigation from '@/components/sidebar/SidebarNavigation';
+import {useSidebar} from '@/context/SidebarContext.tsx';
 
 const drawerWidth: number = 240;
 
@@ -84,20 +78,16 @@ type DraweViewProps = {
 };
 
 const DrawerView: React.FC<DraweViewProps> = ({children, pageTitle}) => {
-	const [open, setOpen] = useState(true);
+	const {isSidebarOpen, setIsSidebarOpen} = useSidebar();
 	const toggleDrawer = () => {
-		setOpen(!open);
+		setIsSidebarOpen(prev => !prev);
 	};
-
-	const {currentUser} = useHostDmon();
-
-	if (currentUser == null) return <></>;
 
 	return (
 		<ThemeProvider theme={defaultTheme}>
 			<Box sx={{display: 'flex'}}>
 				<CssBaseline/>
-				<AppBar position="absolute" open={open}>
+				<AppBar position="absolute" open={isSidebarOpen}>
 					<Toolbar
 						sx={{
 							pr: '24px', // keep right padding when drawer closed
@@ -110,7 +100,7 @@ const DrawerView: React.FC<DraweViewProps> = ({children, pageTitle}) => {
 							onClick={toggleDrawer}
 							sx={{
 								marginRight: '36px',
-								...(open && {display: 'none'}),
+								...(isSidebarOpen && {display: 'none'}),
 							}}
 						>
 							<MenuIcon/>
@@ -135,7 +125,7 @@ const DrawerView: React.FC<DraweViewProps> = ({children, pageTitle}) => {
 
 					variant="permanent"
 					anchor="left"
-					open={open}
+					open={isSidebarOpen}
 				>
 					<Toolbar
 						sx={{
@@ -149,35 +139,10 @@ const DrawerView: React.FC<DraweViewProps> = ({children, pageTitle}) => {
 							<ChevronLeftIcon/>
 						</IconButton>
 					</Toolbar>
+
 					<Divider/>
-					<List component="nav">
-						<HostsList/>
 
-						<Divider sx={{my: 1}}/>
-
-						<RouterLink to={`/user/${currentUser.id}`}>
-							<ListItemButton>
-								<ListItemIcon>
-									<AccountCircleOutlinedIcon/>
-								</ListItemIcon>
-								<ListItemText>
-									Account
-								</ListItemText>
-							</ListItemButton>
-						</RouterLink>
-
-						<RouterLink to={`/user/2`}> {/* TODO: remove in production */}
-							<ListItemButton>
-								<ListItemIcon>
-									<AccountCircleOutlinedIcon/>
-								</ListItemIcon>
-								<ListItemText>
-									Account of user 2.
-								</ListItemText>
-							</ListItemButton>
-						</RouterLink>
-
-					</List>
+					<SidebarNavigation/>
 				</Drawer>
 				<Box
 					component="main"

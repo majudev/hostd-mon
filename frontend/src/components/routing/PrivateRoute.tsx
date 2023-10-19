@@ -1,5 +1,5 @@
 import {Navigate, Outlet} from 'react-router-dom';
-import {useHostDmon} from '@/context/HostDmonContext';
+import {useHostDmon} from '@/context/HostDmonContext.tsx';
 
 const PrivateRoute = () => {
 	const {currentUser} = useHostDmon();
