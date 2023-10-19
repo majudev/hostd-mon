@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {HostDmonContext, useHostDmon} from '@/context/HostDmonContext';
+import {useHostDmon} from '@/context/HostDmonContext';
 import User from '@/types/User';
 import {useForm} from '@/hooks/useForm';
 import {Button, FormControlLabel, FormGroup, Switch, TextField, Typography} from '@mui/material';
@@ -9,7 +9,7 @@ import {Navigate, useParams} from 'react-router-dom';
 export type AccountSettingsFormFields = Omit<User, 'id' | 'name' | 'email' | 'admin'>;
 
 const AccountSettingsForm: React.FC = () => {
-	const {currentUser, setCurrentUser} = useHostDmon() as HostDmonContext;
+	const {currentUser, setCurrentUser} = useHostDmon();
 	const {id: userToEditId} = useParams();
 
 	if (currentUser == null) return <></>;

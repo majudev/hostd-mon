@@ -1,10 +1,10 @@
-import { Navigate, Outlet } from "react-router-dom";
-import {HostDmonContext, useHostDmon} from '@/context/HostDmonContext.tsx';
+import {Navigate, Outlet} from 'react-router-dom';
+import {useHostDmon} from '@/context/HostDmonContext';
 
 const PrivateRoute = () => {
-	const {currentUser} = useHostDmon() as HostDmonContext;
+	const {currentUser} = useHostDmon();
 
-	return currentUser ? <Outlet /> : <Navigate to="/login" />;
+	return currentUser ? <Outlet/> : <Navigate to="/login"/>;
 }
 
 export default PrivateRoute;

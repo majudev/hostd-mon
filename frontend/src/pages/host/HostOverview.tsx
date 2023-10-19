@@ -1,8 +1,8 @@
 import React from 'react';
 import Grid from '@mui/material/Grid';
-import EditHost from '@/pages/host/EditHost.tsx';
-import UptimePanel from '@/pages/host/uptime/UptimePanel.tsx';
-import Panel from '@/components/Panel.tsx';
+import EditHost from '@/pages/host/EditHost';
+import UptimePanel from '@/pages/host/uptime/UptimePanel';
+import Panel from '@/components/Panel';
 
 const HostOverview: React.FC = () => {
 	return <Grid container spacing={3}>

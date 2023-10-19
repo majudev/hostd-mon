@@ -1,6 +1,6 @@
 import React, {useContext, useState, createContext, ReactNode, useEffect} from 'react';
-import User from '@/types/User';
 import {getHostsByUserId} from '@/api/user';
+import User from '@/types/User';
 import Host from '@/types/Host';
 
 export type HostDmonContext = {
@@ -13,8 +13,8 @@ export type HostDmonContext = {
 
 const HostDmonContext = createContext<HostDmonContext | null>(null);
 
-export const useHostDmon = (): HostDmonContext | null => {
-	return useContext(HostDmonContext);
+export const useHostDmon = (): HostDmonContext => {
+	return useContext(HostDmonContext) as HostDmonContext;
 }
 
 export const HostDmonProvider = ({children}: { children: ReactNode }) => {
@@ -23,12 +23,9 @@ export const HostDmonProvider = ({children}: { children: ReactNode }) => {
 
 	useEffect(() => {
 		if (currentUser == null) return;
+		if (hosts != null) return;
 
-		if (hosts == null) {
-			getHostsByUserId(currentUser.id)
-				.then(setHosts)
-				.catch(console.error);
-		}
+		getHostsByUserId(currentUser.id).then(setHosts).catch(console.error);
 	}, [currentUser]);
 
 	return <HostDmonContext.Provider value={{

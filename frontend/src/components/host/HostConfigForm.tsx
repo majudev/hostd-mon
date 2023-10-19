@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
-import Host from '@/types/Host.ts';
-import {useForm} from '@/hooks/useForm.ts';
+import Host from '@/types/Host';
+import {useForm} from '@/hooks/useForm';
 import {
 	Button,
 	FormControl,

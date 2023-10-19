@@ -21,9 +21,9 @@ import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
-import HostsList from '@/components/host/HostsList.tsx';
-import RouterLink from '@/components/RouterLink.tsx';
-import {HostDmonContext, useHostDmon} from '@/context/HostDmonContext.tsx';
+import HostsList from '@/components/host/HostsList';
+import RouterLink from '@/components/RouterLink';
+import {useHostDmon} from '@/context/HostDmonContext';
 
 const drawerWidth: number = 240;
 
@@ -89,7 +89,7 @@ const DrawerView: React.FC<DraweViewProps> = ({children, pageTitle}) => {
 		setOpen(!open);
 	};
 
-	const {currentUser} = useHostDmon() as HostDmonContext;
+	const {currentUser} = useHostDmon();
 
 	if (currentUser == null) return <></>;
 

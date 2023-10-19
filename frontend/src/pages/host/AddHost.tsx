@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import HostConfigForm, {HostConfigFormFields} from '@/components/host/HostConfigForm';
-import {HostDmonContext, useHostDmon} from '@/context/HostDmonContext';
+import {useHostDmon} from '@/context/HostDmonContext';
 import {createHost} from '@/api/host';
 import {useNavigate} from 'react-router-dom';
 import {getErrorMessageIfHostParamsNotValid} from '@/utils/hostsParams/getErrorMessageIfHostParamsNotValid';
@@ -10,7 +10,7 @@ type AddHostProps = {
 };
 
 const AddHost: React.FC<AddHostProps> = ({userId}) => {
-	const {setHosts, currentUser} = useHostDmon() as HostDmonContext;
+	const {setHosts, currentUser} = useHostDmon();
 	const [loading, setLoading] = useState<boolean>(false);
 	const [errorFields, setErrorFields] = useState<Array<string>>([]);
 	const navigate = useNavigate();

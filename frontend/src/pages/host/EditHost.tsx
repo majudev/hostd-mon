@@ -1,17 +1,17 @@
 import React, {useEffect, useState} from 'react';
-import Title from '@/components/Title.tsx';
-import {HostDmonContext, useHostDmon} from '@/context/HostDmonContext.tsx';
-import Host from '@/types/Host.ts';
+import Title from '@/components/Title';
+import {useHostDmon} from '@/context/HostDmonContext';
+import Host from '@/types/Host';
 import {useParams} from 'react-router-dom';
-import HostConfigForm, {HostConfigFormFields} from '@/components/host/HostConfigForm.tsx';
+import HostConfigForm, {HostConfigFormFields} from '@/components/host/HostConfigForm';
 import {getHostById, updateHost} from '@/api/host';
 import Grid from '@mui/material/Grid';
-import DeleteHostButton from '@/components/host/DeleteHostButton.tsx';
-import {getErrorMessageIfHostParamsNotValid} from '@/utils/hostsParams/getErrorMessageIfHostParamsNotValid.ts';
+import DeleteHostButton from '@/components/host/DeleteHostButton';
+import {getErrorMessageIfHostParamsNotValid} from '@/utils/hostsParams/getErrorMessageIfHostParamsNotValid';
 
 const EditHost: React.FC = () => {
 	const {id: hostId} = useParams();
-	const {hosts, setHosts} = useHostDmon() as HostDmonContext;
+	const {hosts, setHosts} = useHostDmon();
 
 	if (hosts == null) return <></>;
 

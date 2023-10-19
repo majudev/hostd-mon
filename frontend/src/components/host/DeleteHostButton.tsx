@@ -2,11 +2,11 @@ import React from 'react';
 import {Button} from '@mui/material';
 import {deleteHost} from '@/api/host';
 import {useNavigate, useParams} from 'react-router-dom';
-import {HostDmonContext, useHostDmon} from '@/context/HostDmonContext.tsx';
+import {useHostDmon} from '@/context/HostDmonContext';
 
 const DeleteHostButton: React.FC = () => {
 	const {id: hostId} = useParams();
-	const {setHosts} = useHostDmon() as HostDmonContext;
+	const {setHosts} = useHostDmon();
 	const navigate = useNavigate();
 	const onDeleteBtnClick = () => {
 		if (hostId == null) return;

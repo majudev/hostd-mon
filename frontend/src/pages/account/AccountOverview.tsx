@@ -1,5 +1,5 @@
 import React from 'react';
-import {HostDmonContext, useHostDmon} from '@/context/HostDmonContext';
+import {useHostDmon} from '@/context/HostDmonContext';
 import {Grid} from '@mui/material';
 import AccountSettingsForm from '@/pages/account/AccountSettingsForm';
 import {useParams} from 'react-router-dom';
@@ -8,7 +8,7 @@ import AddHost from '@/pages/host/AddHost';
 import Panel from '@/components/Panel';
 
 const AccountOverview: React.FC = () => {
-	const {currentUser} = useHostDmon() as HostDmonContext;
+	const {currentUser} = useHostDmon();
 
 	if (currentUser == null) return <></>;
 

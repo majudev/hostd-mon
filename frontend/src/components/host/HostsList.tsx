@@ -2,14 +2,13 @@ import * as React from 'react';
 import ListSubheader from '@mui/material/ListSubheader';
 import ListItemButton from '@mui/material/ListItemButton';
 import AddIcon from '@mui/icons-material/Add';
-import ListItemText from '@mui/material/ListItemText';
-import {HostDmonContext, useHostDmon} from '@/context/HostDmonContext.tsx';
-import {Box, Button} from '@mui/material';
-import Host from '@/types/Host.ts';
-import RouterLink from '@/components/RouterLink.tsx';
+import {Box, Button, ListItemText} from '@mui/material';
+import {useHostDmon} from '@/context/HostDmonContext';
+import Host from '@/types/Host';
+import RouterLink from '@/components/RouterLink';
 
 const HostsList = () => {
-	const {hosts} = useHostDmon() as HostDmonContext;
+	const {hosts} = useHostDmon();
 
 	return <>
 		<ListSubheader component="div" inset>
