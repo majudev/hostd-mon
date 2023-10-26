@@ -1,16 +1,16 @@
 import React, {useEffect, useState} from 'react';
-import {HostDmonContext, useHostDmon} from '@/context/HostDmonContext.tsx';
+import {useHostDmon} from '@/context/HostDmonContext';
 import {useNavigate, useSearchParams} from 'react-router-dom';
 import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
 import {Box, Button, Typography} from '@mui/material';
 import config from '@/config';
 import {getUser} from '@/api/user';
-import User from '@/types/User.ts';
+import User from '@/types/User';
 
 const Login: React.FC = () => {
 	const navigate = useNavigate();
-	const {currentUser, setCurrentUser} = useHostDmon() as HostDmonContext;
+	const {currentUser, setCurrentUser} = useHostDmon();
 	const [loading, setLoading] = useState<boolean>(false);
 
 	const [searchParams, setSearchParams] = useSearchParams();

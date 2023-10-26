@@ -1,19 +1,38 @@
 import React, {useEffect, useState} from 'react';
-import Title from '@/components/Title.tsx';
-import {HostDmonContext, useHostDmon} from '@/context/HostDmonContext.tsx';
-import Host from '@/types/Host.ts';
+import Title from '@/components/Title';
+import {useHostDmon} from '@/context/HostDmonContext';
+import Host from '@/types/Host';
 import {useParams} from 'react-router-dom';
-import HostConfigForm, {HostConfigFormFields} from '@/components/host/HostConfigForm.tsx';
-import {updateHost} from '@/api/host';
+import HostConfigForm, {HostConfigFormFields} from '@/components/host/HostConfigForm';
+import {getHostById, updateHost} from '@/api/host';
 import Grid from '@mui/material/Grid';
-import DeleteHostButton from '@/components/host/DeleteHostButton.tsx';
-import {getErrorMessageIfHostParamsNotValid} from '@/utils/hostsParams/getErrorMessageIfHostParamsNotValid.ts';
+import DeleteHostButton from '@/components/host/DeleteHostButton';
+import {getErrorMessageIfHostParamsNotValid} from '@/utils/hostsParams/getErrorMessageIfHostParamsNotValid';
 
 const EditHost: React.FC = () => {
 	const {id: hostId} = useParams();
-	const {hosts, setHosts} = useHostDmon() as HostDmonContext;
+	const {hosts, setHosts} = useHostDmon();
 
-	const hostToEdit = hosts?.find((host: Host) => host.id === parseInt('' + hostId));
+	if (hosts == null) return <></>;
+
+	const foundHost = hosts.find((host: Host) => host.id === parseInt('' + hostId));
+	const editingMyHost = foundHost != null;
+	const [hostToEdit, setHostToEdit] = useState<Host | null>(foundHost ?? null);
+
+	useEffect(() => {
+		if (hostId == null) return;
+		if (hostToEdit != null) return;
+
+		getHostById(parseInt(hostId)).then(res => {
+			setHostToEdit(res.data);
+		}).catch(error => {
+			console.error(error);
+
+			const {data} = error?.response;
+			alert(data?.message ?? error ?? 'Server error');
+		});
+
+	}, [hostId, hostToEdit]);
 
 	const [defaultFormValues, setDefaultFormValues] = useState<HostConfigFormFields | null>(null);
 
@@ -67,7 +86,7 @@ const EditHost: React.FC = () => {
 
 			const updatedHost = res?.data;
 
-			setHosts(prev => {
+			editingMyHost && setHosts(prev => {
 				if (prev == null) return null;
 
 				return prev.map(host => host.id === parseInt(hostId) ? updatedHost : host);
@@ -92,8 +111,8 @@ const EditHost: React.FC = () => {
 			<Grid item xs={12} md={6}>
 				<Title>Edit {hostToEdit?.name ?? `host #${hostId}`}</Title>
 			</Grid>
-			<Grid item xs={12} md={6} style={{ display: 'flex', justifyContent: 'flex-end' }}>
-				<DeleteHostButton />
+			<Grid item xs={12} md={6} style={{display: 'flex', justifyContent: 'flex-end'}}>
+				<DeleteHostButton/>
 			</Grid>
 		</Grid>
 

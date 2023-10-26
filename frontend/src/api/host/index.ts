@@ -11,13 +11,21 @@ export const getUptimeByHostId = async ({hostId, from, to}: {
 	return data;
 }
 
+export const getHostById = async (hostId: number) => {
+	const {data} = await api.get(`/host/${hostId}`);
+	return data;
+};
+
 export const updateHost = async (host: Host) => {
 	const {data} = await api.patch(`/host/${host.id}`, host);
 	return data;
 }
 
-export const createHost = async (host: Omit<Host, 'id'>) => {
-	const {data} = await api.post('/host/new', host);
+export const createHost = async (host: Omit<Host, 'id'>, userId?: number) => {
+	const {data} = await api.post('/host/new', {
+		...host,
+		userId
+	});
 	return data;
 }
 

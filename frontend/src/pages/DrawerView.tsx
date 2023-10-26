@@ -1,22 +1,23 @@
-import * as React from 'react';
+import React, {ReactNode, useState} from 'react';
 import {styled, createTheme, ThemeProvider} from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import MuiDrawer from '@mui/material/Drawer';
-import Box from '@mui/material/Box';
-import MuiAppBar, {AppBarProps as MuiAppBarProps} from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import List from '@mui/material/List';
-import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import Badge from '@mui/material/Badge';
+import {
+	Container,
+	Badge,
+	IconButton,
+	Divider,
+	Typography,
+	Toolbar,
+	CssBaseline,
+	Box,
+	Drawer as MuiDrawer,
+	AppBar as MuiAppBar,
+	AppBarProps as MuiAppBarProps,
+} from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import {MainListItems} from '@/components/demo/ListItems.tsx';
-import HostsList from '@/components/host/HostsList.tsx';
-import {ReactNode} from 'react';
-import Container from '@mui/material/Container';
+import SidebarNavigation from '@/components/sidebar/SidebarNavigation';
+import {useSidebar} from '@/context/SidebarContext.tsx';
 
 const drawerWidth: number = 240;
 
@@ -77,16 +78,16 @@ type DraweViewProps = {
 };
 
 const DrawerView: React.FC<DraweViewProps> = ({children, pageTitle}) => {
-	const [open, setOpen] = React.useState(true);
+	const {isSidebarOpen, setIsSidebarOpen} = useSidebar();
 	const toggleDrawer = () => {
-		setOpen(!open);
+		setIsSidebarOpen(prev => !prev);
 	};
 
 	return (
 		<ThemeProvider theme={defaultTheme}>
 			<Box sx={{display: 'flex'}}>
 				<CssBaseline/>
-				<AppBar position="absolute" open={open}>
+				<AppBar position="absolute" open={isSidebarOpen}>
 					<Toolbar
 						sx={{
 							pr: '24px', // keep right padding when drawer closed
@@ -99,7 +100,7 @@ const DrawerView: React.FC<DraweViewProps> = ({children, pageTitle}) => {
 							onClick={toggleDrawer}
 							sx={{
 								marginRight: '36px',
-								...(open && {display: 'none'}),
+								...(isSidebarOpen && {display: 'none'}),
 							}}
 						>
 							<MenuIcon/>
@@ -124,7 +125,7 @@ const DrawerView: React.FC<DraweViewProps> = ({children, pageTitle}) => {
 
 					variant="permanent"
 					anchor="left"
-					open={open}
+					open={isSidebarOpen}
 				>
 					<Toolbar
 						sx={{
@@ -138,12 +139,10 @@ const DrawerView: React.FC<DraweViewProps> = ({children, pageTitle}) => {
 							<ChevronLeftIcon/>
 						</IconButton>
 					</Toolbar>
+
 					<Divider/>
-					<List component="nav">
-						<HostsList/>
-						<Divider sx={{my: 1}}/>
-						<MainListItems/>
-					</List>
+
+					<SidebarNavigation/>
 				</Drawer>
 				<Box
 					component="main"

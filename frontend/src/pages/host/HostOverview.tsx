@@ -1,40 +1,18 @@
 import React from 'react';
-import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
-import EditHost from '@/pages/host/EditHost.tsx';
-import {useParams} from 'react-router-dom';
-import {getUptimeByHostId} from '@/api/host';
-import UptimePanel from '@/pages/host/uptime/UptimePanel.tsx';
+import EditHost from '@/pages/host/EditHost';
+import UptimePanel from '@/pages/host/uptime/UptimePanel';
+import Panel from '@/components/Panel';
 
 const HostOverview: React.FC = () => {
-	// const {id: hostId} = useParams();
-
 	return <Grid container spacing={3}>
-		<Grid item xs={12} md={12} lg={12}>
-			<Paper
-				sx={{
-					p: 2,
-					display: 'flex',
-					flexDirection: 'column',
-					// height: 240,
-				}}
-			>
-				<UptimePanel />
-			</Paper>
-		</Grid>
+		<Panel item xs={12} md={12} lg={12}>
+			<UptimePanel/>
+		</Panel>
 
-		<Grid item xs={6} md={6} lg={6}>
-			<Paper
-				sx={{
-					p: 2,
-					display: 'flex',
-					flexDirection: 'column',
-					// height: 240,
-				}}
-			>
-				<EditHost/>
-			</Paper>
-		</Grid>
+		<Panel item xs={6} md={6} lg={6}>
+			<EditHost/>
+		</Panel>
 	</Grid>;
 };
 
