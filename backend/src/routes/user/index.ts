@@ -9,6 +9,27 @@ const prisma = new PrismaClient();
 router.get('/:id', async (req: Request, res: Response) => {
     if(!check_login(res)) return;
 
+    if(req.params.id === 'all'){
+        if(!res.locals.auth_user.admin){
+            fail_no_permissions(res, "you don't have permissions to obtain userlist");
+            return;
+        }
+
+        const users = await prisma.user.findFirst({
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                admin: true,
+            },
+        });
+
+        res.status(200).json({
+            status: "success",
+            data: users
+        }).end();
+    }
+
     var userId: number = parseInt(req.params.id === 'me' ? res.locals.auth_user.userId : req.params.id);
 
     if(Number.isNaN(userId)) {
