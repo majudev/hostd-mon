@@ -52,14 +52,14 @@ const ManageUsers: React.FC = () => {
 								title={`Click to edit account of ${user.name}`}
 								sx={{cursor: 'pointer'}}
 							>
-								<TableCell>{user.id}</TableCell>
-								<TableCell>{user.name}</TableCell>
-								<TableCell>{user.email}</TableCell>
-								<TableCell>{user.admin ? 'Yes' : 'No'}</TableCell>
-								<TableCell>{!user.globallyDisableEmailAlerts ? 'Yes' : 'No'}</TableCell>
-								<TableCell>{user.alertEmail || '-'}</TableCell>
-								<TableCell>{!user.globallyDisablePhoneAlerts ? 'Yes' : 'No'}</TableCell>
-								<TableCell>{user.alertPhoneNumber || '-'}</TableCell>
+								<TableCell>{user.id ?? '-'}</TableCell>
+								<TableCell>{user.name ?? '-'}</TableCell>
+								<TableCell>{user.email ?? '-'}</TableCell>
+								<TableCell>{user.admin ? 'Y' : 'N'}</TableCell>
+								<TableCell>{!user.globallyDisableEmailAlerts ? 'Y' : 'N'}</TableCell>
+								<TableCell>{user.alertEmail ?? '-'}</TableCell>
+								<TableCell>{!user.globallyDisablePhoneAlerts ? 'Y' : 'N'}</TableCell>
+								<TableCell>{user.alertPhoneNumber ?? '-'}</TableCell>
 							</TableRow>
 						))}
 					</TableBody>

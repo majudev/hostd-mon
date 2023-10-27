@@ -1,7 +1,7 @@
 import api from '@/api';
-import Host from '@/types/Host.ts';
-import {AccountSettingsFormFields} from '@/pages/account/AccountSettingsForm.tsx';
-import User from '@/types/User.ts';
+import Host from '@/types/Host';
+import {AccountSettingsFormFields} from '@/components/account/AccountSettingsForm';
+import User from '@/types/User';
 
 export const getHostsByUserId = async (userId: number) => {
 	try {
@@ -36,14 +36,18 @@ export const updateUserById = async (userId: number, fieldsToUpdate: AccountSett
 };
 
 export const getAllUsers = async () => {
+	type IncomingUser = Pick<User, 'id' | 'name' | 'email' | 'admin'>;
+
 	try {
-		const {data: res} = await api.get('/user/all');
+		// const {data: res} = await api.get('/user/all'); // TODO: uncomment this line
+		const res = {data: [{id: 1}, {id: 2}, {id: 3}, {id: 4}, {id: 5}]} as {data: Array<IncomingUser>}; // TODO: remove this line
 
+		const requestPromises = res.data.map((user: IncomingUser) => api.get(`/user/${user.id}`).catch(error => error));
+		const results = await Promise.all(requestPromises);
 
-		const requests = res.data.map((user: Pick<User, 'id' | 'name' | 'email' | 'admin'>) => api.get(`/user/${user.id}`));
-		const responses = await Promise.all(requests);
+		const validResults = results.filter(result => !(result instanceof Error));
 
-		const users = responses.map(res => res.data.data) as Array<User>;
+		const users = validResults.map(res => res.data.data) as Array<User>;
 
 		users.sort((a, b) => a.id > b.id ? 1 : -1);
 

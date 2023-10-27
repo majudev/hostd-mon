@@ -1,16 +1,15 @@
 import React, {useEffect, useState} from 'react';
-import formatDate from '@/utils/formatDate';
+import formatDate from '@/utils/formatDate.ts';
 import {ScatterChart, Scatter, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell} from 'recharts';
 import {v4 as uuidv4} from 'uuid';
-import {Box, Typography} from '@mui/material';
-import Grid from '@mui/material/Grid';
+import {Box, Typography, Grid} from '@mui/material';
 import {UptimeResponse, UptimeResponseDataObject} from '@/types/Uptime';
 import {getUptimeByHostId} from '@/api/host';
 import config from '@/config';
 import {useParams} from 'react-router-dom';
 import subtractTimeFromDate from '@/utils/subtractTimeFromDate';
 import Duration from '@/types/Duration';
-import Satellite from '@/types/Satellite.ts';
+import Satellite from '@/types/Satellite';
 import {getSatellites} from '@/api/satellites';
 
 type ChartDataRecord = {

@@ -1,5 +1,5 @@
 import api from '@/api';
-import Host from '@/types/Host.ts';
+import Host from '@/types/Host';
 
 export const getUptimeByHostId = async ({hostId, from, to}: {
 	hostId: number,
@@ -14,6 +14,23 @@ export const getUptimeByHostId = async ({hostId, from, to}: {
 export const getHostById = async (hostId: number) => {
 	const {data} = await api.get(`/host/${hostId}`);
 	return data;
+};
+
+export const getHostsByIds = async (hostsIds: Array<number>) => {
+	try {
+		const requestPromises = hostsIds.map(hostId => api.get(`/host/${hostId}`).catch(error => error));
+		const results = await Promise.all(requestPromises);
+
+		const validResults = results.filter(result => (!(result instanceof Error)));
+
+		const hosts = validResults.map(res => res.data.data) as Array<Host>;
+
+		hosts.sort((a, b) => a.id > b.id ? 1 : -1);
+
+		return hosts;
+	} catch (error) {
+		return Promise.reject(error);
+	}
 };
 
 export const updateHost = async (host: Host) => {

@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import Grid from '@mui/material/Grid';
 import {Button, ButtonGroup} from '@mui/material';
 import Title from '@/components/Title.tsx';
-import UptimeChart from '@/pages/host/uptime/UptimeChart.tsx';
+import UptimeChart from '@/components/host/uptime/UptimeChart.tsx';
 import {v4 as uuidv4} from 'uuid';
 import config from '@/config';
 import Duration from '@/types/Duration';

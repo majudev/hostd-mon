@@ -7,6 +7,7 @@ type User = {
 	alertPhoneNumber: string | null,
 	globallyDisableEmailAlerts: boolean,
 	globallyDisablePhoneAlerts: boolean,
+	Hosts?: Array<{id: number}>
 };
 
 export default User;
