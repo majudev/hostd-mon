@@ -1,9 +1,9 @@
 import api from '@/api';
 import Host from '@/types/Host.ts';
 import {AccountSettingsFormFields} from '@/pages/account/AccountSettingsForm.tsx';
+import User from '@/types/User.ts';
 
 export const getHostsByUserId = async (userId: number) => {
-
 	try {
 		const {data: res} = await api.get(`/user/${userId}/hosts`);
 
@@ -36,6 +36,19 @@ export const updateUserById = async (userId: number, fieldsToUpdate: AccountSett
 };
 
 export const getAllUsers = async () => {
-	const {data} = await api.get(`/users`);
-	return data;
+	try {
+		const {data: res} = await api.get('/user/all');
+
+
+		const requests = res.data.map((user: Pick<User, 'id' | 'name' | 'email' | 'admin'>) => api.get(`/user/${user.id}`));
+		const responses = await Promise.all(requests);
+
+		const users = responses.map(res => res.data.data) as Array<User>;
+
+		users.sort((a, b) => a.id > b.id ? 1 : -1);
+
+		return users;
+	} catch (error) {
+		return Promise.reject(error);
+	}
 }

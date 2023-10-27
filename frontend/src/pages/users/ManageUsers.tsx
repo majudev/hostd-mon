@@ -1,19 +1,32 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {Navigate, useNavigate} from 'react-router-dom';
 import {useHostDmon} from '@/context/HostDmonContext';
 import {Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material';
 import {v4 as uuidv4} from 'uuid';
 import User from '@/types/User';
 import Panel from '@/components/Panel.tsx';
+import {getAllUsers} from '@/api/user';
 
 const ManageUsers: React.FC = () => {
 	const {currentUser} = useHostDmon();
 	const navigate = useNavigate();
 
-	const users = [currentUser, currentUser, currentUser] as Array<User>;
-
 	if (currentUser == null) return <></>;
 	if (!currentUser.admin) return <Navigate to={`/user/${currentUser.id}`}/>;
+
+	const [users, setUsers] = useState<Array<User> | null>(null);
+	const [isLoading, setIsLoading] = useState<boolean>(false);
+
+	useEffect(() => {
+		if (users != null) return;
+		if (isLoading) return;
+
+		setIsLoading(true);
+
+		getAllUsers().then(setUsers);
+
+		setIsLoading(false);
+	}, []);
 
 	return <Grid container spacing={3}>
 		<Panel item xs={12} md={12} lg={12}>
@@ -32,7 +45,7 @@ const ManageUsers: React.FC = () => {
 						</TableRow>
 					</TableHead>
 					<TableBody>
-						{users.map((user) => (
+						{users?.map((user) => (
 							<TableRow
 								key={uuidv4()}
 								onClick={() => navigate(`/user/${user.id}`)}
