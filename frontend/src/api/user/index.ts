@@ -39,8 +39,7 @@ export const getAllUsers = async () => {
 	type IncomingUser = Pick<User, 'id' | 'name' | 'email' | 'admin'>;
 
 	try {
-		// const {data: res} = await api.get('/user/all'); // TODO: uncomment this line
-		const res = {data: [{id: 1}, {id: 2}, {id: 3}, {id: 4}, {id: 5}]} as {data: Array<IncomingUser>}; // TODO: remove this line
+		const {data: res} = await api.get('/user/all');
 
 		const requestPromises = res.data.map((user: IncomingUser) => api.get(`/user/${user.id}`).catch(error => error));
 		const results = await Promise.all(requestPromises);
