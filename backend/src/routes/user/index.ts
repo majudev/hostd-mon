@@ -15,7 +15,7 @@ router.get('/:id', async (req: Request, res: Response) => {
             return;
         }
 
-        const users = await prisma.user.findFirst({
+        const users = await prisma.user.findMany({
             select: {
                 id: true,
                 name: true,
