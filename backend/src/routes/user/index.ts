@@ -24,10 +24,11 @@ router.get('/:id', async (req: Request, res: Response) => {
             },
         });
 
-        return res.status(200).json({
+        res.status(200).json({
             status: "success",
             data: users
         }).end();
+        return;
     }
 
     var userId: number = parseInt(req.params.id === 'me' ? res.locals.auth_user.userId : req.params.id);
