@@ -129,7 +129,7 @@ async function workerFunction(){
 
     console.debug('Sent alerts - took ' + (afterHostsProcessed - startTime).toFixed(3) + 'ms, including:');
     console.debug('- ' + (afterSatellitesFound-startTime).toFixed(3) + 'ms to retrieve satellites from DB');
-    console.debug('- ' + (afterHostsFound-afterSatellitesFound).toFixed(3) + 'ms to retrieve all hosts with extramon monitoring enabled');
+    console.debug('- ' + (afterHostsFound-afterSatellitesFound).toFixed(3) + 'ms to retrieve all hosts with rhp monitoring enabled');
     console.debug('- ' + (afterHostsProcessed-afterHostsFound).toFixed(3) + 'ms to send all notifications');
 
     (parentPort as MessagePort).postMessage(dataToHash);
