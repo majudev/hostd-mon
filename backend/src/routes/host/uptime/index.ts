@@ -180,7 +180,13 @@ router.get('/period/:from/:to', async (req: Request, res: Response) => {
     })();
 
     uptimeMap.RHPUptimeEntries = await rhpPromise;
-    uptimeMap.ExtramonUptimeEntries = await extramonPromise;
+    uptimeMap.ExtramonUptimeEntries = (await extramonPromise);
+    uptimeMap.RHPUptimeEntries = uptimeMap.RHPUptimeEntries.filter(entry => {
+        return entry !== undefined;
+    });
+    uptimeMap.ExtramonUptimeEntries = uptimeMap.ExtramonUptimeEntries.filter(entry => {
+        return entry !== undefined;
+    });
     console.log(uptimeMap.ExtramonUptimeEntries);
 
     res.status(200).json({
