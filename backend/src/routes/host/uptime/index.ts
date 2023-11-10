@@ -152,9 +152,10 @@ router.get('/period/:from/:to', async (req: Request, res: Response) => {
         const timestampUniqArray = [...new Set(timestampArray)];
         console.log('timestampUniqArray');
         console.log(timestampUniqArray);
-        return timestampUniqArray.map(timestamp => {
+        return timestampUniqArray.map((timestamp, i) => {
             console.log('timestamp: ');
             console.log(timestamp);
+            console.log(i)
             const entries = extramonUptimeEntries.filter(entry => {
                 return entry.timestamp.getTime() == timestamp.getTime();
             });
