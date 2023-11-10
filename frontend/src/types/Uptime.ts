@@ -15,5 +15,5 @@ export interface ExtramonUptimeEntry {
 }
 
 export interface Satellites {
-	[key: string]:   boolean;
+	[key: string]:   string;
 }
