@@ -113,11 +113,11 @@ const DrawerView: React.FC<DraweViewProps> = ({children, pageTitle}) => {
 						>
 							{pageTitle ?? 'Dashboard'}
 						</Typography>
-						<IconButton color="inherit">
-							<Badge badgeContent={4} color="secondary">
-								<NotificationsIcon/>
-							</Badge>
-						</IconButton>
+						{/*<IconButton color="inherit">*/}
+						{/*	<Badge badgeContent={4} color="secondary">*/}
+						{/*		<NotificationsIcon/>*/}
+						{/*	</Badge>*/}
+						{/*</IconButton>*/}
 					</Toolbar>
 				</AppBar>
 				<Drawer

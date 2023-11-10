@@ -83,7 +83,7 @@ const AccountSettingsForm: React.FC<HostConfigFormProps> = ({
 				sx={{mb: 2}}
 			/>
 
-			<FormControlLabel disabled={disableAdminSwitch || disableForm} title={disableAdminSwitch ? 'You can not change your admin status!' : undefined} control={
+			<FormControlLabel disabled={disableAdminSwitch || disableForm} title={disableAdminSwitch ? 'You can not change your admin status' : undefined} control={
 				<Switch name="admin" onChange={e => {
 					handleInputChange(e);
 					onCheckboxChange && onCheckboxChange(e);
