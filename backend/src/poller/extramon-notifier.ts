@@ -88,8 +88,8 @@ async function workerFunction(){
             where: {
                 Alert: {
                     none: {
-
-                    }
+                        
+                    },
                 },
             }
         });
@@ -101,9 +101,9 @@ async function workerFunction(){
             //if(lastUptimeEntry.Alert.length > 0) return;
 
             const inactivityPeriod = (timestamp.getTime() - lastUptimeEntry.timestamp.getTime()) / 1000;
-            const inactivityPeriodString = (inactivityPeriod < 60) ? (inactivityPeriod + 's') : 
-                                          ((inactivityPeriod/60 < 60) ? ((inactivityPeriod / 60) + 'min') : (
-                                           (inactivityPeriod/3600 < 24) ? ((inactivityPeriod/3600) + 'h') : ((inactivityPeriod/3600/24) + 'd')
+            const inactivityPeriodString = (inactivityPeriod < 60) ? (Math.floor(inactivityPeriod) + 's') : 
+                                          ((inactivityPeriod/60 < 60) ? (Math.floor(inactivityPeriod / 60) + 'min') : (
+                                           (inactivityPeriod/3600 < 24) ? (Math.floor(inactivityPeriod/3600) + 'h') : (Math.floor(inactivityPeriod/3600/24) + 'd')
                                           ));
 
             var sentTo = new Array();
