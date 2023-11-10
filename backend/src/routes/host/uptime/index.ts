@@ -150,19 +150,11 @@ router.get('/period/:from/:to', async (req: Request, res: Response) => {
     const extramonPromise = (async () => {
         const timestampArray = extramonUptimeEntries.map((entry) => entry.timestamp);
         const timestampUniqArray = [...new Set(timestampArray)];
-        //const timestampSet = new Set(timestampArray);
-        //const timestampUniqArray = Array.from(timestampSet);
-        //console.log('timestampUniqArray');
-        //console.log(timestampUniqArray);
         return timestampUniqArray.map((timestamp, i) => {
-            //console.log('timestamp: ');
-            //console.log(timestamp);
-            //console.log(i)
+            if(i % 2 == 1) return undefined;
             const entries = extramonUptimeEntries.filter(entry => {
                 return entry.timestamp.getTime() == timestamp.getTime();
             });
-            //console.log('entries');
-            //console.log(entries);
             const satellitesMap = satellitesArray.reduce((previous, current) => {
                 return {
                     ...previous,
@@ -171,8 +163,6 @@ router.get('/period/:from/:to', async (req: Request, res: Response) => {
                     }) !== undefined,
                 };
             }, {});
-            //console.log('satellitesMap');
-            //console.log(satellitesMap);
             return {
                 timestamp: timestamp,
                 satellites: satellitesMap,
