@@ -15,5 +15,12 @@ export interface ExtramonUptimeEntry {
 }
 
 export interface Satellites {
-	[key: string]:   string;
+	[key: string]:   State;
+}
+
+export interface State {
+	state: string;
+	ping: boolean;
+	rhpv2: boolean | undefined; //Only for RHP
+	rhpv3: boolean | undefined; //Only for RHP
 }
