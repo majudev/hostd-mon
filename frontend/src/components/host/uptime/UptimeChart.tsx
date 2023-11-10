@@ -99,7 +99,7 @@ const UptimeChart: React.FC<UptimeChartProps> = ({selectedDuration, loading, set
 			entries: uptimeEntries.ExtramonUptimeEntries.map(entry => {
 				return {
 					datetime: formatDate(entry.timestamp),
-					up: entry.satellites[satellite.name] ? 1 : 0,
+					up: (entry.satellites[satellite.name].state === 'good') ? 1 : 0,
 				}
 			})
 		};

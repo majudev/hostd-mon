@@ -137,10 +137,24 @@ router.get('/period/:from/:to', async (req: Request, res: Response) => {
                     return entry.Satellite.name === current;
                 });
 
-                ///TODO: make three-state responses
-                var state = false;
+                ///TODO: make three-state responses, uncomment code below
+                /*var state = false;
                 if(obj !== undefined){
                     if(obj.ping && obj.rhpv2 && obj.rhpv3) state = true;
+                }*/
+                
+                var state = {
+                    state: 'fail',
+                    ping: false,
+                    rhpv2: false,
+                    rhpv3: false,
+                };
+                if(obj !== undefined){
+                    state.ping = obj.ping;
+                    state.rhpv2 = obj.rhpv2;
+                    state.rhpv3 = obj.rhpv3;
+                    if(obj.ping && obj.rhpv2 && obj.rhpv3) state.state = 'good';
+                    else if(obj.ping || obj.rhpv2 || obj.rhpv3) state.state = 'warn';
                 }
 
                 return {
@@ -165,11 +179,29 @@ router.get('/period/:from/:to', async (req: Request, res: Response) => {
                 return entry.timestamp.getTime() == timestamp.getTime();
             });
             const satellitesMap = satellitesArray.reduce((previous, current) => {
+                const obj = entries.find(entry => {
+                    return entry.Satellite.name === current;
+                });
+                
+                ///TODO: make three-state responses, uncomment code below
+                /*var state = false;
+                if(obj !== undefined){
+                    state = true;
+                }*/
+                
+                var state = {
+                    state: 'fail',
+                    ping: false,
+                };
+                if(obj !== undefined){
+                    state.state = 'good';
+                    state.ping = true;
+                }
+                
+
                 return {
                     ...previous,
-                    [current]: entries.find(entry => {
-                        return entry.Satellite.name === current;
-                    }) !== undefined,
+                    [current]: state,
                 };
             }, {});
             return {
@@ -187,7 +219,6 @@ router.get('/period/:from/:to', async (req: Request, res: Response) => {
     uptimeMap.ExtramonUptimeEntries = uptimeMap.ExtramonUptimeEntries.filter(entry => {
         return entry !== undefined;
     });
-    console.log(uptimeMap.ExtramonUptimeEntries);
 
     res.status(200).json({
         status: "success",
