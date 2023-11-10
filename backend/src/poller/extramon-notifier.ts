@@ -85,13 +85,6 @@ async function workerFunction(){
             orderBy: {
                 timestamp: 'desc',
             },
-            where: {
-                Alert: {
-                    none: {
-                        
-                    },
-                },
-            }
         });
 
         if(lastUptimeEntry === null) return;
