@@ -149,20 +149,20 @@ router.get('/period/:from/:to', async (req: Request, res: Response) => {
 
     const extramonPromise = (async () => {
         const timestampArray = extramonUptimeEntries.map((entry) => entry.timestamp);
-        //const timestampUniqArray = [...new Set(timestampArray)];
-        const timestampSet = new Set(timestampArray);
-        const timestampUniqArray = Array.from(timestampSet);
-        console.log('timestampUniqArray');
-        console.log(timestampUniqArray);
+        const timestampUniqArray = [...new Set(timestampArray)];
+        //const timestampSet = new Set(timestampArray);
+        //const timestampUniqArray = Array.from(timestampSet);
+        //console.log('timestampUniqArray');
+        //console.log(timestampUniqArray);
         return timestampUniqArray.map((timestamp, i) => {
-            console.log('timestamp: ');
-            console.log(timestamp);
-            console.log(i)
+            //console.log('timestamp: ');
+            //console.log(timestamp);
+            //console.log(i)
             const entries = extramonUptimeEntries.filter(entry => {
                 return entry.timestamp.getTime() == timestamp.getTime();
             });
-            console.log('entries');
-            console.log(entries);
+            //console.log('entries');
+            //console.log(entries);
             const satellitesMap = satellitesArray.reduce((previous, current) => {
                 return {
                     ...previous,
@@ -171,8 +171,8 @@ router.get('/period/:from/:to', async (req: Request, res: Response) => {
                     }) !== undefined,
                 };
             }, {});
-            console.log('satellitesMap');
-            console.log(satellitesMap);
+            //console.log('satellitesMap');
+            //console.log(satellitesMap);
             return {
                 timestamp: timestamp,
                 satellites: satellitesMap,
@@ -181,7 +181,7 @@ router.get('/period/:from/:to', async (req: Request, res: Response) => {
     })();
 
     uptimeMap.RHPUptimeEntries = await rhpPromise;
-    uptimeMap.ExtramonUptimeEntries = await extramonPromise;
+    uptimeMap.ExtramonUptimeEntries = [...new Set(await extramonPromise)];
     console.log(uptimeMap.ExtramonUptimeEntries);
 
     res.status(200).json({
