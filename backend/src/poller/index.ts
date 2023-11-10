@@ -1,6 +1,7 @@
 import spawnExtramonWorker from './extramon-worker';
 import spawnRHPWorker from './rhp-worker';
 import spawnExtramonNotifier from './extramon-notifier';
+import spawnRHPNotifier from './rhp-notifier';
 import logger from '../utils/logger';
 import {performance} from 'perf_hooks';
 
@@ -15,6 +16,10 @@ var rhpWorkerSpawned = performance.now();
 var extramonNotifierFlag = false;
 const extramonNotifierInterval = 180;
 var extramonNotifierSpawned = performance.now();
+
+var rhpNotifierFlag = false;
+const rhpNotifierInterval = 180;
+var rhpNotifierSpawned = performance.now();
 
 function extramonWorkerScheduler(additionalTimeout: number = 0){
     setTimeout(() => {
@@ -88,6 +93,30 @@ function extramonNotifierScheduler(additionalTimeout: number = 0){
     }, extramonNotifierInterval * 1000 + additionalTimeout);
 }
 
+function rhpNotifierScheduler(additionalTimeout: number = 0){
+    setTimeout(() => {
+        rhpNotifierScheduler();
+        if(!rhpNotifierFlag){
+            logger.info('Spawning new RHPNotifier');
+            rhpNotifierSpawned = performance.now();
+
+            rhpNotifierFlag = true;
+            const worker = spawnRHPNotifier();
+            worker.on('message', (result) => {
+                logger.info('RHPNotifier finished it\'s work in ' + (performance.now() - rhpNotifierSpawned).toFixed(3) + 'ms');
+                rhpNotifierFlag = false;
+            });
+            worker.on('error', (error) => {
+                rhpNotifierFlag = false;
+                logger.error('RHPNotifier errored out:');
+                console.log(error);
+            });
+        }else{
+            logger.info('RHPNotifier hasn\'t finished work yet, not firing...');
+        }
+    }, rhpNotifierInterval * 1000 + additionalTimeout);
+}
+
 export function startScheduler(){
     logger.info('Starting ExtramonWorker scheduler (firing every ' + extramonWorkerInterval + ' seconds)');
     extramonWorkerScheduler(Math.floor(Math.random() * extramonWorkerInterval/2 * 1000));
@@ -97,6 +126,9 @@ export function startScheduler(){
 
     logger.info('Starting ExtramonNotifier scheduler (firing every ' + extramonNotifierInterval + ' seconds)');
     extramonNotifierScheduler(Math.floor(Math.random() * 10000));
+
+    logger.info('Starting RHPNotifier scheduler (firing every ' + rhpNotifierInterval + ' seconds)');
+    rhpNotifierScheduler(Math.floor(Math.random() * 10000));
 }
 
 export default startScheduler;

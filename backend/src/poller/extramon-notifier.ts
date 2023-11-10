@@ -5,16 +5,6 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-interface PingRequest {
-    data: string;
-    signature: string;
-    pubkey: string;
-};
-
-interface PingData {
-    timestamp: number;
-}
-
 function spawnExtramonNotifier() : Worker {
     const worker = new Worker(__filename, { workerData: null });
     return worker;
@@ -88,7 +78,7 @@ async function workerFunction(){
         });
 
         if(lastUptimeEntry === null) return;
-        
+
         const timestamp = new Date;
         if(lastUptimeEntry.timestamp.getTime() + lastUptimeEntry.deadtime * 1000 < timestamp.getTime()){
             if(lastUptimeEntry.Alert.length > 0) return;
@@ -123,7 +113,7 @@ async function workerFunction(){
                     userId: host.userId,
                     hostId: host.id,
                     timestamp: timestamp,
-                    message: "Your host " + host.name + " has been dead for " + inactivityPeriodString + ", so the alert has been sent.",
+                    message: "Your host " + host.name + " has not responded to extramon ping for " + inactivityPeriodString + ", so the alert was sent.",
                     sentTo: sentTo,
                 }
             });
