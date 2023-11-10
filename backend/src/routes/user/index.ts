@@ -217,6 +217,7 @@ router.get('/:id/alerts', async (req: Request, res: Response) => {
             timestamp: true,
             message: true,
             sentTo: true,
+            read: true,
             Host: {
                 select: {
                     id: true,

@@ -103,6 +103,8 @@ model Alert {
   extramonEventId       Int?
   extramonEvent         ExtramonUptimeEntry?  @relation(fields: [extramonEventId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
+  read                  Boolean               @default(false)
+
   userId                Int
   hostId                Int
   User                  User                  @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
