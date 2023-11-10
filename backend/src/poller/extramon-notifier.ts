@@ -68,11 +68,11 @@ async function workerFunction(){
                 id: true,
                 timestamp: true,
                 deadtime: true,
-                /*Alert: {
+                Alert: {
                     select: {
                         id: true,
                     }
-                },*/
+                },
                 Satellite: {
                     select: {
                         id: true,
@@ -98,7 +98,7 @@ async function workerFunction(){
 
         const timestamp = new Date;
         if(lastUptimeEntry.timestamp.getTime() + lastUptimeEntry.deadtime * 1000 < timestamp.getTime()){
-            //if(lastUptimeEntry.Alert.length > 0) return;
+            if(lastUptimeEntry.Alert.length > 0) return;
 
             const inactivityPeriod = (timestamp.getTime() - lastUptimeEntry.timestamp.getTime()) / 1000;
             const inactivityPeriodString = (inactivityPeriod < 60) ? (Math.floor(inactivityPeriod) + 's') : 
