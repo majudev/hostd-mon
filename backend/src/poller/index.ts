@@ -1,5 +1,6 @@
 import spawnExtramonWorker from './extramon-worker';
 import spawnRHPWorker from './rhp-worker';
+import spawnExtramonNotifier from './extramon-notifier';
 import logger from '../utils/logger';
 import {performance} from 'perf_hooks';
 
@@ -11,7 +12,11 @@ var rhpWorkerFlag = false;
 const rhpWorkerInterval = 60;
 var rhpWorkerSpawned = performance.now();
 
-function extramonWorkerScheduler(){
+var extramonNotifierFlag = false;
+const extramonNotifierInterval = 180;
+var extramonNotifierSpawned = performance.now();
+
+function extramonWorkerScheduler(additionalTimeout: number = 0){
     setTimeout(() => {
         extramonWorkerScheduler();
         if(!extramonWorkerFlag){
@@ -32,10 +37,10 @@ function extramonWorkerScheduler(){
         }else{
             logger.info('ExtramonWorker hasn\'t finished work yet, not firing...');
         }
-    }, extramonWorkerInterval * 1000);
+    }, extramonWorkerInterval * 1000 + additionalTimeout);
 }
 
-function rhpWorkerScheduler(){
+function rhpWorkerScheduler(additionalTimeout: number = 0){
     setTimeout(() => {
         rhpWorkerScheduler();
         if(!rhpWorkerFlag){
@@ -56,15 +61,42 @@ function rhpWorkerScheduler(){
         }else{
             logger.info('RHPWorker hasn\'t finished work yet, not firing...');
         }
-    }, rhpWorkerInterval * 1000);
+    }, rhpWorkerInterval * 1000 + additionalTimeout);
+}
+
+function extramonNotifierScheduler(additionalTimeout: number = 0){
+    setTimeout(() => {
+        extramonNotifierScheduler();
+        if(!extramonNotifierFlag){
+            logger.info('Spawning new ExtramonNotifier');
+            extramonNotifierSpawned = performance.now();
+
+            extramonNotifierFlag = true;
+            const worker = spawnExtramonNotifier();
+            worker.on('message', (result) => {
+                logger.info('ExtramonNotifier finished it\'s work in ' + (performance.now() - extramonNotifierSpawned).toFixed(3) + 'ms');
+                extramonNotifierFlag = false;
+            });
+            worker.on('error', (error) => {
+                extramonNotifierFlag = false;
+                logger.error('ExtramonNotifier errored out:');
+                console.log(error);
+            });
+        }else{
+            logger.info('ExtramonNotifier hasn\'t finished work yet, not firing...');
+        }
+    }, extramonNotifierInterval * 1000 + additionalTimeout);
 }
 
 export function startScheduler(){
     logger.info('Starting ExtramonWorker scheduler (firing every ' + extramonWorkerInterval + ' seconds)');
-    extramonWorkerScheduler();
+    extramonWorkerScheduler(Math.floor(Math.random() * extramonWorkerInterval/2 * 1000));
 
     logger.info('Starting RHPWorker scheduler (firing every ' + rhpWorkerInterval + ' seconds)');
-    rhpWorkerScheduler();
+    rhpWorkerScheduler(Math.floor(Math.random() * rhpWorkerInterval/2 * 1000));
+
+    logger.info('Starting ExtramonNotifier scheduler (firing every ' + extramonNotifierInterval + ' seconds)');
+    extramonNotifierScheduler(Math.floor(Math.random() * 10000));
 }
 
 export default startScheduler;

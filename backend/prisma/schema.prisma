@@ -20,6 +20,9 @@ model Host {
   rhpDeadtime           Int                   @default(300)
   extramonDeadtime      Int                   @default(300)
 
+  alertPhone            Boolean               @default(true)
+  alertEmail            Boolean               @default(true)
+
   userId                Int
   User                  User                  @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   RHPUptimeEntries      RHPUptimeEntry[]
@@ -41,6 +44,8 @@ model RHPUptimeEntry {
   Satellite   Satellite @relation(fields: [satelliteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   hostId      Int
   Host        Host      @relation(fields: [hostId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  Alert       Alert[]    
 }
 
 model ExtramonUptimeEntry {
@@ -53,6 +58,8 @@ model ExtramonUptimeEntry {
   Satellite   Satellite @relation(fields: [satelliteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   hostId      Int
   Host        Host      @relation(fields: [hostId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  Alert       Alert[]
 }
 
 model User {
@@ -80,19 +87,24 @@ model Satellite {
 }
 
 model Settings {
-  id  Int @id @default(autoincrement())
-  key String @db.VarChar(255) @unique
-  value String @db.VarChar(255)
+  id                    Int                   @id @default(autoincrement())
+  key                   String                @db.VarChar(255) @unique
+  value                 String                @db.VarChar(255)
 }
 
 model Alert {
-  id      Int @id @default(autoincrement())
-  timestamp   DateTime  @default(now()) @db.Timestamp(6)
-  message String
-  sentTo  String[]
+  id                    Int                   @id @default(autoincrement())
+  timestamp             DateTime              @default(now()) @db.Timestamp(6)
+  message               String
+  sentTo                String[]
 
-  userId  Int
-  hostId  Int
-  User    User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  Host    Host @relation(fields: [hostId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  rhpEventId            Int?
+  rhpEvent              RHPUptimeEntry?       @relation(fields: [rhpEventId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  extramonEventId       Int?
+  extramonEvent         ExtramonUptimeEntry?  @relation(fields: [extramonEventId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  userId                Int
+  hostId                Int
+  User                  User                  @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  Host                  Host                  @relation(fields: [hostId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
