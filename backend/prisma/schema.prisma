@@ -35,7 +35,7 @@ model RHPUptimeEntry {
   rhpv2       Boolean
   rhpv3       Boolean
 
-  deadtime    Int       @default(300)
+  deadtime    Int
 
   satelliteId Int
   Satellite   Satellite @relation(fields: [satelliteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
@@ -47,7 +47,7 @@ model ExtramonUptimeEntry {
   id          Int       @id @default(autoincrement())
   timestamp   DateTime  @default(now()) @db.Timestamp(6)
 
-  deadtime    Int       @default(300)
+  deadtime    Int
 
   satelliteId Int
   Satellite   Satellite @relation(fields: [satelliteId], references: [id], onDelete: Cascade, onUpdate: Cascade)

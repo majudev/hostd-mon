@@ -140,6 +140,7 @@ async function workerFunction(){
                     },
                     select: {
                         id: true,
+                        extramonDeadtime: true,
                     }
                 });
 
@@ -170,6 +171,7 @@ async function workerFunction(){
                             timestamp: new Date(data.timestamp * 1000),
                             satelliteId: satelliteId.id,
                             hostId: hostId.id,
+                            deadtime: hostId.extramonDeadtime,
                         }
                     });
                 }

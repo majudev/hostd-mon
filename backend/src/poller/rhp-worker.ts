@@ -38,6 +38,8 @@ async function workerFunction(){
             id: true,
             rhpAddress: true,
             rhpPubkey: true,
+
+            rhpDeadtime: true,
         },
         where: {
             AND: [
@@ -89,6 +91,8 @@ async function workerFunction(){
                         rhpv3: body.rhpv3,
 
                         satelliteId: satellite.id,
+
+                        deadtime: current.rhpDeadtime,
                     }
                 });
             }catch(e){
@@ -102,6 +106,8 @@ async function workerFunction(){
                         rhpv3: false,
 
                         satelliteId: satellite.id,
+
+                        deadtime: current.rhpDeadtime,
                     }
                 });
             }
