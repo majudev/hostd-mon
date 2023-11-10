@@ -149,7 +149,9 @@ router.get('/period/:from/:to', async (req: Request, res: Response) => {
 
     const extramonPromise = (async () => {
         const timestampArray = extramonUptimeEntries.map((entry) => entry.timestamp);
-        const timestampUniqArray = [...new Set(timestampArray)];
+        //const timestampUniqArray = [...new Set(timestampArray)];
+        const timestampSet = new Set(timestampArray);
+        const timestampUniqArray = [...timestampSet];
         console.log('timestampUniqArray');
         console.log(timestampUniqArray);
         return timestampUniqArray.map((timestamp, i) => {
