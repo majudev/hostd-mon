@@ -45,7 +45,7 @@ router.get('/period/:from/:to', async (req: Request, res: Response) => {
         return;
     }
 
-    const hostPromise = prisma.host.findFirst({
+    /*const hostPromise = prisma.host.findFirst({
         where: {
             id: hostId,
             RHPUptimeEntries: {
@@ -107,19 +107,99 @@ router.get('/period/:from/:to', async (req: Request, res: Response) => {
     if(host === null){
         fail_entity_not_found(res, "host with id " + hostId + " not found");
         return;
+    }*/
+
+    const hostExists = await prisma.host.count({
+        where: {
+            id: hostId,
+        }
+    }) > 0;
+
+    if(!hostExists){
+        fail_entity_not_found(res, "host with id " + hostId + " not found");
+        return;
     }
 
+    const extramonUptimePromise = prisma.extramonUptimeEntry.findMany({
+        where: {
+            hostId: hostId,
+            timestamp: {
+                gte: from,
+                lte: to,
+            }
+        },
+        select: {
+            id: true,
+            timestamp: true,
+            Satellite: {
+                select: {
+                    //id: true,
+                    name: true,
+                }
+            },
+        },
+    });
+
+    const rhpUptimePromise = prisma.rHPUptimeEntry.findMany({
+        where: {
+            hostId: hostId,
+            timestamp: {
+                gte: from,
+                lte: to,
+            }
+        },
+        select: {
+            id: true,
+            timestamp: true,
+            ping: true,
+            rhpv2: true,
+            rhpv3: true,
+            Satellite: {
+                select: {
+                    //id: true,
+                    name: true,
+                }
+            },
+        },
+    });
+
+    const satellitesPromise = prisma.satellite.findMany({
+        select: {
+            name: true,
+        }
+    });
+
+    const satellites = await satellitesPromise;
+    if(satellites === null){
+        fail_internal_error(res, "no satellites found");
+        await extramonUptimePromise;
+        await rhpUptimePromise;
+        return;
+    }
+    const satellitesArray = satellites.map((satellite) => satellite.name);
+
+    const extramonUptimeEntries = await extramonUptimePromise;
+    const rhpUptimeEntries = await rhpUptimePromise;
+
+    /*const host = await hostPromise;
+    if(host === null){
+        fail_entity_not_found(res, "host with id " + hostId + " not found");
+        return;
+    }*/
+
+    //eof
+
     const uptimeMap = {
-        id: host.id,
+        id: hostId,
         RHPUptimeEntries: new Array(),
         ExtramonUptimeEntries: new Array(),
     };
 
     const rhpPromise = (async () => {
-        const timestampArray = host.RHPUptimeEntries.map((entry) => entry.timestamp);
+        const timestampArray = rhpUptimeEntries.map((entry) => entry.timestamp);
         const timestampUniqArray = [...new Set(timestampArray)];
         return timestampUniqArray.map(timestamp => {
-            const entries = host.RHPUptimeEntries.filter(entry => {
+            const entries = rhpUptimeEntries.filter(entry => {
                 return entry.timestamp.getTime() == timestamp.getTime();
             });
             const satellitesMap = satellitesArray.reduce((previous, current) => {
@@ -140,10 +220,10 @@ router.get('/period/:from/:to', async (req: Request, res: Response) => {
     })();
 
     const extramonPromise = (async () => {
-        const timestampArray = host.ExtramonUptimeEntries.map((entry) => entry.timestamp);
+        const timestampArray = extramonUptimeEntries.map((entry) => entry.timestamp);
         const timestampUniqArray = [...new Set(timestampArray)];
         return timestampUniqArray.map(timestamp => {
-            const entries = host.ExtramonUptimeEntries.filter(entry => {
+            const entries = extramonUptimeEntries.filter(entry => {
                 return entry.timestamp.getTime() == timestamp.getTime();
             });
             const satellitesMap = satellitesArray.reduce((previous, current) => {
