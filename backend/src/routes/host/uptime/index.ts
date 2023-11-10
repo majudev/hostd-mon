@@ -126,22 +126,30 @@ router.get('/period/:from/:to', async (req: Request, res: Response) => {
     const rhpPromise = (async () => {
         const timestampArray = rhpUptimeEntries.map((entry) => entry.timestamp);
         const timestampUniqArray = [...new Set(timestampArray)];
-        return timestampUniqArray.map(timestamp => {
+        return timestampUniqArray.map((timestamp, i) => {
+            if(i % 2 == 1) return undefined; //idk but works
+
             const entries = rhpUptimeEntries.filter(entry => {
                 return entry.timestamp.getTime() == timestamp.getTime();
             });
             const satellitesMap = satellitesArray.reduce((previous, current) => {
+                const obj = entries.find(entry => {
+                    return entry.Satellite.name === current;
+                });
+
+                ///TODO: make three-state responses
+                var state = false;
+                if(obj !== undefined){
+                    if(obj.ping && obj.rhpv2 && obj.rhpv3) state = true;
+                }
+
                 return {
                     ...previous,
-                    [current]: entries.find(entry => {
-                        return entry.Satellite.name === current;
-                    }) !== undefined,
+                    [current]: state,
                 };
             }, {});
             return {
-                ...entries[0],
-                id: undefined,
-                Satellite: undefined,
+                timestamp: timestamp,
                 satellites: satellitesMap,
             }
         });
@@ -151,7 +159,8 @@ router.get('/period/:from/:to', async (req: Request, res: Response) => {
         const timestampArray = extramonUptimeEntries.map((entry) => entry.timestamp);
         const timestampUniqArray = [...new Set(timestampArray)];
         return timestampUniqArray.map((timestamp, i) => {
-            if(i % 2 == 1) return undefined;
+            if(i % 2 == 1) return undefined; //idk but works
+
             const entries = extramonUptimeEntries.filter(entry => {
                 return entry.timestamp.getTime() == timestamp.getTime();
             });
@@ -171,7 +180,7 @@ router.get('/period/:from/:to', async (req: Request, res: Response) => {
     })();
 
     uptimeMap.RHPUptimeEntries = await rhpPromise;
-    uptimeMap.ExtramonUptimeEntries = [...new Set(await extramonPromise)];
+    uptimeMap.ExtramonUptimeEntries = await extramonPromise;
     console.log(uptimeMap.ExtramonUptimeEntries);
 
     res.status(200).json({
