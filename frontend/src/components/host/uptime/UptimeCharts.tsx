@@ -129,8 +129,6 @@ const UptimeCharts: React.FC<UptimeChartProps> = ({selectedDuration, loading, se
 		};
 	}) as Array<SatelliteUptimeData>;
 
-	console.log(satellitesUptimeData)
-
 	const renderTooltip = (props: any) => {
 		const {active, payload} = props;
 

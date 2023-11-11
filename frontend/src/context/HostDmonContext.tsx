@@ -2,7 +2,7 @@ import React, {useContext, useState, createContext, ReactNode, useEffect} from '
 import {getHostsByUserId, getUserAlerts} from '@/api/user';
 import User from '@/types/User';
 import Host from '@/types/Host';
-import UserAlert from '@/types/UserAlert.ts';
+import Alert from '@/types/Alert';
 
 export type HostDmonContext = {
 	currentUser: User | null,
@@ -11,8 +11,8 @@ export type HostDmonContext = {
 	hosts: Array<Host> | null,
 	setHosts: React.Dispatch<React.SetStateAction<Array<Host> | null>>,
 
-	userAlerts: Array<UserAlert> | null,
-	setUserAlerts: React.Dispatch<React.SetStateAction<Array<UserAlert> | null>>
+	userAlerts: Array<Alert> | null,
+	setUserAlerts: React.Dispatch<React.SetStateAction<Array<Alert> | null>>
 };
 
 const HostDmonContext = createContext<HostDmonContext | null>(null);
@@ -24,7 +24,7 @@ export const useHostDmon = (): HostDmonContext => {
 export const HostDmonProvider = ({children}: { children: ReactNode }) => {
 	const [currentUser, setCurrentUser] = useState<User | null>(null);
 	const [hosts, setHosts] = useState<Array<Host> | null>(null);
-	const [userAlerts, setUserAlerts] = useState<Array<UserAlert> | null>(null);
+	const [userAlerts, setUserAlerts] = useState<Array<Alert> | null>(null);
 
 	useEffect(() => {
 		if (currentUser == null) return;

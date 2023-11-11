@@ -18,7 +18,7 @@ export const getHostById = async (hostId: number) => {
 
 export const getHostAlerts = async (hostId: number) => {
 	const {data} = await api.get(`/host/${hostId}/alerts`);
-	return data;
+	return data?.data ?? null;
 };
 
 export const getHostsByIds = async (hostsIds: Array<number>) => {

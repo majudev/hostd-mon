@@ -1,6 +1,6 @@
 import Host from '@/types/Host';
 
-type UserAlert = {
+type Alert = {
 	Host: Pick<Host, 'id' | 'name'>,
 	id: number,
 	message: string,
@@ -9,4 +9,4 @@ type UserAlert = {
 	timestamp: string
 };
 
-export default UserAlert;
+export default Alert;
