@@ -1,26 +1,28 @@
 export interface UptimeResponse {
 	status: string;
-	data:   UptimeResponseDataObject;
+	data: UptimeResponseDataObject;
 }
 
 export interface UptimeResponseDataObject {
-	id:                    number;
-	RHPUptimeEntries:      any[];
-	ExtramonUptimeEntries: ExtramonUptimeEntry[];
+	id: number;
+	RHPUptimeEntries: UptimeEntry[];
+	ExtramonUptimeEntries: UptimeEntry[];
 }
 
-export interface ExtramonUptimeEntry {
-	timestamp:  Date;
+export interface UptimeEntry {
+	timestamp: Date;
 	satellites: Satellites;
 }
 
 export interface Satellites {
-	[key: string]:   State;
+	[key: string]: StateObject;
 }
 
-export interface State {
-	state: string;
+export type State = 'good' | 'warn' | 'fail';
+
+export interface StateObject {
+	state: State;
 	ping: boolean;
-	rhpv2: boolean | undefined; //Only for RHP
-	rhpv3: boolean | undefined; //Only for RHP
+	rhpv2?: boolean; //Only for RHP
+	rhpv3?: boolean; //Only for RHP
 }

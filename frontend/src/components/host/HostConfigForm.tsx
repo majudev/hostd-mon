@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import Divider from '@mui/material/Divider';
 
-export type HostConfigFormFields = Omit<Host, 'id'> & { sia: boolean, extramon: boolean };
+export type HostConfigFormFields = Omit<Host, 'id'> & { rhp: boolean, extramon: boolean };
 
 type HostConfigFormProps = React.ComponentProps<'form'> & {
 	handleSubmit?: (formData: HostConfigFormFields) => any,
@@ -31,7 +31,7 @@ const HostConfigForm: React.FC<HostConfigFormProps> = ({
                                                        }) => {
 	const {formData, handleInputChange, setNewFormValues} = useForm<HostConfigFormFields>(defaultFormValues ?? {
 		name: '',
-		sia: true,
+		rhp: true,
 		rhpAddress: '',
 		rhpPubkey: '',
 		extramon: false,
@@ -51,8 +51,8 @@ const HostConfigForm: React.FC<HostConfigFormProps> = ({
 
 		setNewFormValues({
 			...formData,
-			sia: e.target.name === 'extramon' && formData.extramon,
-			extramon: e.target.name === 'sia' && formData.sia
+			rhp: e.target.name === 'extramon' && formData.extramon,
+			extramon: e.target.name === 'rhp' && formData.rhp
 		});
 	};
 
@@ -81,11 +81,11 @@ const HostConfigForm: React.FC<HostConfigFormProps> = ({
 			<Divider/>
 
 			<FormControlLabel disabled={disableForm} control={
-				<Switch name="sia" onChange={e => {
+				<Switch name="rhp" onChange={e => {
 					handleInputChange(e);
 					onCheckboxChange && onCheckboxChange(e);
-				}} checked={formData.sia}/>
-			} label="sia" sx={{mb: 2, mt: 1}}/>
+				}} checked={formData.rhp}/>
+			} label="rhp" sx={{mb: 2, mt: 1}}/>
 
 			<TextField
 				type="text"
@@ -94,8 +94,8 @@ const HostConfigForm: React.FC<HostConfigFormProps> = ({
 				name="rhpAddress"
 				onChange={handleInputChange}
 				value={formData.rhpAddress}
-				disabled={!formData.sia || disableForm}
-				required={formData.sia}
+				disabled={!formData.rhp || disableForm}
+				required={formData.rhp}
 				error={errorFields?.includes('rhpAddress')}
 				fullWidth
 				sx={{mb: 4}}
@@ -108,14 +108,14 @@ const HostConfigForm: React.FC<HostConfigFormProps> = ({
 				name="rhpPubkey"
 				onChange={handleInputChange}
 				value={formData.rhpPubkey}
-				disabled={!formData.sia || disableForm}
-				required={formData.sia}
+				disabled={!formData.rhp || disableForm}
+				required={formData.rhp}
 				error={errorFields?.includes('rhpPubkey')}
 				fullWidth
 				sx={{mb: 2}}
 			/>
 
-			<FormControl error={errorFields?.includes('rhpDeadtime')} disabled={!formData.sia || disableForm} required={formData.sia} fullWidth sx={{my: 2}}>
+			<FormControl error={errorFields?.includes('rhpDeadtime')} disabled={!formData.rhp || disableForm} required={formData.rhp} fullWidth sx={{my: 2}}>
 				<InputLabel id="rhpDeadtime">rhp dead time</InputLabel>
 				<Select
 					labelId="demo-simple-select-label"
