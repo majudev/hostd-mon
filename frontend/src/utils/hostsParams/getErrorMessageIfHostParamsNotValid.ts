@@ -2,7 +2,7 @@ import {HostConfigFormFields} from '@/components/host/HostConfigForm.tsx';
 
 export const getErrorMessageIfHostParamsNotValid = ({
 	                                                    name,
-	                                                    sia,
+	                                                    rhp,
 	                                                    rhpAddress,
 	                                                    rhpPubkey,
 	                                                    rhpDeadtime,
@@ -15,7 +15,7 @@ export const getErrorMessageIfHostParamsNotValid = ({
 		return 'Name is required';
 	}
 
-	if (sia && (rhpAddress == null || rhpAddress.length === 0 || rhpPubkey == null || rhpPubkey.length === 0 || rhpDeadtime == null)) {
+	if (rhp && (rhpAddress == null || rhpAddress.length === 0 || rhpPubkey == null || rhpPubkey.length === 0 || rhpDeadtime == null)) {
 		return 'rhpAddress, rhpPubkey and rhp dead time are required';
 	}
 
