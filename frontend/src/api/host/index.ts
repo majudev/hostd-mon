@@ -16,6 +16,11 @@ export const getHostById = async (hostId: number) => {
 	return data;
 };
 
+export const getHostAlerts = async (hostId: number) => {
+	const {data} = await api.get(`/host/${hostId}/alerts`);
+	return data;
+};
+
 export const getHostsByIds = async (hostsIds: Array<number>) => {
 	try {
 		const requestPromises = hostsIds.map(hostId => api.get(`/host/${hostId}`).catch(error => error));
