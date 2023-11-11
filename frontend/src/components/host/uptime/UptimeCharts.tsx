@@ -1,0 +1,395 @@
+import React, {useEffect, useState} from 'react';
+import formatDate from '@/utils/formatDate.ts';
+import {ScatterChart, Scatter, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, Line, ComposedChart} from 'recharts';
+import {v4 as uuidv4} from 'uuid';
+import {Box, Typography, Grid} from '@mui/material';
+import {State, StateObject, UptimeResponse, UptimeResponseDataObject} from '@/types/Uptime';
+import {getUptimeByHostId} from '@/api/host';
+import config from '@/config';
+import {useParams} from 'react-router-dom';
+import subtractTimeFromDate from '@/utils/subtractTimeFromDate';
+import Duration from '@/types/Duration';
+import Satellite from '@/types/Satellite';
+import {getSatellites} from '@/api/satellites';
+
+type ChartDataRecord = StateObject & {
+	datetime: string,
+	timestamp: number
+};
+
+type SatelliteUptimeData = {
+	satelliteName: string,
+	extramonEntries: Array<ChartDataRecord>,
+	rhpEntries: Array<ChartDataRecord>
+};
+
+const parseDurationTextToDate = (duration: Duration): Date => {
+	return duration === 'max' ?
+		new Date(0) :
+		subtractTimeFromDate(
+			new Date(),
+			{
+				hours: duration.endsWith('h') ? parseInt(duration?.split('h')[0] ?? '0') : undefined,
+				days: duration.endsWith('d') ? parseInt(duration?.split('d')[0] ?? '0') : undefined,
+				years: duration.endsWith('y') ? parseInt(duration?.split('y')[0] ?? '0') : undefined,
+			}
+		);
+};
+
+const getColourFromState = (state: State) => {
+	switch (state) {
+		case 'good':
+			return 'green';
+		case 'warn':
+			return 'yellow';
+		case 'fail':
+			return 'red';
+	}
+};
+
+type UptimeChartProps = {
+	selectedDuration: Duration,
+	loading: boolean,
+	setLoading: React.Dispatch<React.SetStateAction<boolean>>
+};
+
+const data = [
+	{
+		"newMarkersClustered": 10000,
+		"mcp": 1643,
+		"wasm": 790
+	},
+	{
+		"newMarkersClustered": 1666,
+		"mcp": 182,
+		"wasm": 42
+	},
+	{
+		"newMarkersClustered": 625,
+		"mcp": 56,
+		"wasm": 11
+	},
+	{
+		"newMarkersClustered": 300,
+		"mcpSlope": 0
+	},
+	{
+		"newMarkersClustered": 10000,
+		"mcpSlope": 1522
+	},
+	{
+		"newMarkersClustered": 600,
+		"wasmSlope": 0
+	},
+	{
+		"newMarkersClustered": 10000,
+		"wasmSlope": 678
+	}
+];
+
+export const Graph = () => {
+	return (
+		<ResponsiveContainer className="graph-wrapper" width="100%" height="90%">
+			<ComposedChart data={data}>
+				<XAxis dataKey="newMarkersClustered" type="number"/>
+				<YAxis unit="ms" type="number"/>
+				<Scatter name="MCP" dataKey="mcp" fill="red"/>
+				<Scatter name="Wasm" dataKey="wasm" fill="blue"/>
+				<Tooltip/>
+				<Line dataKey="wasmSlope" stroke="blue" dot={false}/>
+				<Line dataKey="mcpSlope" stroke="red" dot={false}/>
+			</ComposedChart>
+		</ResponsiveContainer>
+	)
+}
+
+const interpolateColor = (startColor: any, endColor: any, position: any) => {
+	const r = Math.round(startColor[0] + (endColor[0] - startColor[0]) * position);
+	const g = Math.round(startColor[1] + (endColor[1] - startColor[1]) * position);
+	const b = Math.round(startColor[2] + (endColor[2] - startColor[2]) * position);
+	return `rgb(${r}, ${g}, ${b})`;
+};
+
+const UptimeCharts: React.FC<UptimeChartProps> = ({selectedDuration, loading, setLoading}) => {
+	const {id: hostId} = useParams();
+
+	const [satellites, setSatellites] = useState<Array<Satellite> | null>(null);
+	const [uptimeEntries, setUptimeEntries] = useState<UptimeResponseDataObject | null>(null);
+
+	useEffect(() => {
+		if (hostId == null) return;
+
+		if (satellites == null) {
+			getSatellites()
+				.then((_satellites: Array<Satellite>) => {
+					setSatellites(_satellites);
+				})
+				.catch(console.error);
+		}
+	}, [hostId]);
+
+	useEffect(() => {
+		if (hostId == null) return;
+		if (satellites == null) return;
+
+		const getUptimeDataHandler = () => {
+			if (loading) return;
+
+			setLoading(true);
+
+			getUptimeByHostId({
+				hostId: parseInt(hostId),
+				from: parseDurationTextToDate(selectedDuration),
+				to: 'now'
+			}).then((data: UptimeResponse) => {
+				setUptimeEntries(data.data);
+			}).catch(console.error);
+
+			setLoading(false);
+		};
+
+		getUptimeDataHandler();
+
+		const interval = setInterval(getUptimeDataHandler, config.CHARTS.REFRESH_DATA_INTERVAL_MS);
+
+		return () => {
+			if (interval != null) {
+				clearInterval(interval);
+			}
+		};
+	}, [hostId, selectedDuration, satellites]);
+
+	if (uptimeEntries == null || satellites == null) return <></>;
+
+	// shape data for recharts library
+	const satellitesUptimeData = satellites.map(satellite => {
+		return {
+			satelliteName: satellite.name,
+			extramonEntries: uptimeEntries.ExtramonUptimeEntries.map((entry, i) => {
+				return {
+					datetime: formatDate(entry.timestamp),
+					timestamp: new Date(entry.timestamp).getTime(),
+					state: i === 3 ? 'fail' : entry.satellites[satellite.name].state,
+					ping: entry.satellites[satellite.name].ping,
+					uv: 0
+				}
+			}),
+			rhpEntries: uptimeEntries.RHPUptimeEntries.map(entry => {
+				return {
+					datetime: formatDate(entry.timestamp),
+					timestamp: new Date(entry.timestamp).getTime(),
+					state: entry.satellites[satellite.name].state,
+					ping: entry.satellites[satellite.name].ping,
+					rhpv2: entry.satellites[satellite.name].rhpv2,
+					rhpv3: entry.satellites[satellite.name].rhpv3,
+					uv: 0
+				}
+			}),
+		};
+	}) as Array<SatelliteUptimeData>;
+
+	console.log(satellitesUptimeData)
+
+	const renderTooltip = (props: any) => {
+		const {active, payload} = props;
+
+		if (active && payload && payload.length) {
+			const data = payload[0] && payload[0].payload;
+
+			return (
+				<div
+					style={{
+						backgroundColor: '#fff',
+						border: '1px solid #999',
+						margin: 0,
+						padding: 10,
+					}}
+				>
+					<p>{data.datetime}</p>
+					<p>
+						<span>ping: </span>
+						<span style={{
+							color: getColourFromState(data.state),
+							fontWeight: 'bold'
+						}}>{data.ping ? 'ok' : 'fail'}</span>
+					</p>
+
+					{
+						data.rhpv2 !== undefined &&
+                   <p>
+                       <span>rhpv2: </span>
+                       <span style={{
+								  color: data.rhpv2 ? 'green' : 'red',
+								  fontWeight: 'bold'
+							  }}>{data.rhpv2 ? 'ok' : 'fail'}</span>
+                   </p>
+					}
+
+					{
+						data.rhpv3 !== undefined &&
+                   <p>
+                       <span>rhpv3: </span>
+                       <span style={{
+								  color: data.rhpv3 ? 'green' : 'red',
+								  fontWeight: 'bold'
+							  }}>{data.rhpv3 ? 'ok' : 'fail'}</span>
+                   </p>
+					}
+				</div>
+			);
+		}
+
+		return null;
+	};
+
+	return <>
+		{
+			satellitesUptimeData.map(satelliteUptimeData => <>
+					{/*<Box key={uuidv4()} mt={2} mb={1}>*/}
+					{/*	<Typography>{satelliteUptimeData.satelliteName} - rhp</Typography>*/}
+					{/*	<ResponsiveContainer width="100%" height={30}>*/}
+					{/*		<ScatterChart*/}
+					{/*			width={800}*/}
+					{/*			height={100}*/}
+					{/*			margin={{*/}
+					{/*				top: 20,*/}
+					{/*				right: 10,*/}
+					{/*				bottom: 0,*/}
+					{/*				left: 10,*/}
+					{/*			}}*/}
+					{/*		>*/}
+					{/*			<XAxis*/}
+					{/*				type="number"*/}
+					{/*				dataKey="timestamp"*/}
+					{/*				name="timestamp"*/}
+					{/*				display="none"*/}
+					{/*				domain={['dataMin', 'dataMax']} // This line sets the domain to the minimum and maximum values in the data*/}
+					{/*			/>*/}
+					{/*			<YAxis*/}
+					{/*				height={0}*/}
+					{/*				width={0}*/}
+					{/*				tick={false}*/}
+					{/*				tickLine={false}*/}
+					{/*				axisLine={false}*/}
+					{/*			/>*/}
+
+					{/*			<Tooltip cursor={{strokeDasharray: '3 3'}} wrapperStyle={{zIndex: 100}} content={renderTooltip}/>*/}
+
+					{/*			<Scatter data={satelliteUptimeData.rhpEntries}>*/}
+					{/*				{satelliteUptimeData.rhpEntries.map(entry => (*/}
+					{/*					<Cell*/}
+					{/*						key={uuidv4()}*/}
+					{/*						fill={getColourFromState(entry.state)}*/}
+					{/*					/>*/}
+					{/*				))}*/}
+					{/*			</Scatter>*/}
+					{/*		</ScatterChart>*/}
+					{/*	</ResponsiveContainer>*/}
+
+					{/*	{*/}
+					{/*		satelliteUptimeData.rhpEntries.length > 2 &&*/}
+					{/*       <Grid container spacing={2} columns={3}>*/}
+					{/*           <Grid item xs={1}>*/}
+					{/*               <Typography variant="caption">*/}
+					{/*						{satelliteUptimeData.rhpEntries[0]?.datetime}*/}
+					{/*               </Typography>*/}
+					{/*           </Grid>*/}
+					{/*           <Grid item xs={1} sx={{textAlign: 'center'}}></Grid>*/}
+					{/*           <Grid item xs={1} sx={{textAlign: 'right'}}>*/}
+					{/*               <Typography variant="caption">*/}
+					{/*						{satelliteUptimeData.rhpEntries.pop()?.datetime}*/}
+					{/*               </Typography>*/}
+					{/*           </Grid>*/}
+					{/*       </Grid>*/}
+					{/*	}*/}
+					{/*</Box>*/}
+
+					<Box key={uuidv4()} mt={2} mb={1}>
+						<Typography>{satelliteUptimeData.satelliteName} - extramon</Typography>
+						<ResponsiveContainer width="100%" height={50}>
+							<ComposedChart
+								width={800}
+								margin={{
+									top: 20,
+									right: 10,
+									bottom: 10,
+									left: 10,
+								}}
+								data={satelliteUptimeData.extramonEntries}
+							>
+								{/*<defs>*/}
+								{/*	<linearGradient id="colorUv" x1="0%" y1="0%" x2="0%" y2="100%">*/}
+								{/*		<stop offset="0%" stopColor="green" />*/}
+								{/*		<stop offset={colorBreakPointPercentage} stopColor="green" />*/}
+								{/*		<stop offset={colorBreakPointPercentage} stopColor="red" />*/}
+								{/*		<stop offset="100%" stopColor="red" />*/}
+								{/*	</linearGradient>*/}
+								{/*</defs>*/}
+
+								<XAxis
+									type="number"
+									dataKey="timestamp"
+									name="timestamp"
+									display="none"
+									domain={['dataMin', 'dataMax']} // This line sets the domain to the minimum and maximum values in the data
+								/>
+								<YAxis
+									dataKey="timestamp"
+									height={0}
+									width={0}
+									tick={false}
+									tickLine={false}
+									axisLine={false}
+								/>
+
+								<Tooltip cursor={{strokeDasharray: '3 3'}} wrapperStyle={{zIndex: 100}} content={renderTooltip}/>
+
+								Scatter plot
+								<Scatter data={satelliteUptimeData.extramonEntries}>
+									{satelliteUptimeData.extramonEntries.map(entry => (
+										<Cell
+											key={uuidv4()}
+											fill={getColourFromState(entry.state)}
+										/>
+									))}
+								</Scatter>
+
+								<Line
+									type="monotone"
+									dataKey="uv"
+									// stroke={() => Math.floor(Math.random() * 4) < 2 ? 'red' : 'blue'}
+									stroke={'red'}
+									dot={false}
+									activeDot={false}
+								/>
+							</ComposedChart>
+						</ResponsiveContainer>
+
+						{
+							satelliteUptimeData.extramonEntries.length > 2 &&
+                      <Grid container spacing={2} columns={3}>
+                          <Grid item xs={1}>
+                              <Typography variant="caption">
+											{satelliteUptimeData.extramonEntries[0]?.datetime}
+                              </Typography>
+                          </Grid>
+                          <Grid item xs={1} sx={{textAlign: 'center'}}></Grid>
+                          <Grid item xs={1} sx={{textAlign: 'right'}}>
+                              <Typography variant="caption">
+											{satelliteUptimeData.extramonEntries.pop()?.datetime}
+                              </Typography>
+                          </Grid>
+                      </Grid>
+						}
+					</Box>
+				</>
+			)
+		}
+		<ResponsiveContainer width="100%" height={300}>
+
+			<Graph/>
+		</ResponsiveContainer>
+	</>;
+};
+
+export default UptimeCharts;
