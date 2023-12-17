@@ -2,6 +2,8 @@ import { Worker, MessagePort, isMainThread, parentPort, workerData } from 'node:
 import logger from '../utils/logger';
 import {performance} from 'perf_hooks';
 import { PrismaClient } from '@prisma/client';
+import sendNotificationSMS from '../notifier/notify-sms';
+import sendNotificationEmail from '../notifier/notify-email';
 
 const prisma = new PrismaClient();
 
@@ -93,18 +95,20 @@ async function workerFunction(){
             const alertPhone = host.alertPhone && !host.User.globallyDisablePhoneAlerts;
             const alertEmail = host.alertEmail && !host.User.globallyDisableEmailAlerts;
 
-            if(alertPhone){
+            if(alertPhone && host.User.alertPhoneNumber !== null){
                 //Phone alert
                 sentTo.push('Phone: ' + host.User.alertPhoneNumber);
                 ///TODO: do something...
                 console.log("To phone " + host.User.alertPhoneNumber + ": Your host " + host.name + " has been dead for " + inactivityPeriodString + ", so the alert has been sent.");
+                sendNotificationSMS(host.User.alertPhoneNumber, "Your host " + host.name + " has been dead for " + inactivityPeriodString + ", so the alert has been sent.");
             }
 
-            if(alertEmail){
+            if(alertEmail && host.User.alertEmail !== null){
                 //Email alert
                 sentTo.push('Email: ' + host.User.alertEmail);
                 ///TODO: do something...
                 console.log("To email " + host.User.alertEmail + ": Your host " + host.name + " has been dead for " + inactivityPeriodString + ", so the alert has been sent.");
+                sendNotificationEmail(host.User.alertEmail, "no-reply@sia.watch", "Sia hostd down", "Your host " + host.name + " has been dead for " + inactivityPeriodString + ", so the alert has been sent.", "<p>Your host <b>" + host.name + "</b> has been dead for <b>" + inactivityPeriodString + "</b>, so the alert has been sent.</p>");
             }
 
             await prisma.alert.create({
