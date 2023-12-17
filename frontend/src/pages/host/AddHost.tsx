@@ -26,13 +26,13 @@ const AddHost: React.FC<AddHostProps> = ({userId}) => {
 
 		setLoading(true);
 
-		const {name, sia, rhpAddress, rhpPubkey, rhpDeadtime, extramon, extramonPubkey, extramonDeadtime} = formData;
+		const {name, rhp, rhpAddress, rhpPubkey, rhpDeadtime, extramon, extramonPubkey, extramonDeadtime} = formData;
 
 		const newHost = {
 			name,
-			rhpAddress: sia ? rhpAddress : null,
-			rhpPubkey: sia ? rhpPubkey : null,
-			rhpDeadtime: sia ? rhpDeadtime : undefined,
+			rhpAddress: rhp ? rhpAddress : null,
+			rhpPubkey: rhp ? rhpPubkey : null,
+			rhpDeadtime: rhp ? rhpDeadtime : undefined,
 			extramonPubkey: extramon ? extramonPubkey : null,
 			extramonDeadtime: extramon ? extramonDeadtime : undefined,
 		};

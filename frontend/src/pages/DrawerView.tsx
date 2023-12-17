@@ -17,7 +17,10 @@ import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import SidebarNavigation from '@/components/sidebar/SidebarNavigation';
-import {useSidebar} from '@/context/SidebarContext.tsx';
+import {useSidebar} from '@/context/SidebarContext';
+import {useHostDmon} from '@/context/HostDmonContext';
+import sum from '@/utils/sum';
+import RouterLink from '@/components/routing/RouterLink';
 
 const drawerWidth: number = 240;
 
@@ -82,6 +85,12 @@ const DrawerView: React.FC<DraweViewProps> = ({children, pageTitle}) => {
 		setIsSidebarOpen(prev => !prev);
 	};
 
+	const {userAlerts} = useHostDmon();
+
+	const userAlertCount = userAlerts == null ?
+		0 :
+		sum(userAlerts.map(alert => alert.read ? 0 : 1));
+
 	return (
 		<ThemeProvider theme={defaultTheme}>
 			<Box sx={{display: 'flex'}}>
@@ -113,11 +122,15 @@ const DrawerView: React.FC<DraweViewProps> = ({children, pageTitle}) => {
 						>
 							{pageTitle ?? 'Dashboard'}
 						</Typography>
-						{/*<IconButton color="inherit">*/}
-						{/*	<Badge badgeContent={4} color="secondary">*/}
-						{/*		<NotificationsIcon/>*/}
-						{/*	</Badge>*/}
-						{/*</IconButton>*/}
+						<IconButton color="inherit">
+							<RouterLink to="/alerts">
+								<Badge
+									badgeContent={userAlertCount} color="secondary"
+								>
+									<NotificationsIcon/>
+								</Badge>
+							</RouterLink>
+						</IconButton>
 					</Toolbar>
 				</AppBar>
 				<Drawer

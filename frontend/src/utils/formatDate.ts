@@ -1,4 +1,4 @@
-const formatDate = (date: Date) => {
+const formatDate = (date: Date | number) => {
 	date = new Date(date);
 
 	const year = date.getFullYear();

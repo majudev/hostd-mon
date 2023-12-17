@@ -41,7 +41,7 @@ const EditHost: React.FC = () => {
 
 		setDefaultFormValues({
 			name: hostToEdit.name ?? '',
-			sia: hostToEdit.rhpAddress != null && hostToEdit.rhpAddress !== '' && hostToEdit.rhpPubkey != null && hostToEdit.rhpPubkey !== '',
+			rhp: hostToEdit.rhpAddress != null && hostToEdit.rhpAddress !== '' && hostToEdit.rhpPubkey != null && hostToEdit.rhpPubkey !== '',
 			rhpAddress: hostToEdit.rhpAddress ?? '',
 			rhpPubkey: hostToEdit.rhpPubkey ?? '',
 			extramon: hostToEdit.extramonPubkey != null && hostToEdit.extramonPubkey !== '',
@@ -69,14 +69,14 @@ const EditHost: React.FC = () => {
 
 		setLoading(true);
 
-		const {name, sia, rhpAddress, rhpPubkey, rhpDeadtime, extramon, extramonPubkey, extramonDeadtime} = formData;
+		const {name, rhp, rhpAddress, rhpPubkey, rhpDeadtime, extramon, extramonPubkey, extramonDeadtime} = formData;
 
 		const hostToUpdate = {
 			id: parseInt(hostId),
 			name,
-			rhpAddress: sia ? rhpAddress : null,
-			rhpPubkey: sia ? rhpPubkey : null,
-			rhpDeadtime: sia ? rhpDeadtime : undefined,
+			rhpAddress: rhp ? rhpAddress : null,
+			rhpPubkey: rhp ? rhpPubkey : null,
+			rhpDeadtime: rhp ? rhpDeadtime : undefined,
 			extramonPubkey: extramon ? extramonPubkey : null,
 			extramonDeadtime: extramon ? extramonDeadtime : undefined,
 		};

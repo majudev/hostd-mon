@@ -10,6 +10,7 @@ import Panel from '@/components/Panel';
 import ManageUsers from '@/pages/users/ManageUsers';
 import NotFound from '@/pages/errors/NotFound';
 import {SidebarProvider} from '@/context/SidebarContext';
+import Alerts from '@/pages/alerts/Alerts';
 
 const App = () => {
 	return <Router>
@@ -34,6 +35,12 @@ const App = () => {
 						<Route path="user/:id" element={
 							<DrawerView pageTitle="Account">
 								<AccountOverview/>
+							</DrawerView>
+						}/>
+
+						<Route path="alerts" element={
+							<DrawerView pageTitle="Alerts">
+								<Alerts/>
 							</DrawerView>
 						}/>
 

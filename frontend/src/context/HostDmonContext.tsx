@@ -1,14 +1,18 @@
 import React, {useContext, useState, createContext, ReactNode, useEffect} from 'react';
-import {getHostsByUserId} from '@/api/user';
+import {getHostsByUserId, getUserAlerts} from '@/api/user';
 import User from '@/types/User';
 import Host from '@/types/Host';
+import Alert from '@/types/Alert';
 
 export type HostDmonContext = {
 	currentUser: User | null,
 	setCurrentUser: React.Dispatch<React.SetStateAction<User | null>>
 
 	hosts: Array<Host> | null,
-	setHosts: React.Dispatch<React.SetStateAction<Array<Host> | null>>
+	setHosts: React.Dispatch<React.SetStateAction<Array<Host> | null>>,
+
+	userAlerts: Array<Alert> | null,
+	setUserAlerts: React.Dispatch<React.SetStateAction<Array<Alert> | null>>
 };
 
 const HostDmonContext = createContext<HostDmonContext | null>(null);
@@ -20,6 +24,7 @@ export const useHostDmon = (): HostDmonContext => {
 export const HostDmonProvider = ({children}: { children: ReactNode }) => {
 	const [currentUser, setCurrentUser] = useState<User | null>(null);
 	const [hosts, setHosts] = useState<Array<Host> | null>(null);
+	const [userAlerts, setUserAlerts] = useState<Array<Alert> | null>(null);
 
 	useEffect(() => {
 		if (currentUser == null) return;
@@ -28,12 +33,22 @@ export const HostDmonProvider = ({children}: { children: ReactNode }) => {
 		getHostsByUserId(currentUser.id).then(setHosts).catch(console.error);
 	}, [currentUser]);
 
+	useEffect(() => {
+		if (currentUser == null) return;
+		if (userAlerts != null) return;
+
+		getUserAlerts(currentUser.id).then(setUserAlerts).catch(console.error);
+	}, [currentUser]);
+
 	return <HostDmonContext.Provider value={{
 		currentUser,
 		setCurrentUser,
 
 		hosts,
-		setHosts
+		setHosts,
+
+		userAlerts,
+		setUserAlerts
 	}}>
 		{children}
 	</HostDmonContext.Provider>;

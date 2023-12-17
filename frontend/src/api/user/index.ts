@@ -25,6 +25,11 @@ export const getUserById = async (userId: number) => {
 	return data;
 }
 
+export const getUserAlerts = async (userId: number) => {
+	const {data} = await api.get(`/user/${userId}/alerts`);
+	return data?.data ?? null;
+}
+
 export const getUser = async () => {
 	const {data} = await api.get('/user/me');
 	return data;

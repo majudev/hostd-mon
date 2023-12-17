@@ -3,6 +3,7 @@ import Grid from '@mui/material/Grid';
 import EditHost from '@/pages/host/EditHost';
 import UptimePanel from '@/pages/host/uptime/UptimePanel';
 import Panel from '@/components/Panel';
+import HostAlerts from '@/pages/host/HostAlerts.tsx';
 
 const HostOverview: React.FC = () => {
 	return <Grid container spacing={3}>
@@ -12,6 +13,10 @@ const HostOverview: React.FC = () => {
 
 		<Panel item xs={6} md={6} lg={6}>
 			<EditHost/>
+		</Panel>
+
+		<Panel item xs={6} md={6} lg={6}>
+			<HostAlerts/>
 		</Panel>
 	</Grid>;
 };

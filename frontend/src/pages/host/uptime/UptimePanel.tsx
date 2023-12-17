@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
 import Grid from '@mui/material/Grid';
 import {Button, ButtonGroup} from '@mui/material';
-import Title from '@/components/Title.tsx';
-import UptimeChart from '@/components/host/uptime/UptimeChart.tsx';
+import Title from '@/components/Title';
+import UptimeCharts from '@/components/host/uptime/UptimeCharts';
 import {v4 as uuidv4} from 'uuid';
 import config from '@/config';
 import Duration from '@/types/Duration';
@@ -34,7 +34,7 @@ const UptimePanel: React.FC = () => {
 			</Grid>
 		</Grid>
 
-		<UptimeChart selectedDuration={selectedDuration} loading={loading} setLoading={setLoading}/>
+		<UptimeCharts selectedDuration={selectedDuration} loading={loading} setLoading={setLoading}/>
 	</>;
 };
 
