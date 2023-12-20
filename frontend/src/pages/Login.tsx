@@ -7,6 +7,7 @@ import {Box, Button, Typography} from '@mui/material';
 import config from '@/config';
 import {getUser} from '@/api/user';
 import User from '@/types/User';
+import {AxiosError} from 'axios';
 
 const Login: React.FC = () => {
 	const navigate = useNavigate();
@@ -37,7 +38,12 @@ const Login: React.FC = () => {
 		}).catch(error => {
 			navigate('/login');
 			alert('Server error. Try again later.');
-			console.error(error);
+
+			if (error instanceof AxiosError && error.response != null) {
+				console.error(error.response);
+			} else {
+				console.error(error);
+			}
 		});
 
 		setLoading(false);
