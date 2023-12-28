@@ -129,6 +129,7 @@ func (m *Manager) PingHost(ctx context.Context, hostAddr string, hostKey types.P
 	log.Debug("opening RHP2 session")
 	rhp2Session, err := proto2.NewSession(ctx, hostKey, hostAddr)
 	if err != nil {
+		log.Error("couldn't open RHP2 session", zap.Error(err))
 		return PingResult{
 			PingRTT: pingOk,
 			RHPv2:   false,
@@ -141,6 +142,7 @@ func (m *Manager) PingHost(ctx context.Context, hostAddr string, hostKey types.P
 	log.Debug("scanning settings")
 	settings, err := rhp2Session.ScanSettings()
 	if err != nil {
+		log.Error("couldn't scan settings", zap.Error(err))
 		return PingResult{
 			PingRTT: pingOk,
 			RHPv2:   false,
@@ -153,6 +155,7 @@ func (m *Manager) PingHost(ctx context.Context, hostAddr string, hostKey types.P
 	// start the RHP3 session
 	host, _, err := net.SplitHostPort(hostAddr)
 	if err != nil {
+		log.Error("couldn't open RHP3 session", zap.Error(err))
 		return PingResult{
 			PingRTT: pingOk,
 			RHPv2:   true,
@@ -162,6 +165,7 @@ func (m *Manager) PingHost(ctx context.Context, hostAddr string, hostKey types.P
 	rhp3Addr := net.JoinHostPort(host, settings.SiaMuxPort)
 	rhp3Session, err := proto3.NewSession(ctx, hostKey, rhp3Addr)
 	if err != nil {
+		log.Error("couldn't open RHP3 session", zap.Error(err))
 		return PingResult{
 			PingRTT: pingOk,
 			RHPv2:   true,
@@ -174,6 +178,7 @@ func (m *Manager) PingHost(ctx context.Context, hostAddr string, hostKey types.P
 	log.Debug("scanning price table")
 	pt, err := rhp3Session.ScanPriceTable()
 	if err != nil {
+		log.Error("couldn't scan price table", zap.Error(err))
 		return PingResult{
 			PingRTT: pingOk,
 			RHPv2:   true,
