@@ -77,7 +77,7 @@ async function workerFunction(){
 
             try {
                 logger.debug('Code ' + response.status + ' (' + current.rhpPubkey + ')');
-                if(Math.floor(response.status / 100) == 2){
+                if(Math.floor(response.status / 100) != 2){
                     throw 'badcode';
                 }
 
