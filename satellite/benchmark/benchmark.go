@@ -46,6 +46,7 @@ func (m *Manager) ScanHost(ctx context.Context, hostAddr string, hostKey types.P
 	addrParts := strings.Split(hostAddr, ":")
 	pinger, err := ping.NewPinger(addrParts[0])
 	pinger.SetPrivileged(true)
+	pinger.Timeout = 5
 	pinger.Count = 1
 	err = pinger.Run()
 	if err == nil && (pinger.Statistics().PacketLoss == 0) {
@@ -117,6 +118,7 @@ func (m *Manager) PingHost(ctx context.Context, hostAddr string, hostKey types.P
 	addrParts := strings.Split(hostAddr, ":")
 	pinger, err := ping.NewPinger(addrParts[0])
 	pinger.SetPrivileged(true)
+	pinger.Timeout = 5
 	pinger.Count = 1
 	err = pinger.Run()
 	if err == nil && (pinger.Statistics().PacketLoss == 0) {
