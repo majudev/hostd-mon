@@ -76,11 +76,13 @@ async function workerFunction(){
             });
 
             try {
+                logger.debug('Code ' + response.status + ' (' + current.rhpPubkey + ')');
                 if(Math.floor(response.status / 100) == 2){
                     throw 'badcode';
                 }
 
                 const body = await response.json();
+                logger.debug('Body ' + current.rhpPubkey + ': ' + JSON.stringify(body));
                 await prisma.rHPUptimeEntry.create({
                     data: {
                         hostId: current.id,
