@@ -80,6 +80,17 @@ async function workerFunction(){
             orderBy: {
                 timestamp: 'desc',
             },
+            where: {
+                OR: [
+                    {
+                        ping: true,
+                    },
+                    {
+                        rhpv2: true,
+                        rhpv3: true,
+                    }
+                ]
+            }
         });
 
         if(lastUptimeEntry === null) return;
