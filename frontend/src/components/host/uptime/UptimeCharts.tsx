@@ -183,7 +183,7 @@ const UptimeCharts: React.FC<UptimeChartProps> = ({selectedDuration, loading, se
 
 	return <>
 		{
-			satellitesUptimeData.map(satelliteUptimeData => <>
+			satellitesUptimeData.map(satelliteUptimeData => <Box key={uuidv4()}>
 					<Box key={uuidv4()} mt={2} mb={1}>
 						<Typography>{satelliteUptimeData.satelliteName} - rhp</Typography>
 						{satelliteUptimeData.rhpEntries.length === 0 &&
@@ -309,7 +309,7 @@ const UptimeCharts: React.FC<UptimeChartProps> = ({selectedDuration, loading, se
                       </Grid>
 						}
 					</Box>
-				</>
+				</Box>
 			)
 		}
 	</>;
