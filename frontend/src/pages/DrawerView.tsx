@@ -123,9 +123,9 @@ const DrawerView: React.FC<DraweViewProps> = ({children, pageTitle}) => {
 							{pageTitle ?? 'Dashboard'}
 						</Typography>
 						<IconButton color="inherit">
-							<RouterLink to="/alerts">
+							<RouterLink to="/alerts" title="show alerts">
 								<Badge
-									badgeContent={userAlertCount} color="secondary"
+									badgeContent={true ? 0 : userAlertCount} color="secondary"
 								>
 									<NotificationsIcon/>
 								</Badge>

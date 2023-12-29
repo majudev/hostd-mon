@@ -4,6 +4,7 @@ import {getHostAlerts} from '@/api/host';
 import Alert from '@/types/Alert.ts';
 import Grid from '@mui/material/Grid';
 import Title from '@/components/Title.tsx';
+import AlertsTable from '@/components/alerts/AlertsTable.tsx';
 
 type HostAlertsProps = {};
 
@@ -26,7 +27,7 @@ const HostAlerts: React.FC<HostAlertsProps> = () => {
 			</Grid>
 		</Grid>
 
-		{JSON.stringify(hostAlerts, null, 3)}
+		<AlertsTable alerts={hostAlerts ?? []} doNotShowHostLink />
 	</>;
 };
 
