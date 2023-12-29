@@ -148,7 +148,7 @@ const UptimeCharts: React.FC<UptimeChartProps> = ({selectedDuration, loading, se
 					<p>
 						<span>ping: </span>
 						<span style={{
-							color: getColourFromState(data.state),
+							color: data.state === 'good' ? 'green' : 'red',
 							fontWeight: 'bold'
 						}}>{data.ping ? 'ok' : 'fail'}</span>
 					</p>
