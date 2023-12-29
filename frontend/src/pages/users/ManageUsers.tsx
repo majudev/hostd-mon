@@ -23,9 +23,9 @@ const ManageUsers: React.FC = () => {
 
 		setIsLoading(true);
 
-		getAllUsers().then(setUsers);
-
-		setIsLoading(false);
+		getAllUsers()
+			.then(setUsers)
+			.finally(() => setIsLoading(false));
 	}, []);
 
 	return <Grid container spacing={3}>

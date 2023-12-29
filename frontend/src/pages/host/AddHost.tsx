@@ -37,31 +37,31 @@ const AddHost: React.FC<AddHostProps> = ({userId}) => {
 			extramonDeadtime: extramon ? extramonDeadtime : undefined,
 		};
 
-		createHost(newHost, currentUser.admin ? userId : undefined).then((res) => {
-			setErrorFields([]);
+		createHost(newHost, currentUser.admin ? userId : undefined)
+			.then((res) => {
+				setErrorFields([]);
 
-			const createdHost = res.data;
+				const createdHost = res.data;
 
-			userId == null && setHosts(prev => {
-				if (prev == null) return null;
+				userId == null && setHosts(prev => {
+					if (prev == null) return null;
 
-				return [...prev, createdHost];
-			});
+					return [...prev, createdHost];
+				});
 
-			setLoading(false);
+				navigate(`/host/${createdHost.id}`);
+			})
+			.catch(error => {
+				console.error(error);
 
-			navigate(`/host/${createdHost.id}`);
-		}).catch(error => {
-			console.error(error);
-			setLoading(false);
+				const {data} = error?.response;
 
-			const {data} = error?.response;
+				if (data == null) return;
 
-			if (data == null) return;
-
-			setErrorFields([data?.duplicate]);
-			alert(data?.message ?? error ?? 'Server error');
-		});
+				setErrorFields([data?.duplicate]);
+				alert(data?.message ?? error ?? 'Server error');
+			})
+			.finally(() => setLoading(false));
 	}
 
 	return <HostConfigForm

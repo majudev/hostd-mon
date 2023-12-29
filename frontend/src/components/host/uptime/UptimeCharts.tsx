@@ -84,11 +84,12 @@ const UptimeCharts: React.FC<UptimeChartProps> = ({selectedDuration, loading, se
 				hostId: parseInt(hostId),
 				from: parseDurationTextToDate(selectedDuration),
 				to: 'now'
-			}).then((data: UptimeResponse) => {
-				setUptimeEntries(data.data);
-			}).catch(console.error);
-
-			setLoading(false);
+			})
+				.then((data: UptimeResponse) => {
+					setUptimeEntries(data.data);
+				})
+				.catch(console.error)
+				.finally(() => setLoading(false));
 		};
 
 		getUptimeDataHandler();

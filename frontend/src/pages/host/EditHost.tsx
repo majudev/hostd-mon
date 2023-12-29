@@ -81,29 +81,29 @@ const EditHost: React.FC = () => {
 			extramonDeadtime: extramon ? extramonDeadtime : undefined,
 		};
 
-		updateHost(hostToUpdate).then(res => {
-			setErrorFields([]);
+		updateHost(hostToUpdate)
+			.then(res => {
+				setErrorFields([]);
 
-			const updatedHost = res?.data;
+				const updatedHost = res?.data;
 
-			editingMyHost && setHosts(prev => {
-				if (prev == null) return null;
+				editingMyHost && setHosts(prev => {
+					if (prev == null) return null;
 
-				return prev.map(host => host.id === parseInt(hostId) ? updatedHost : host);
-			});
+					return prev.map(host => host.id === parseInt(hostId) ? updatedHost : host);
+				});
+			})
+			.catch(error => {
+				console.error(error);
 
-			setLoading(false);
-		}).catch(error => {
-			console.error(error);
-			setLoading(false);
+				const {data} = error?.response;
 
-			const {data} = error?.response;
+				if (data == null) return;
 
-			if (data == null) return;
-
-			setErrorFields([data?.duplicate]);
-			alert(data?.message ?? error ?? 'Server error');
-		});
+				setErrorFields([data?.duplicate]);
+				alert(data?.message ?? error ?? 'Server error');
+			})
+			.finally(() => setLoading(false));
 	}
 
 	return <>
