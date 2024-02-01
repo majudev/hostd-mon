@@ -79,6 +79,8 @@ const Login: React.FC = () => {
 				</Button>
 			</Box>
 		</Box>
+		<p>SiaWatch is shutting down on 15th Feb 2024.</p>
+		<p>There is less than 5 active users of the service. If you feel up to the challenge and want to maintain the service anyway, contact me at support@sia.watch - but keep in mind you will have to pay the monthly bill for the infrastructure.</p>
 	</Container>;
 };
 
